@@ -23,6 +23,7 @@
       <button id="setupWorkspace" class="secondary" type="button">Run one-time workspace setup</button>
       <button id="openSetup" class="secondary" type="button">Open setup directly</button>
       <button id="healthCheck" class="secondary" type="button">Check backend</button>
+      <button id="openHealth" class="secondary" type="button">Open backend check directly</button>
       <p id="configStatus" class="small">No URL saved yet.</p>
     </section>
 
@@ -73,6 +74,7 @@
       bind("healthCheck", checkBackend);
       bind("setupWorkspace", setupWorkspace);
       bind("openSetup", openSetupDirectly);
+      bind("openHealth", openHealthDirectly);
       bind("captureLocation", captureLocation);
       bind("submitTest", submitTest);
       bindPhotoInput();
@@ -116,6 +118,15 @@
       showResult({ ok: true, message: "Checking backend..." });
       const data = await getJson(`${url}?action=health`);
       showResult(data);
+    }
+
+    function openHealthDirectly() {
+      const url = getBackendUrl();
+      if (!url) return;
+      const healthUrl = `${url}?action=health`;
+      document.getElementById("configStatus").textContent = "Opening backend check directly.";
+      showResult({ ok: true, message: "Opening direct backend check URL. It should show configured:true.", healthUrl });
+      window.open(healthUrl, "_blank", "noopener");
     }
 
     async function setupWorkspace() {
