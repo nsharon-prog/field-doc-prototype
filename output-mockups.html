@@ -105,6 +105,24 @@
 
     .section { padding: 12px 12px 0; }
 
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 6px 2px 10px;
+      color: #344453;
+      font-size: .86rem;
+      font-weight: 900;
+    }
+
+    .section-label:before {
+      content: "";
+      width: 7px;
+      height: 24px;
+      border-radius: 4px;
+      background: var(--blue);
+    }
+
     .card {
       margin-bottom: 12px;
       padding: 14px;
@@ -399,6 +417,52 @@
       gap: 7px;
     }
 
+    .equipment-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .equipment-card {
+      display: grid;
+      gap: 8px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafb;
+    }
+
+    .equipment-card h3 {
+      margin-bottom: 0;
+      font-size: 1rem;
+    }
+
+    .mini-equipment {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .mini-equipment span {
+      min-height: 54px;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+      padding: 8px;
+      border-radius: 7px;
+      background: #fff;
+      border: 1px solid #e3e9ed;
+      text-align: center;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .mini-equipment strong {
+      display: block;
+      color: var(--ink);
+      font-size: .96rem;
+      white-space: nowrap;
+    }
+
     .eq-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -510,6 +574,7 @@
     </section>
 
     <section class="section">
+      <div class="section-label">בחירת תצוגה וסינון</div>
       <article class="card">
         <h2>בחירת תצוגה</h2>
         <div class="field">
@@ -535,12 +600,13 @@
             <strong id="selected-settlements-label">26 יישובים</strong>
           </div>
         </div>
-        <p class="muted">הרשימה כאן מבוססת על נתוני מקור נגישים: מצבת הרשאות ויעדי יישובים. אם יש רשימת שבעה מרחבים רשמית אחרת, נחבר אותה כאן.</p>
+        <p class="muted">הרשימה כאן מבוססת על נתוני מקור נגישים: מצבת הרשאות ויעדי יישובים. כרגע זה מוקאפ: הסינון משנה את ההקשר, היישובים והסיכומים, אבל רשימת הנקודות למטה עדיין מדגימה מבנה ולא מסד נתונים מלא.</p>
         <div class="equipment" id="settlement-list" aria-label="יישובים בתצוגה"></div>
       </article>
     </section>
 
     <section class="section" id="ready-points">
+      <div class="section-label">רשימת נקודות לפתיחה</div>
       <article class="card">
         <div class="breadcrumb" id="points-breadcrumb">מחוז צפון השרון / כל המחוז</div>
         <h2 id="points-title">נקודות מוכנות ליום הבחירות - כל המחוז</h2>
@@ -579,6 +645,7 @@
     </section>
 
     <section class="section" aria-live="polite">
+      <div class="section-label">דף תפעול לנקודה שנבחרה</div>
       <div class="panel active point-output" id="point-polling">
         <article class="card point-head">
           <div class="headline-row">
@@ -774,6 +841,7 @@
     </section>
 
     <section class="section">
+      <div class="section-label">מפה וקישורי ניווט</div>
       <article class="card">
         <h2>מפת מרחב / רשימת ניווט</h2>
         <div class="mini-map">
@@ -791,19 +859,11 @@
     </section>
 
     <section class="section" id="equipment">
+      <div class="section-label">ציוד וסיכומי מוכנות</div>
       <article class="card">
-        <h2>ציוד כולל - מרחב מזרח השרון</h2>
-        <div class="equipment">
-          <div class="eq-row"><span>שלטים גדולים</span><strong>38-46</strong></div>
-          <div class="eq-row"><span>שלטים קטנים</span><strong>55-71</strong></div>
-          <div class="eq-row"><span>שולחנות</span><strong>18</strong></div>
-          <div class="eq-row"><span>דגלי המפלגה</span><strong>62-78</strong></div>
-          <div class="eq-row"><span>פליירים</span><strong>13,500-17,000</strong></div>
-          <div class="eq-row"><span>כובעים</span><strong>360-480</strong></div>
-          <div class="eq-row"><span>חולצות</span><strong>160-210</strong></div>
-          <div class="eq-row"><span>אזיקונים</span><strong>כן</strong></div>
-          <div class="eq-row"><span>חבל</span><strong>כן</strong></div>
-        </div>
+        <h2 id="equipment-title">ציוד לפי מרחב - כל המחוז</h2>
+        <p class="muted">זה צריך להיות אחד התוצרים המרכזיים למטה: לא רק “כמה צריך בסך הכל”, אלא איפה זה נדרש. במוצר האמיתי המספרים יגיעו מסיכום נקודות מאושרות.</p>
+        <div class="equipment-grid" id="equipment-breakdown"></div>
       </article>
 
       <article class="card danger">
@@ -835,7 +895,16 @@
         merhavim: 7,
         settlements: ["פרדס חנה כרכור", "חדרה", "זכרון יעקב", "בנימינה גבעת עדה", "חריש", "קיסריה", "קציר", "אור עקיבא", "מעין צבי", "גן השומרון", "רגבים", "מאור", "אביאל", "עמיקם", "עין עירון", "תלמי אלעזר", "בית חנניה", "מי עמי", "בת שלמה", "שדה יצחק", "גבעת נילי", "מאיר שפיה", "אלוני יצחק", "מצפה אילן", "כפר פינס", "שער מנשה"],
         points: 164,
-        ready: 118
+        ready: 118,
+        equipment: [
+          { name: "פרדס חנה והסביבה", signs: "8-10", small: "12-15", tables: "4", flyers: "2,800-3,600", hats: "70-90", shirts: "30-40" },
+          { name: "נתניה ומרכז השרון", signs: "10-13", small: "15-20", tables: "5", flyers: "3,600-4,600", hats: "90-120", shirts: "40-55" },
+          { name: "קיסריה והסביבה", signs: "5-7", small: "8-10", tables: "2", flyers: "1,400-1,900", hats: "35-50", shirts: "18-24" },
+          { name: "עמק חפר", signs: "5-7", small: "7-9", tables: "2", flyers: "1,200-1,700", hats: "35-45", shirts: "16-22" },
+          { name: "חדרה / חריש מנשה", signs: "9-12", small: "13-18", tables: "4", flyers: "2,700-3,700", hats: "70-95", shirts: "32-44" },
+          { name: "זכרון יעקב והסביבה", signs: "6-8", small: "8-11", tables: "3", flyers: "1,700-2,300", hats: "45-60", shirts: "20-28" },
+          { name: "בנימינה והסביבה", signs: "4-6", small: "6-8", tables: "2", flyers: "1,100-1,500", hats: "30-40", shirts: "14-20" }
+        ]
       },
       "pardes-hanna": {
         label: "מרחב פרדס חנה והסביבה",
@@ -843,7 +912,8 @@
         merhavim: 1,
         settlements: ["פרדס חנה כרכור", "גן השומרון", "עין עירון", "כפר פינס", "שער מנשה"],
         points: 28,
-        ready: 20
+        ready: 20,
+        equipment: [{ name: "פרדס חנה והסביבה", signs: "8-10", small: "12-15", tables: "4", flyers: "2,800-3,600", hats: "70-90", shirts: "30-40" }]
       },
       netanya: {
         label: "מרחב נתניה ומרכז השרון",
@@ -851,7 +921,8 @@
         merhavim: 1,
         settlements: ["נתניה", "אבן יהודה", "תל מונד", "לב השרון", "קדימה-צורן", "פרדסיה"],
         points: 34,
-        ready: 21
+        ready: 21,
+        equipment: [{ name: "נתניה ומרכז השרון", signs: "10-13", small: "15-20", tables: "5", flyers: "3,600-4,600", hats: "90-120", shirts: "40-55" }]
       },
       caesarea: {
         label: "מרחב קיסריה והסביבה",
@@ -859,7 +930,8 @@
         merhavim: 1,
         settlements: ["קיסריה", "שדות ים", "אור עקיבא", "בית חנניה"],
         points: 19,
-        ready: 16
+        ready: 16,
+        equipment: [{ name: "קיסריה והסביבה", signs: "5-7", small: "8-10", tables: "2", flyers: "1,400-1,900", hats: "35-50", shirts: "18-24" }]
       },
       hefer: {
         label: "מרחב עמק חפר",
@@ -867,7 +939,8 @@
         merhavim: 1,
         settlements: ["עמק חפר", "בית חירות", "שדה יצחק", "מעין צבי"],
         points: 22,
-        ready: 15
+        ready: 15,
+        equipment: [{ name: "עמק חפר", signs: "5-7", small: "7-9", tables: "2", flyers: "1,200-1,700", hats: "35-45", shirts: "16-22" }]
       },
       "hadera-menashe": {
         label: "מרחב חדרה / חריש מנשה",
@@ -875,7 +948,8 @@
         merhavim: 1,
         settlements: ["חדרה", "חריש", "מנשה", "מגל", "מאור", "רגבים", "קציר", "מצפה אילן"],
         points: 42,
-        ready: 27
+        ready: 27,
+        equipment: [{ name: "חדרה / חריש מנשה", signs: "9-12", small: "13-18", tables: "4", flyers: "2,700-3,700", hats: "70-95", shirts: "32-44" }]
       },
       zichron: {
         label: "מרחב זכרון יעקב והסביבה",
@@ -883,7 +957,8 @@
         merhavim: 1,
         settlements: ["זכרון יעקב", "בת שלמה", "מאיר שפיה", "גבעת נילי", "עמיקם", "אביאל"],
         points: 24,
-        ready: 19
+        ready: 19,
+        equipment: [{ name: "זכרון יעקב והסביבה", signs: "6-8", small: "8-11", tables: "3", flyers: "1,700-2,300", hats: "45-60", shirts: "20-28" }]
       },
       binyamina: {
         label: "מרחב בנימינה והסביבה",
@@ -891,7 +966,8 @@
         merhavim: 1,
         settlements: ["בנימינה גבעת עדה", "גבעת עדה", "אלוני יצחק", "מי עמי"],
         points: 18,
-        ready: 14
+        ready: 14,
+        equipment: [{ name: "בנימינה והסביבה", signs: "4-6", small: "6-8", tables: "2", flyers: "1,100-1,500", hats: "30-40", shirts: "14-20" }]
       }
     };
 
@@ -905,6 +981,8 @@
     const statSettlements = document.getElementById("stat-settlements");
     const statPoints = document.getElementById("stat-points");
     const statReady = document.getElementById("stat-ready");
+    const equipmentTitle = document.getElementById("equipment-title");
+    const equipmentBreakdown = document.getElementById("equipment-breakdown");
 
     function renderScope(scopeKey) {
       const scope = scopes[scopeKey] || scopes.district;
@@ -916,9 +994,28 @@
       statSettlements.textContent = scope.settlements.length;
       statPoints.textContent = scope.points;
       statReady.textContent = scope.ready;
+      equipmentTitle.textContent = `ציוד לפי מרחב - ${scope.label}`;
 
       settlementList.innerHTML = scope.settlements.map((settlement) => (
         `<div class="eq-row"><span>${settlement}</span><strong>יישוב</strong></div>`
+      )).join("");
+
+      equipmentBreakdown.innerHTML = scope.equipment.map((item) => (
+        `<div class="equipment-card">
+          <h3>${item.name}</h3>
+          <div class="mini-equipment">
+            <span>שלטים גדולים<strong>${item.signs}</strong></span>
+            <span>שלטים קטנים<strong>${item.small}</strong></span>
+            <span>שולחנות<strong>${item.tables}</strong></span>
+            <span>פליירים<strong>${item.flyers}</strong></span>
+            <span>כובעים<strong>${item.hats}</strong></span>
+            <span>חולצות<strong>${item.shirts}</strong></span>
+          </div>
+          <div class="equipment">
+            <div class="eq-row"><span>אזיקונים</span><strong>כן</strong></div>
+            <div class="eq-row"><span>חבל</span><strong>כן לפי נקודה</strong></div>
+          </div>
+        </div>`
       )).join("");
     }
 
