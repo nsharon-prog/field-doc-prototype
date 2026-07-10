@@ -38,7 +38,7 @@ function setupWorkspace_() {
     SPREADSHEET_ID: spreadsheet.getId(),
     ROOT_FOLDER_ID: rootFolder.getId(),
     SETUP_EMAIL: Session.getEffectiveUser().getEmail(),
-    SETUP_AT: new Date().toISOString()
+    SETUP_AT: israelTimestamp_()
   }, true);
 
   ensureSheets_(spreadsheet);
@@ -63,7 +63,7 @@ function getHealth_() {
     ownerEmail: Session.getEffectiveUser().getEmail(),
     spreadsheetId: sheetId || "",
     rootFolderId: folderId || "",
-    now: new Date().toISOString()
+    now: israelTimestamp_()
   };
 }
 
@@ -72,13 +72,13 @@ function saveFeasibilitySubmission_(payload) {
   const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
   const rootFolder = DriveApp.getFolderById(workspace.rootFolderId);
   const pointId = payload.pointId || `TEST-${Date.now()}`;
-  const timestamp = new Date();
+  const timestamp = israelTimestamp_();
   const town = payload.town || "צפון השרון";
   const pointFolder = getOrCreateChildFolder_(getOrCreateChildFolder_(rootFolder, town), pointId);
 
   const point = {
     pointId,
-    timestamp: timestamp.toISOString(),
+    timestamp,
     type: payload.type || "signage",
     number: payload.number || "בדיקה 001",
     town,
@@ -223,6 +223,10 @@ function buildOutputUrls_(point) {
       ? `https://www.waze.com/ul?ll=${point.correctedLat},${point.correctedLng}&navigate=yes`
       : `https://www.waze.com/ul?q=${encodeURIComponent(query)}`
   };
+}
+
+function israelTimestamp_() {
+  return Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd HH:mm:ss");
 }
 
 function jsonResponse(data) {
