@@ -1,6 +1,6 @@
 const FIELD_DOC_APP = {
   properties: PropertiesService.getScriptProperties(),
-  sheetNames: ["Settings", "Teams", "Users", "Points", "Photos", "StatusHistory", "InfraTests"]
+  sheetNames: ["Settings", "Districts", "Merhavim", "Settlements", "Teams", "Users", "Points", "Photos", "StatusHistory", "InfraTests"]
 };
 
 function doGet(event) {
@@ -43,6 +43,7 @@ function setupWorkspace_() {
 
   ensureSheets_(spreadsheet);
   seedSettings_(spreadsheet, rootFolder);
+  seedHierarchy_(spreadsheet);
 
   return {
     ok: true,
@@ -73,15 +74,32 @@ function saveFeasibilitySubmission_(payload) {
   const rootFolder = DriveApp.getFolderById(workspace.rootFolderId);
   const pointId = payload.pointId || `TEST-${Date.now()}`;
   const timestamp = israelTimestamp_();
-  const town = payload.town || "צפון השרון";
-  const pointFolder = getOrCreateChildFolder_(getOrCreateChildFolder_(rootFolder, town), pointId);
+  const districtId = payload.districtId || "north-sharon-district";
+  const districtName = payload.districtName || "מחוז צפון השרון";
+  const merhavId = payload.merhavId || "east-sharon";
+  const merhavName = payload.merhavName || "מרחב מזרח השרון";
+  const settlementId = payload.settlementId || "kfar-saba";
+  const settlementName = payload.town || payload.settlementName || "כפר סבא";
+  const pointFolder = getOrCreateChildFolder_(
+    getOrCreateChildFolder_(
+      getOrCreateChildFolder_(rootFolder, districtName),
+      merhavName
+    ),
+    `${settlementName} - ${pointId}`
+  );
 
   const point = {
     pointId,
     timestamp,
+    districtId,
+    districtName,
+    merhavId,
+    merhavName,
+    settlementId,
+    settlementName,
     type: payload.type || "signage",
     number: payload.number || "בדיקה 001",
-    town,
+    town: settlementName,
     teamId: payload.teamId || "north-sharon",
     status: "Waiting for review",
     plannedAddress: payload.plannedAddress || "",
@@ -159,9 +177,12 @@ function ensureSheets_(spreadsheet) {
     if (!spreadsheet.getSheetByName(name)) spreadsheet.insertSheet(name);
   });
   setHeaders_(spreadsheet.getSheetByName("Settings"), ["key", "value"]);
-  setHeaders_(spreadsheet.getSheetByName("Teams"), ["teamId", "town", "teamName", "teamLeadEmail", "active"]);
-  setHeaders_(spreadsheet.getSheetByName("Users"), ["userId", "name", "email", "phone", "role", "teamId", "active"]);
-  setHeaders_(spreadsheet.getSheetByName("Points"), ["pointId", "timestamp", "type", "number", "town", "teamId", "status", "plannedAddress", "correctedLat", "correctedLng", "documentedBy", "notes"]);
+  setHeaders_(spreadsheet.getSheetByName("Districts"), ["districtId", "districtName", "districtLeadEmail", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Merhavim"), ["merhavId", "districtId", "merhavName", "merhavLeadEmail", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Settlements"), ["settlementId", "merhavId", "districtId", "settlementName", "settlementLeadEmail", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Teams"), ["teamId", "districtId", "merhavId", "settlementId", "town", "teamName", "teamLeadEmail", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Users"), ["userId", "name", "email", "phone", "role", "districtId", "merhavId", "settlementId", "teamId", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Points"), ["pointId", "timestamp", "districtId", "districtName", "merhavId", "merhavName", "settlementId", "settlementName", "type", "number", "town", "teamId", "status", "plannedAddress", "correctedLat", "correctedLng", "documentedBy", "notes"]);
   setHeaders_(spreadsheet.getSheetByName("Photos"), ["photoId", "pointId", "timestamp", "itemKey", "caption", "fileId", "fileUrl", "mimeType", "compressedBytes", "width", "height"]);
   setHeaders_(spreadsheet.getSheetByName("StatusHistory"), ["pointId", "timestamp", "fromStatus", "toStatus", "changedBy", "note"]);
   setHeaders_(spreadsheet.getSheetByName("InfraTests"), ["timestamp", "pointId", "result", "photos", "spreadsheetId", "rootFolderId"]);
@@ -177,6 +198,39 @@ function seedSettings_(spreadsheet, rootFolder) {
   appendObject_(settings, { key: "superAdminEmail", value: "" });
 }
 
+function seedHierarchy_(spreadsheet) {
+  const districts = spreadsheet.getSheetByName("Districts");
+  const merhavim = spreadsheet.getSheetByName("Merhavim");
+  const settlements = spreadsheet.getSheetByName("Settlements");
+  if (districts.getLastRow() < 2) {
+    appendObject_(districts, {
+      districtId: "north-sharon-district",
+      districtName: "מחוז צפון השרון",
+      districtLeadEmail: "",
+      active: true
+    });
+  }
+  if (merhavim.getLastRow() < 2) {
+    appendObject_(merhavim, {
+      merhavId: "east-sharon",
+      districtId: "north-sharon-district",
+      merhavName: "מרחב מזרח השרון",
+      merhavLeadEmail: "",
+      active: true
+    });
+  }
+  if (settlements.getLastRow() < 2) {
+    appendObject_(settlements, {
+      settlementId: "kfar-saba",
+      merhavId: "east-sharon",
+      districtId: "north-sharon-district",
+      settlementName: "כפר סבא",
+      settlementLeadEmail: "",
+      active: true
+    });
+  }
+}
+
 function requireWorkspace_() {
   const spreadsheetId = FIELD_DOC_APP.properties.getProperty("SPREADSHEET_ID");
   const rootFolderId = FIELD_DOC_APP.properties.getProperty("ROOT_FOLDER_ID");
@@ -185,8 +239,15 @@ function requireWorkspace_() {
 }
 
 function setHeaders_(sheet, headers) {
-  sheet.clear();
-  sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold");
+  const lastColumn = sheet.getLastColumn();
+  const existingHeaders = lastColumn
+    ? sheet.getRange(1, 1, 1, lastColumn).getValues()[0].filter(Boolean)
+    : [];
+  const mergedHeaders = existingHeaders.slice();
+  headers.forEach((header) => {
+    if (mergedHeaders.indexOf(header) === -1) mergedHeaders.push(header);
+  });
+  sheet.getRange(1, 1, 1, mergedHeaders.length).setValues([mergedHeaders]).setFontWeight("bold");
   sheet.setFrozenRows(1);
 }
 
