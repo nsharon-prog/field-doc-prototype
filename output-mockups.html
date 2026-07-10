@@ -189,6 +189,30 @@
       margin-bottom: 10px;
     }
 
+    .field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 900;
+    }
+
+    select {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 800;
+    }
+
     .selectish {
       display: grid;
       gap: 3px;
@@ -478,60 +502,74 @@
 
     <section class="section" id="summary">
       <div class="stats" aria-label="מצב כללי">
-        <div class="stat"><strong>7</strong><span>מרחבים</span></div>
-        <div class="stat"><strong>31</strong><span>יישובים</span></div>
-        <div class="stat"><strong>164</strong><span>נקודות</span></div>
-        <div class="stat"><strong>118</strong><span>מוכנות</span></div>
+        <div class="stat"><strong id="stat-merhavim">7</strong><span>מרחבים</span></div>
+        <div class="stat"><strong id="stat-settlements">26</strong><span>יישובים</span></div>
+        <div class="stat"><strong id="stat-points">164</strong><span>נקודות</span></div>
+        <div class="stat"><strong id="stat-ready">118</strong><span>מוכנות</span></div>
       </div>
     </section>
 
     <section class="section">
       <article class="card">
-        <h2>בחירת מרחב ויישוב</h2>
+        <h2>בחירת תצוגה</h2>
+        <div class="field">
+          <label for="scope-select">מחוז / מרחב</label>
+          <select id="scope-select">
+            <option value="district">כל המחוז - צפון השרון</option>
+            <option value="pardes-hanna">מרחב פרדס חנה והסביבה</option>
+            <option value="netanya">מרחב נתניה ומרכז השרון</option>
+            <option value="caesarea">מרחב קיסריה והסביבה</option>
+            <option value="hefer">מרחב עמק חפר</option>
+            <option value="hadera-menashe">מרחב חדרה / חריש מנשה</option>
+            <option value="zichron">מרחב זכרון יעקב והסביבה</option>
+            <option value="binyamina">מרחב בנימינה והסביבה</option>
+          </select>
+        </div>
         <div class="toolbar">
           <div class="selectish">
-            <small>מרחב נבחר</small>
-            <strong>מרחב מזרח השרון</strong>
+            <small>תצוגה נבחרת</small>
+            <strong id="selected-scope-label">כל המחוז - צפון השרון</strong>
           </div>
           <div class="selectish">
-            <small>יישוב נבחר</small>
-            <strong>כפר סבא</strong>
+            <small>יישובים בתצוגה</small>
+            <strong id="selected-settlements-label">26 יישובים</strong>
           </div>
         </div>
-        <p class="muted">במוצר האמיתי הבחירה תסנן את הרשימה. במוקאפ הזה אנחנו רואים דוגמה מלאה של יישוב אחד, כדי להחליט איך התוצר צריך להיראות.</p>
+        <p class="muted">הרשימה כאן מבוססת על נתוני מקור נגישים: מצבת הרשאות ויעדי יישובים. אם יש רשימת שבעה מרחבים רשמית אחרת, נחבר אותה כאן.</p>
+        <div class="equipment" id="settlement-list" aria-label="יישובים בתצוגה"></div>
       </article>
     </section>
 
     <section class="section" id="ready-points">
       <article class="card">
-        <div class="breadcrumb">מחוז צפון השרון / מרחב מזרח השרון / כפר סבא</div>
-        <h2>נקודות מוכנות ליום הבחירות</h2>
-        <p class="muted">זה החלק הראשון שהצוות רואה בטלפון. לוחצים על נקודה ומקבלים דף תפעול קצר: ניווט, תמונות, ציוד, חניה והערות.</p>
+        <div class="breadcrumb" id="points-breadcrumb">מחוז צפון השרון / כל המחוז</div>
+        <h2 id="points-title">נקודות מוכנות ליום הבחירות - כל המחוז</h2>
+        <p class="muted" id="points-help">זה החלק הראשון שהצוות רואה בטלפון. לוחצים על נקודה ומקבלים דף תפעול קצר: ניווט, תמונות, ציוד, חניה והערות.</p>
         <div class="list">
           <button class="row-button active point-button" data-point="polling" type="button">
             <span>
-              <span class="row-title">קלפי / אשכול 014 · בית ספר הדרים</span>
+              <span class="row-title">קלפי / אשכול 014 · פרדס חנה כרכור</span>
               <span class="row-meta">זהב · מיקום אומת בשטח · דוכן בכניסה הראשית</span>
             </span>
             <span class="badge ready">מוכן</span>
           </button>
           <button class="row-button point-button" data-point="signage" type="button">
             <span>
-              <span class="row-title">שילוט 008 · צומת ויצמן</span>
+              <span class="row-title">שילוט 008 · חדרה</span>
               <span class="row-meta">חשיבות 2 · שלט גדול · שני אנשים ואזיקונים</span>
             </span>
             <span class="badge ready">מוכן</span>
           </button>
           <button class="row-button point-button" data-point="booth" type="button">
             <span>
-              <span class="row-title">דוכן 006 · קניון ערים</span>
+              <span class="row-title">דוכן 006 · זכרון יעקב</span>
               <span class="row-meta">חשיבות 1 · מומלץ 16:00-20:00 · עברית ורוסית</span>
             </span>
             <span class="badge ready">מוכן</span>
           </button>
           <button class="row-button point-button" data-point="needs-check" type="button">
             <span>
-              <span class="row-title">שילוט 012 · רחוב טשרניחובסקי</span>
+              <span class="row-title">שילוט 012 · בנימינה גבעת עדה</span>
               <span class="row-meta">חסר: מדידת גובה + תמונה מקרוב · לא לשימוש ביום הבחירות עדיין</span>
             </span>
             <span class="badge warn">חסר מידע</span>
@@ -548,18 +586,18 @@
             <span class="badge ready">מוכן ליום הבחירות</span>
             <span class="badge">אשכול זהב</span>
           </div>
-          <h2>בית ספר הדרים · כפר סבא</h2>
+          <h2>אשכול 014 · פרדס חנה כרכור</h2>
           <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: שירה · בדיקה אחרונה: 10.07.2026 14:35</p>
           <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%91%D7%99%D7%AA%20%D7%A1%D7%A4%D7%A8%20%D7%94%D7%93%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%91%D7%99%D7%AA%20%D7%A1%D7%A4%D7%A8%20%D7%94%D7%93%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
+            <a class="button" href="https://www.waze.com/ul?q=%D7%A4%D7%A8%D7%93%D7%A1%20%D7%97%D7%A0%D7%94%20%D7%9B%D7%A8%D7%9B%D7%95%D7%A8&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
+            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A4%D7%A8%D7%93%D7%A1%20%D7%97%D7%A0%D7%94%20%D7%9B%D7%A8%D7%9B%D7%95%D7%A8" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
 
         <article class="card">
           <h2>מיקום</h2>
           <div class="facts">
-            <div class="fact"><small>כתובת מתוכננת</small><strong>רח' הגליל 12, כפר סבא</strong></div>
+            <div class="fact"><small>כתובת מתוכננת</small><strong>פרדס חנה כרכור</strong></div>
             <div class="fact"><small>מיקום מתוקן מהשטח</small><strong>32.178124, 34.907822</strong></div>
           </div>
         </article>
@@ -609,11 +647,11 @@
             <span class="badge ready">מוכן ליום הבחירות</span>
             <span class="badge warn">חשיבות 2</span>
           </div>
-          <h2>צומת ויצמן · כפר סבא</h2>
+          <h2>שילוט 008 · חדרה</h2>
           <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעד: דניאל · בדיקה אחרונה: 09.07.2026 18:10</p>
           <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%95%D7%99%D7%A6%D7%9E%D7%9F%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%95%D7%99%D7%A6%D7%9E%D7%9F%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
+            <a class="button" href="https://www.waze.com/ul?q=%D7%97%D7%93%D7%A8%D7%94&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
+            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%97%D7%93%D7%A8%D7%94" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
 
@@ -675,11 +713,11 @@
             <span class="badge ready">מוכן ליום הבחירות</span>
             <span class="badge warn">חשיבות 1</span>
           </div>
-          <h2>קניון ערים · כפר סבא</h2>
+          <h2>דוכן 006 · זכרון יעקב</h2>
           <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: מאיה · בדיקה אחרונה: 08.07.2026 20:05</p>
           <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%A7%D7%A0%D7%99%D7%95%D7%9F%20%D7%A2%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A7%D7%A0%D7%99%D7%95%D7%9F%20%D7%A2%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
+            <a class="button" href="https://www.waze.com/ul?q=%D7%96%D7%9B%D7%A8%D7%95%D7%9F%20%D7%99%D7%A2%D7%A7%D7%91&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
+            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%96%D7%9B%D7%A8%D7%95%D7%9F%20%D7%99%D7%A2%D7%A7%D7%91" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
 
@@ -720,7 +758,7 @@
             <span class="badge">שילוט 012</span>
             <span class="badge warn">חסר מידע</span>
           </div>
-          <h2>רחוב טשרניחובסקי · כפר סבא</h2>
+          <h2>שילוט 012 · בנימינה גבעת עדה</h2>
           <p class="muted">הנקודה מופיעה כאן כדי להראות איך תוצר לא מוכן נראה לצוות מוביל. היא לא אמורה להופיע ברשימת יום הבחירות לצוותי השטח.</p>
         </article>
 
@@ -746,7 +784,7 @@
           <span class="pin booth">ד</span>
         </div>
         <div class="actions">
-          <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=Kfar%20Saba" target="_blank" rel="noopener">פתיחת מפת Google</a>
+          <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A6%D7%A4%D7%95%D7%9F%20%D7%94%D7%A9%D7%A8%D7%95%D7%9F" target="_blank" rel="noopener">פתיחת מפת Google</a>
           <a class="button secondary" href="#ready-points">חזרה לרשימת נקודות</a>
         </div>
       </article>
@@ -771,7 +809,7 @@
       <article class="card danger">
         <h2>דורש טיפול לפני יום הבחירות</h2>
         <ul>
-          <li>כפר סבא / שילוט 012: חסרה מדידת גובה ותמונה מקרוב.</li>
+          <li>בנימינה גבעת עדה / שילוט 012: חסרה מדידת גובה ותמונה מקרוב.</li>
           <li>הוד השרון / דוכן 009: חניה וגישה לא נבדקו.</li>
           <li>רעננה / קלפי 021: המיקום לא אומת מהטלפון.</li>
         </ul>
@@ -790,6 +828,103 @@
   </main>
 
   <script>
+    const scopes = {
+      district: {
+        label: "כל המחוז - צפון השרון",
+        breadcrumb: "מחוז צפון השרון / כל המחוז",
+        merhavim: 7,
+        settlements: ["פרדס חנה כרכור", "חדרה", "זכרון יעקב", "בנימינה גבעת עדה", "חריש", "קיסריה", "קציר", "אור עקיבא", "מעין צבי", "גן השומרון", "רגבים", "מאור", "אביאל", "עמיקם", "עין עירון", "תלמי אלעזר", "בית חנניה", "מי עמי", "בת שלמה", "שדה יצחק", "גבעת נילי", "מאיר שפיה", "אלוני יצחק", "מצפה אילן", "כפר פינס", "שער מנשה"],
+        points: 164,
+        ready: 118
+      },
+      "pardes-hanna": {
+        label: "מרחב פרדס חנה והסביבה",
+        breadcrumb: "מחוז צפון השרון / מרחב פרדס חנה והסביבה",
+        merhavim: 1,
+        settlements: ["פרדס חנה כרכור", "גן השומרון", "עין עירון", "כפר פינס", "שער מנשה"],
+        points: 28,
+        ready: 20
+      },
+      netanya: {
+        label: "מרחב נתניה ומרכז השרון",
+        breadcrumb: "מחוז צפון השרון / מרחב נתניה ומרכז השרון",
+        merhavim: 1,
+        settlements: ["נתניה", "אבן יהודה", "תל מונד", "לב השרון", "קדימה-צורן", "פרדסיה"],
+        points: 34,
+        ready: 21
+      },
+      caesarea: {
+        label: "מרחב קיסריה והסביבה",
+        breadcrumb: "מחוז צפון השרון / מרחב קיסריה והסביבה",
+        merhavim: 1,
+        settlements: ["קיסריה", "שדות ים", "אור עקיבא", "בית חנניה"],
+        points: 19,
+        ready: 16
+      },
+      hefer: {
+        label: "מרחב עמק חפר",
+        breadcrumb: "מחוז צפון השרון / מרחב עמק חפר",
+        merhavim: 1,
+        settlements: ["עמק חפר", "בית חירות", "שדה יצחק", "מעין צבי"],
+        points: 22,
+        ready: 15
+      },
+      "hadera-menashe": {
+        label: "מרחב חדרה / חריש מנשה",
+        breadcrumb: "מחוז צפון השרון / מרחב חדרה / חריש מנשה",
+        merhavim: 1,
+        settlements: ["חדרה", "חריש", "מנשה", "מגל", "מאור", "רגבים", "קציר", "מצפה אילן"],
+        points: 42,
+        ready: 27
+      },
+      zichron: {
+        label: "מרחב זכרון יעקב והסביבה",
+        breadcrumb: "מחוז צפון השרון / מרחב זכרון יעקב והסביבה",
+        merhavim: 1,
+        settlements: ["זכרון יעקב", "בת שלמה", "מאיר שפיה", "גבעת נילי", "עמיקם", "אביאל"],
+        points: 24,
+        ready: 19
+      },
+      binyamina: {
+        label: "מרחב בנימינה והסביבה",
+        breadcrumb: "מחוז צפון השרון / מרחב בנימינה והסביבה",
+        merhavim: 1,
+        settlements: ["בנימינה גבעת עדה", "גבעת עדה", "אלוני יצחק", "מי עמי"],
+        points: 18,
+        ready: 14
+      }
+    };
+
+    const scopeSelect = document.getElementById("scope-select");
+    const selectedScopeLabel = document.getElementById("selected-scope-label");
+    const selectedSettlementsLabel = document.getElementById("selected-settlements-label");
+    const settlementList = document.getElementById("settlement-list");
+    const pointsBreadcrumb = document.getElementById("points-breadcrumb");
+    const pointsTitle = document.getElementById("points-title");
+    const statMerhavim = document.getElementById("stat-merhavim");
+    const statSettlements = document.getElementById("stat-settlements");
+    const statPoints = document.getElementById("stat-points");
+    const statReady = document.getElementById("stat-ready");
+
+    function renderScope(scopeKey) {
+      const scope = scopes[scopeKey] || scopes.district;
+      selectedScopeLabel.textContent = scope.label;
+      selectedSettlementsLabel.textContent = `${scope.settlements.length} יישובים`;
+      pointsBreadcrumb.textContent = scope.breadcrumb;
+      pointsTitle.textContent = `נקודות מוכנות ליום הבחירות - ${scope.label}`;
+      statMerhavim.textContent = scope.merhavim;
+      statSettlements.textContent = scope.settlements.length;
+      statPoints.textContent = scope.points;
+      statReady.textContent = scope.ready;
+
+      settlementList.innerHTML = scope.settlements.map((settlement) => (
+        `<div class="eq-row"><span>${settlement}</span><strong>יישוב</strong></div>`
+      )).join("");
+    }
+
+    scopeSelect.addEventListener("change", () => renderScope(scopeSelect.value));
+    renderScope(scopeSelect.value);
+
     const pointButtons = document.querySelectorAll(".point-button");
     const pointPanels = document.querySelectorAll(".point-output");
 
