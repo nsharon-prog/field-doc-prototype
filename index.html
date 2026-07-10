@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17202a">
+  <title>תיעוד שטח</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">ת</span>
+        <div><strong>תיעוד שטח</strong><small>יום הבחירות</small></div>
+      </div>
+      <button class="avatar" title="פרופיל">ש</button>
+    </header>
+
+    <main>
+      <section class="screen active" id="queueScreen">
+        <div class="welcome">
+          <p>שלום, שירה</p>
+          <h1>איזו נקודה מתעדים עכשיו?</h1>
+        </div>
+
+        <section class="current-work">
+          <div class="home-section-title"><span>נקודות בתהליך</span><small>אפשר להחזיק כמה נקודות</small></div>
+          <div class="my-points">
+            <article class="my-point" data-type="cluster" data-number="אשכול 014" data-name="בית ספר הדרים" data-address="כפר סבא · רח' הגליל 12" data-badge="אשכול זהב">
+              <div class="my-point-top"><span class="point-kind cluster">אשכול זהב 014</span><span class="timer">08:42 שעות</span></div>
+              <strong>בית ספר הדרים</strong>
+              <small>כפר סבא · רח' הגליל 12</small>
+              <div class="mini-progress"><i style="width:30%"></i></div>
+              <div class="my-point-bottom"><span>התחלת תיעוד</span><button class="continue-assignment" type="button">המשך</button></div>
+            </article>
+            <article class="my-point" data-type="booth" data-number="דוכן 003" data-name="מרכז קהילתי אלון" data-address="כפר סבא · רח' העבודה 7" data-badge="דוכן">
+              <div class="my-point-top"><span class="point-kind booth">דוכן 003</span><span class="timer warning">02:18 שעות</span></div>
+              <strong>מרכז קהילתי אלון</strong>
+              <small>כפר סבא · רח' העבודה 7</small>
+              <div class="mini-progress"><i style="width:0"></i></div>
+              <div class="my-point-bottom"><span>טרם התחלת</span><button class="continue-assignment" type="button">התחלה</button></div>
+            </article>
+          </div>
+        </section>
+
+        <div class="available-heading">
+          <div><h2>נקודות פנויות</h2><p>לקיחה שומרת את הנקודה עבורך ל-10 שעות</p></div>
+          <button type="button">לפי מרחק</button>
+        </div>
+
+        <div class="point-list">
+          <article class="point-card correction" data-type="signage" data-number="שילוט 008" data-name="צומת ויצמן" data-address="כפר סבא · ויצמן פינת ירושלים" data-badge="שילוט">
+            <div class="card-top"><span class="point-kind signage">שילוט 008</span><span class="status correction-status">צריך השלמה</span></div>
+            <h2>צומת ויצמן</h2>
+            <p>כפר סבא · ויצמן פינת ירושלים</p>
+            <div class="review-note"><strong>הערת הבודק</strong> חסרה תמונה מקרוב ומדידת גובה.</div>
+            <div class="card-footer"><span>כ-700 מ' ממך</span><button class="take-button" type="button">אני לוקחת</button></div>
+          </article>
+          <article class="point-card" data-type="cluster" data-number="אשכול 021" data-name="תיכון רבין" data-address="כפר סבא · דרך הפועל 4" data-badge="אשכול זהב">
+            <div class="card-top"><span class="point-kind cluster">אשכול זהב 021</span></div>
+            <h2>תיכון רבין</h2>
+            <p>כפר סבא · דרך הפועל 4</p>
+            <div class="card-footer"><span>כ-1.2 ק"מ ממך</span><button class="take-button" type="button">אני לוקחת</button></div>
+          </article>
+          <article class="point-card" data-type="booth" data-number="דוכן 006" data-name="קניון ערים" data-address="כפר סבא · ברל כצנלסון 14" data-badge="דוכן">
+            <div class="card-top"><span class="point-kind booth">דוכן 006</span></div>
+            <h2>קניון ערים</h2>
+            <p>כפר סבא · ברל כצנלסון 14</p>
+            <div class="card-footer"><span>כ-2.4 ק"מ ממך</span><button class="take-button" type="button">אני לוקחת</button></div>
+          </article>
+        </div>
+
+        <button class="add-field-point" id="addFieldPoint" type="button">
+          <span>+</span>
+          <div><strong>הוספת נקודה מהשטח</strong><small>מצאת מקום שלא מופיע ברשימה?</small></div>
+          <b>←</b>
+        </button>
+      </section>
+
+      <section class="screen" id="documentScreen">
+        <div class="subheader">
+          <button class="back" data-nav="queue" title="חזרה">→</button>
+          <div><small>משימת שטח</small><strong id="documentPointNumber">אשכול 014</strong></div>
+          <button class="release" id="releaseButton">שחרור</button>
+        </div>
+
+        <div class="assignment-summary">
+          <span class="point-kind cluster" id="documentPointType">אשכול זהב</span>
+          <h1 id="documentPointName">בית ספר הדרים</h1>
+          <p id="documentPointAddress">כפר סבא · רח' הגליל 12</p>
+          <div class="nav-actions">
+            <a href="#" target="_blank">Waze</a>
+            <a href="#" target="_blank">Google Maps</a>
+          </div>
+          <div class="location-card">
+            <div>
+              <small>מיקום מתוכנן</small>
+              <strong id="plannedLocationText">לפי מוביל הצוות</strong>
+            </div>
+            <p id="actualLocationText">עדיין לא אומת מהמכשיר</p>
+            <div class="location-actions">
+              <button id="confirmLocation" type="button">המיקום נכון</button>
+              <button id="useCurrentLocation" type="button">עדכון למיקום הנוכחי</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mission-progress">
+          <div><strong>התקדמות המשימה</strong><span id="progressText">0 מתוך 8</span></div>
+          <div class="progress-track"><i id="progressBar"></i></div>
+        </div>
+
+        <section class="mission-step arrival">
+          <div class="step-title"><span>1</span><div><h2>הגעה ואימות</h2><p>לפני שמצלמים, מאשרים שהגעת לנקודה הנכונה.</p></div></div>
+          <div class="big-actions">
+            <button class="complete-step primary" type="button">הגעתי לנקודה</button>
+            <button class="ghost" id="blockerToggle" type="button">יש בעיה במקום</button>
+          </div>
+          <div class="blocker-box" id="blockerBox" hidden>
+            <label>מה הבעיה?<select><option>לא מצאתי את הנקודה</option><option>אין גישה למקום</option><option>המקום לא מתאים</option><option>בעיה בטיחותית</option><option>אחר</option></select></label>
+            <label>הסבר קצר<textarea rows="2" placeholder="מה מוביל הצוות צריך לדעת?"></textarea></label>
+            <button class="add-photo" type="button">צילום הבעיה</button>
+          </div>
+        </section>
+
+        <div id="missionSteps"></div>
+
+        <section class="mission-step logistics-step">
+          <div class="step-title"><span id="logisticsStepNumber">6</span><div><h2>חניה, פריקה וגישה</h2><p>רק אחרי שסיימת את המקום עצמו: איך צוות יגיע לכאן עם ציוד?</p></div></div>
+          <button class="add-photo" type="button">📷 צילום חניה / פריקה</button>
+          <div class="photo-gallery"></div>
+          <label>חניה באזור<select><option>חניה חופשית קרובה</option><option>חניה בתשלום</option><option>אין חניה קרובה</option><option>לא ברור</option></select></label>
+          <label>מקום עצירה זמנית לפריקה<input placeholder="איפה אפשר לעצור רגע עם ציוד?"></label>
+          <label>הערות גישה<textarea rows="2" placeholder="מסלול הליכה, מדרגות, חסימות, דרך נוחה להגיע..."></textarea></label>
+          <button class="complete-step" type="button">סיימתי שלב זה</button>
+        </section>
+
+        <section class="mission-step equipment-step">
+          <div class="step-title"><span id="equipmentStepNumber">7</span><div><h2>סיכום ציוד ומשאבים</h2><p>מסקנה אחרי שראית את המקום.</p></div></div>
+          <div class="equipment-grid">
+            <div class="equipment-row"><span>שלט גדול</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row"><span>שלט קטן</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row"><span>שולחן</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row"><span>דגלי המפלגה</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row binary"><span>אזיקונים</span><select><option>לא</option><option>כן</option></select></div>
+            <div class="equipment-row binary"><span>חבל</span><select><option>לא</option><option>כן</option></select></div>
+            <div class="equipment-row"><span>פליירים</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row"><span>כובעים</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+            <div class="equipment-row"><span>חולצות</span><input inputmode="numeric" placeholder="מינ׳"><input inputmode="numeric" placeholder="מקס׳"></div>
+          </div>
+          <label>עוד ציוד או אנשים<textarea rows="2" placeholder="למשל סולם, שני אנשים, פליירים ברוסית..."></textarea></label>
+          <button class="complete-step" type="button">סיימתי שלב זה</button>
+        </section>
+
+        <section class="mission-step review-step">
+          <div class="step-title"><span id="reviewStepNumber">8</span><div><h2>בדיקה לפני שליחה</h2><p>האם התיעוד מספיק ברור למי שיצטרך להקים ביום הבחירות?</p></div></div>
+          <div class="review-list">
+            <span>GPS נקלט</span>
+            <span>תמונות חובה קיימות</span>
+            <span>הוראות הקמה ברורות</span>
+          </div>
+          <label>הערה אחרונה למוביל הצוות<textarea rows="2" placeholder="משהו שחשוב לא לפספס"></textarea></label>
+          <button class="complete-step" type="button">סיימתי בדיקה</button>
+        </section>
+
+        <div class="bottom-actions">
+          <button class="save-draft">שמירה והמשך אחר כך</button>
+          <button class="submit-review" id="submitReview">שליחה לבדיקה</button>
+        </div>
+      </section>
+
+      <section class="screen" id="submittedScreen">
+        <div class="success-mark">✓</div>
+        <h1>התיעוד נשלח לבדיקה</h1>
+        <p id="submittedPointName">אשכול 014 · בית ספר הדרים</p>
+        <div class="success-info"><span>הנקודה שוחררה מההקצאה שלך</span><span>מוביל הצוות יקבל אותה לבדיקה</span></div>
+        <button class="submit-review" data-nav="queue">חזרה לנקודות</button>
+      </section>
+
+      <section class="screen" id="newPointScreen">
+        <div class="subheader"><button class="back" data-nav="queue" title="חזרה">→</button><div><small>נקודה חדשה</small><strong>הוספה מהשטח</strong></div></div>
+        <div class="new-point-intro"><span>+</span><div><h1>מה מצאת?</h1><p>נפתח נקודה חדשה ונעבור מיד לתיעוד שלה.</p></div></div>
+        <form id="newPointForm">
+          <section class="mission-step">
+            <label class="question">סוג הנקודה</label>
+            <div class="type-choice">
+              <button type="button" data-new-type="cluster"><span class="dot gold"></span>אשכול</button>
+              <button type="button" data-new-type="signage"><span class="dot blue"></span>שילוט</button>
+              <button type="button" data-new-type="booth"><span class="dot green"></span>דוכן</button>
+            </div>
+          </section>
+          <section class="mission-step">
+            <label>יישוב<input id="newTown" value="כפר סבא"></label>
+            <label>איך נזהה את המקום?<input id="newName" placeholder="למשל: צומת ליד התחנה המרכזית"></label>
+            <label>למה כדאי להוסיף אותו?<textarea id="newReason" rows="3" placeholder="מה חשוב או מתאים במקום הזה?"></textarea></label>
+          </section>
+          <button class="submit-review" type="submit">יצירת נקודה והתחלת תיעוד</button>
+          <p class="approval-note">הנקודה תסומן כחדשה מהשטח ותועבר לאישור מוביל הצוות.</p>
+        </form>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" data-nav="queue"><span>⌂</span>עכשיו</button>
+      <button><span>✓</span>הפעילות שלי</button>
+    </nav>
+  </div>
+
+  <div class="editor-overlay" id="photoEditor" hidden>
+    <div class="editor">
+      <header><button id="closeEditor" type="button">×</button><strong>סימון על התמונה</strong><button id="saveEditor" type="button">שמירה</button></header>
+      <div class="editor-canvas"><div class="editor-photo"></div><span class="canvas-arrow">➜</span><span class="canvas-label">מיקום</span></div>
+      <div class="editor-tools">
+        <button type="button"><b>➜</b>חץ</button>
+        <button type="button"><b>○</b>עיגול</button>
+        <button type="button"><b>א</b>כיתוב</button>
+        <button type="button"><b>↶</b>ביטול</button>
+      </div>
+      <p>בגרסה אמיתית זה יהיה עורך תמונה מלא. כאן זה מדגים את הפעולה.</p>
+    </div>
+  </div>
+  <div class="review-overlay" id="submitDecision" hidden>
+    <div class="review-dialog">
+      <h2>לפני שליחה לבדיקה</h2>
+      <p>נראה שיש כמה דברים שלא הושלמו. אפשר לחזור אליהם, לשלוח בכל זאת, או לשמור להמשך.</p>
+      <div class="missing-list" id="missingList"></div>
+      <div class="decision-actions">
+        <button id="backToMissing" type="button">חזרה להשלמות</button>
+        <button id="sendAnyway" type="button">שליחה בכל זאת</button>
+        <button id="saveForLater" type="button">שמירה וחזרה לרשימה</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

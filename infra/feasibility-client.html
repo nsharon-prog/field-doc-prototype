@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Field Docs Feasibility Test</title>
+  <style>
+    :root{--ink:#17202a;--muted:#63717c;--line:#dce2e6;--blue:#1769e0;--teal:#087f73;--bg:#f2f4f5}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding:16px}h1{font-size:1.45rem;margin:8px 0 4px}p{color:var(--muted);line-height:1.4}.card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:#fff}label{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:6px}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:700}.secondary{background:#eef5ff;color:var(--blue);border:1px solid #b5c7d9}.ok{color:var(--teal);font-weight:700}.warn{color:#b45f00}.preview{width:100%;max-height:260px;object-fit:cover;border-radius:6px;margin-top:8px;background:#edf1f3}.result{white-space:pre-wrap;direction:ltr;text-align:left;background:#101820;color:#d7fbe8;padding:12px;border-radius:8px;overflow:auto}.small{font-size:.82rem}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Field Docs Infrastructure Test</h1>
+    <p>This page proves the free stack: phone camera, image compression, GPS, Apps Script, Google Sheet, and Drive upload.</p>
+
+    <section class="card">
+      <label>Apps Script Web App URL
+        <input id="backendUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      </label>
+      <button id="saveConfig" class="secondary" type="button">Save URL on this phone</button>
+      <button id="setupWorkspace" class="secondary" type="button">Run one-time workspace setup</button>
+      <button id="healthCheck" class="secondary" type="button">Check backend</button>
+    </section>
+
+    <section class="card">
+      <label>Point type
+        <select id="pointType">
+          <option value="signage">Signage</option>
+          <option value="booth">Booth</option>
+          <option value="cluster">Polling place / cluster</option>
+        </select>
+      </label>
+      <label>Town <input id="town" value="North Sharon"></label>
+      <label>Planned address <input id="plannedAddress" value="Kfar Saba, Weizmann Junction"></label>
+      <label>Documented by <input id="documentedBy" placeholder="Name / phone"></label>
+      <label>Notes <textarea id="notes" rows="3" placeholder="Short field note"></textarea></label>
+      <button id="captureLocation" type="button" class="secondary">Capture current GPS</button>
+      <p id="locationStatus" class="small">No corrected location captured yet.</p>
+    </section>
+
+    <section class="card">
+      <label>Photo
+        <input id="photoInput" type="file" accept="image/*" capture="environment">
+      </label>
+      <img id="preview" class="preview" alt="" hidden>
+      <p id="photoStatus" class="small">Photos will be resized to max 1600px and JPEG quality 0.76 before upload.</p>
+      <label>Photo caption <input id="caption" placeholder="What does this photo show?"></label>
+    </section>
+
+    <section class="card">
+      <button id="submitTest" type="button">Submit feasibility test</button>
+      <p class="small">Expected result: one row in Sheets and one compressed photo in Drive.</p>
+      <div id="result" class="result" hidden></div>
+    </section>
+  </main>
+
+  <script>
+    const state = { photo: null, location: null };
+    const backendInput = document.getElementById("backendUrl");
+    backendInput.value = localStorage.getItem("fieldDocBackendUrl") || "";
+
+    document.getElementById("saveConfig").addEventListener("click", () => {
+      localStorage.setItem("fieldDocBackendUrl", backendInput.value.trim());
+      showResult({ ok: true, message: "Saved backend URL locally on this device." });
+    });
+
+    document.getElementById("healthCheck").addEventListener("click", async () => {
+      const url = backendInput.value.trim();
+      try {
+        const response = await fetch(`${url}?action=health`);
+        showResult(await response.json());
+      } catch (error) {
+        showResult({ ok: false, error: String(error) });
+      }
+    });
+
+    document.getElementById("setupWorkspace").addEventListener("click", async () => {
+      const url = backendInput.value.trim();
+      if (!url) return showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify({ action: "setup" }),
+          headers: { "Content-Type": "text/plain;charset=utf-8" }
+        });
+        showResult(await response.json());
+      } catch (error) {
+        showResult({ ok: false, error: String(error) });
+      }
+    });
+
+    document.getElementById("captureLocation").addEventListener("click", () => {
+      const status = document.getElementById("locationStatus");
+      if (!navigator.geolocation) {
+        status.textContent = "GPS is not available in this browser.";
+        return;
+      }
+      status.textContent = "Capturing GPS...";
+      navigator.geolocation.getCurrentPosition((position) => {
+        state.location = {
+          lat: Number(position.coords.latitude.toFixed(6)),
+          lng: Number(position.coords.longitude.toFixed(6)),
+          accuracy: Math.round(position.coords.accuracy)
+        };
+        status.textContent = `Captured: ${state.location.lat}, ${state.location.lng} (${state.location.accuracy}m)`;
+        status.className = "small ok";
+      }, () => {
+        status.textContent = "Could not capture GPS. This often requires HTTPS.";
+        status.className = "small warn";
+      }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+    });
+
+    document.getElementById("photoInput").addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      state.photo = await compressImage(file, 1600, 0.76);
+      const preview = document.getElementById("preview");
+      preview.src = state.photo.dataUrl;
+      preview.hidden = false;
+      document.getElementById("photoStatus").textContent =
+        `Compressed to ${Math.round(state.photo.bytes / 1024)} KB, ${state.photo.width}x${state.photo.height}.`;
+    });
+
+    document.getElementById("submitTest").addEventListener("click", async () => {
+      const url = backendInput.value.trim();
+      if (!url) return showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+      const payload = {
+        action: "submitFeasibility",
+        pointId: `TEST-${Date.now()}`,
+        type: document.getElementById("pointType").value,
+        number: "TEST 001",
+        town: document.getElementById("town").value,
+        plannedAddress: document.getElementById("plannedAddress").value,
+        correctedLocation: state.location,
+        documentedBy: document.getElementById("documentedBy").value,
+        notes: document.getElementById("notes").value,
+        photos: state.photo ? [{
+          itemKey: "feasibility",
+          caption: document.getElementById("caption").value,
+          fileName: state.photo.fileName,
+          mimeType: "image/jpeg",
+          base64: state.photo.base64,
+          width: state.photo.width,
+          height: state.photo.height
+        }] : []
+      };
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "text/plain;charset=utf-8" }
+        });
+        showResult(await response.json());
+      } catch (error) {
+        showResult({ ok: false, error: String(error) });
+      }
+    });
+
+    async function compressImage(file, maxWidth, quality) {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, maxWidth / bitmap.width);
+      const width = Math.round(bitmap.width * scale);
+      const height = Math.round(bitmap.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+      const dataUrl = await blobToDataUrl(blob);
+      return {
+        dataUrl,
+        base64: dataUrl.split(",")[1],
+        bytes: blob.size,
+        width,
+        height,
+        fileName: file.name.replace(/\.[^.]+$/, "") + "-compressed.jpg"
+      };
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function showResult(data) {
+      const result = document.getElementById("result");
+      result.hidden = false;
+      result.textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
