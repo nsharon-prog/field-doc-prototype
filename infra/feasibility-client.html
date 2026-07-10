@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Field Docs Feasibility Test</title>
   <style>
-    :root{--ink:#17202a;--muted:#63717c;--line:#dce2e6;--blue:#1769e0;--teal:#087f73;--bg:#f2f4f5}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding:16px}h1{font-size:1.45rem;margin:8px 0 4px}p{color:var(--muted);line-height:1.4}.card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:#fff}label{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:6px}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:700}.secondary{background:#eef5ff;color:var(--blue);border:1px solid #b5c7d9}.ok{color:var(--teal);font-weight:700}.warn{color:#b45f00}.preview{width:100%;max-height:260px;object-fit:cover;border-radius:6px;margin-top:8px;background:#edf1f3}.result{white-space:pre-wrap;direction:ltr;text-align:left;background:#101820;color:#d7fbe8;padding:12px;border-radius:8px;overflow:auto}.small{font-size:.82rem}
+    :root{--ink:#17202a;--muted:#63717c;--line:#dce2e6;--blue:#1769e0;--teal:#087f73;--bg:#f2f4f5;--warn:#b45f00}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding:16px}h1{font-size:1.45rem;margin:8px 0 4px}p{color:var(--muted);line-height:1.4}.card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:#fff}label{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:6px}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:700}.secondary{background:#eef5ff;color:var(--blue);border:1px solid #b5c7d9}.ok{color:var(--teal);font-weight:700}.warn{color:var(--warn);font-weight:700}.preview{width:100%;max-height:260px;object-fit:cover;border-radius:6px;margin-top:8px;background:#edf1f3}.result{white-space:pre-wrap;direction:ltr;text-align:left;background:#101820;color:#d7fbe8;padding:12px;border-radius:8px;overflow:auto}.small{font-size:.82rem}.status{padding:10px;border-radius:6px;background:#f6f8f9;color:var(--muted);font-size:.9rem}
   </style>
 </head>
 <body>
   <main class="app">
     <h1>Field Docs Infrastructure Test</h1>
     <p>This page proves the free stack: phone camera, image compression, GPS, Apps Script, Google Sheet, and Drive upload.</p>
+    <p id="startupStatus" class="status">Loading test controls...</p>
 
     <section class="card">
       <label>Apps Script Web App URL
@@ -57,43 +58,63 @@
 
   <script>
     const state = { photo: null, location: null };
-    const backendInput = document.getElementById("backendUrl");
-    backendInput.value = localStorage.getItem("fieldDocBackendUrl") || "";
+    let backendInput;
 
-    document.getElementById("saveConfig").addEventListener("click", () => {
-      localStorage.setItem("fieldDocBackendUrl", backendInput.value.trim());
-      showResult({ ok: true, message: "Saved backend URL locally on this device." });
+    window.addEventListener("error", (event) => {
+      showResult({ ok: false, error: event.message || "Page script error" });
     });
 
-    document.getElementById("healthCheck").addEventListener("click", async () => {
+    document.addEventListener("DOMContentLoaded", () => {
+      backendInput = document.getElementById("backendUrl");
+      backendInput.value = localStorage.getItem("fieldDocBackendUrl") || "";
+      bind("saveConfig", saveConfig);
+      bind("healthCheck", checkBackend);
+      bind("setupWorkspace", setupWorkspace);
+      bind("captureLocation", captureLocation);
+      bind("submitTest", submitTest);
+      bindPhotoInput();
+      setStartup("Controls ready. Paste the Apps Script Web App URL, then press Save URL.", true);
+    });
+
+    function bind(id, handler) {
+      const element = document.getElementById(id);
+      if (!element) throw new Error(`Missing button: ${id}`);
+      element.addEventListener("click", handler);
+    }
+
+    function setStartup(message, ok) {
+      const status = document.getElementById("startupStatus");
+      status.textContent = message;
+      status.className = ok ? "status ok" : "status warn";
+    }
+
+    function saveConfig() {
       const url = backendInput.value.trim();
-      try {
-        const response = await fetch(`${url}?action=health`);
-        showResult(await response.json());
-      } catch (error) {
-        showResult({ ok: false, error: String(error) });
-      }
-    });
+      localStorage.setItem("fieldDocBackendUrl", url);
+      showResult({ ok: true, message: "Saved backend URL locally on this phone.", savedUrlStart: url.slice(0, 45) });
+    }
 
-    document.getElementById("setupWorkspace").addEventListener("click", async () => {
-      const url = backendInput.value.trim();
-      if (!url) return showResult({ ok: false, error: "Missing Apps Script Web App URL." });
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          body: JSON.stringify({ action: "setup" }),
-          headers: { "Content-Type": "text/plain;charset=utf-8" }
-        });
-        showResult(await response.json());
-      } catch (error) {
-        showResult({ ok: false, error: String(error) });
-      }
-    });
+    async function checkBackend() {
+      const url = getBackendUrl();
+      if (!url) return;
+      showResult({ ok: true, message: "Checking backend..." });
+      const data = await getJson(`${url}?action=health`);
+      showResult(data);
+    }
 
-    document.getElementById("captureLocation").addEventListener("click", () => {
+    async function setupWorkspace() {
+      const url = getBackendUrl();
+      if (!url) return;
+      showResult({ ok: true, message: "Running one-time setup..." });
+      const data = await postJson(url, { action: "setup" });
+      showResult(data);
+    }
+
+    function captureLocation() {
       const status = document.getElementById("locationStatus");
       if (!navigator.geolocation) {
         status.textContent = "GPS is not available in this browser.";
+        status.className = "small warn";
         return;
       }
       status.textContent = "Capturing GPS...";
@@ -105,26 +126,34 @@
         };
         status.textContent = `Captured: ${state.location.lat}, ${state.location.lng} (${state.location.accuracy}m)`;
         status.className = "small ok";
-      }, () => {
-        status.textContent = "Could not capture GPS. This often requires HTTPS.";
+      }, (error) => {
+        status.textContent = `Could not capture GPS: ${error.message || "permission/location error"}`;
         status.className = "small warn";
-      }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
-    });
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    }
 
-    document.getElementById("photoInput").addEventListener("change", async (event) => {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      state.photo = await compressImage(file, 1600, 0.76);
-      const preview = document.getElementById("preview");
-      preview.src = state.photo.dataUrl;
-      preview.hidden = false;
-      document.getElementById("photoStatus").textContent =
-        `Compressed to ${Math.round(state.photo.bytes / 1024)} KB, ${state.photo.width}x${state.photo.height}.`;
-    });
+    function bindPhotoInput() {
+      document.getElementById("photoInput").addEventListener("change", async (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        try {
+          document.getElementById("photoStatus").textContent = "Compressing photo...";
+          state.photo = await compressImage(file, 1600, 0.76);
+          const preview = document.getElementById("preview");
+          preview.src = state.photo.dataUrl;
+          preview.hidden = false;
+          document.getElementById("photoStatus").textContent =
+            `Compressed to ${Math.round(state.photo.bytes / 1024)} KB, ${state.photo.width}x${state.photo.height}.`;
+        } catch (error) {
+          document.getElementById("photoStatus").textContent = `Photo failed: ${error.message || error}`;
+          document.getElementById("photoStatus").className = "small warn";
+        }
+      });
+    }
 
-    document.getElementById("submitTest").addEventListener("click", async () => {
-      const url = backendInput.value.trim();
-      if (!url) return showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+    async function submitTest() {
+      const url = getBackendUrl();
+      if (!url) return;
       const payload = {
         action: "submitFeasibility",
         pointId: `TEST-${Date.now()}`,
@@ -145,17 +174,51 @@
           height: state.photo.height
         }] : []
       };
+      showResult({ ok: true, message: "Submitting test point..." });
+      const data = await postJson(url, payload);
+      showResult(data);
+    }
+
+    function getBackendUrl() {
+      const url = backendInput.value.trim();
+      if (!url) {
+        showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+        return "";
+      }
+      localStorage.setItem("fieldDocBackendUrl", url);
+      return url;
+    }
+
+    async function getJson(url) {
+      try {
+        const response = await fetch(url);
+        return await parseResponse(response);
+      } catch (error) {
+        return { ok: false, error: String(error) };
+      }
+    }
+
+    async function postJson(url, payload) {
       try {
         const response = await fetch(url, {
           method: "POST",
           body: JSON.stringify(payload),
           headers: { "Content-Type": "text/plain;charset=utf-8" }
         });
-        showResult(await response.json());
+        return await parseResponse(response);
       } catch (error) {
-        showResult({ ok: false, error: String(error) });
+        return { ok: false, error: String(error) };
       }
-    });
+    }
+
+    async function parseResponse(response) {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        return { ok: false, status: response.status, error: "Response was not JSON.", bodyStart: text.slice(0, 500) };
+      }
+    }
 
     async function compressImage(file, maxWidth, quality) {
       const bitmap = await createImageBitmap(file);
