@@ -267,12 +267,30 @@
       background: #fff;
       color: var(--ink);
       text-align: right;
+      text-decoration: none;
     }
 
     .row-button.active {
       border-color: #7fb2f0;
       background: #f3f8ff;
       box-shadow: inset 4px 0 0 var(--blue);
+    }
+
+    .list-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .list-group-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 2px 2px;
+      color: #334553;
+      font-size: .9rem;
+      font-weight: 900;
     }
 
     .row-title {
@@ -609,235 +627,44 @@
       <div class="section-label">רשימת נקודות לפתיחה</div>
       <article class="card">
         <div class="breadcrumb" id="points-breadcrumb">מחוז צפון השרון / כל המחוז</div>
-        <h2 id="points-title">נקודות מוכנות ליום הבחירות - כל המחוז</h2>
-        <p class="muted" id="points-help">זה החלק הראשון שהצוות רואה בטלפון. לוחצים על נקודה ומקבלים דף תפעול קצר: ניווט, תמונות, ציוד, חניה והערות.</p>
+        <h2 id="points-title">נקודות לפי מוכנות ועדיפות - כל המחוז</h2>
+        <p class="muted" id="points-help">זה אינדקס העבודה ליום הבחירות: קודם נקודות מוכנות בעדיפות גבוהה, אחר כך מוכנות בעדיפות נמוכה יותר, ובסוף נקודות שחסרות מידע ולא אמורות להיפתח לצוותים עד השלמה.</p>
         <div class="list">
-          <button class="row-button active point-button" data-point="polling" type="button">
-            <span>
-              <span class="row-title">קלפי / אשכול 014 · פרדס חנה כרכור</span>
-              <span class="row-meta">זהב · מיקום אומת בשטח · דוכן בכניסה הראשית</span>
-            </span>
-            <span class="badge ready">מוכן</span>
-          </button>
-          <button class="row-button point-button" data-point="signage" type="button">
-            <span>
-              <span class="row-title">שילוט 008 · חדרה</span>
-              <span class="row-meta">חשיבות 2 · שלט גדול · שני אנשים ואזיקונים</span>
-            </span>
-            <span class="badge ready">מוכן</span>
-          </button>
-          <button class="row-button point-button" data-point="booth" type="button">
+          <div class="list-group-title"><span>מוכן ליום הבחירות · עדיפות 1</span><span class="badge ready">2</span></div>
+          <a class="row-button" href="point-output.html?point=booth">
             <span>
               <span class="row-title">דוכן 006 · זכרון יעקב</span>
-              <span class="row-meta">חשיבות 1 · מומלץ 16:00-20:00 · עברית ורוסית</span>
+              <span class="row-meta">מוכן · עדיפות 1 · מומלץ 16:00-20:00 · עברית ורוסית</span>
             </span>
-            <span class="badge ready">מוכן</span>
-          </button>
-          <button class="row-button point-button" data-point="needs-check" type="button">
+            <span class="badge ready">פתיחה</span>
+          </a>
+          <a class="row-button" href="point-output.html?point=polling">
+            <span>
+              <span class="row-title">קלפי / אשכול 014 · פרדס חנה כרכור</span>
+              <span class="row-meta">מוכן · עדיפות 1 · אשכול זהב · דוכן בכניסה הראשית</span>
+            </span>
+            <span class="badge ready">פתיחה</span>
+          </a>
+
+          <div class="list-group-title"><span>מוכן ליום הבחירות · עדיפות 2</span><span class="badge ready">1</span></div>
+          <a class="row-button" href="point-output.html?point=signage">
+            <span>
+              <span class="row-title">שילוט 008 · חדרה</span>
+              <span class="row-meta">מוכן · עדיפות 2 · שלט גדול · שני אנשים ואזיקונים</span>
+            </span>
+            <span class="badge ready">פתיחה</span>
+          </a>
+
+          <div class="list-group-title"><span>חסר מידע · לא לשימוש עדיין</span><span class="badge warn">1</span></div>
+          <a class="row-button" href="point-output.html?point=needs-check">
             <span>
               <span class="row-title">שילוט 012 · בנימינה גבעת עדה</span>
               <span class="row-meta">חסר: מדידת גובה + תמונה מקרוב · לא לשימוש ביום הבחירות עדיין</span>
             </span>
-            <span class="badge warn">חסר מידע</span>
-          </button>
+            <span class="badge warn">בדיקה</span>
+          </a>
         </div>
       </article>
-    </section>
-
-    <section class="section" aria-live="polite">
-      <div class="section-label">דף תפעול לנקודה שנבחרה</div>
-      <div class="panel active point-output" id="point-polling">
-        <article class="card point-head">
-          <div class="headline-row">
-            <span class="badge">קלפי / אשכול 014</span>
-            <span class="badge ready">מוכן ליום הבחירות</span>
-            <span class="badge">אשכול זהב</span>
-          </div>
-          <h2>אשכול 014 · פרדס חנה כרכור</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: שירה · בדיקה אחרונה: 10.07.2026 14:35</p>
-          <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%A4%D7%A8%D7%93%D7%A1%20%D7%97%D7%A0%D7%94%20%D7%9B%D7%A8%D7%9B%D7%95%D7%A8&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A4%D7%A8%D7%93%D7%A1%20%D7%97%D7%A0%D7%94%20%D7%9B%D7%A8%D7%9B%D7%95%D7%A8" target="_blank" rel="noopener">Google Maps</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>מיקום</h2>
-          <div class="facts">
-            <div class="fact"><small>כתובת מתוכננת</small><strong>פרדס חנה כרכור</strong></div>
-            <div class="fact"><small>מיקום מתוקן מהשטח</small><strong>32.178124, 34.907822</strong></div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>מה עושים בשטח</h2>
-          <p>להקים את הדוכן מימין לשער הכניסה הראשית, על המדרכה הרחבה. להשאיר מעבר חופשי להולכי רגל. מומלץ להגיע 20 דקות לפני פתיחת הקלפיות.</p>
-        </article>
-
-        <article class="card">
-          <h2>תמונות והסברים</h2>
-          <div class="photo-list">
-            <div class="photo">
-              <div class="thumb"></div>
-              <div>
-                <h3>כניסה לאשכול</h3>
-                <p class="muted">הכניסה הראשית ברורה מהרחוב. החץ מסמן את הצד שבו כדאי להציב את הדוכן.</p>
-              </div>
-            </div>
-            <div class="photo">
-              <div class="thumb"></div>
-              <div>
-                <h3>מיקום צפוי לדוכן</h3>
-                <p class="muted">מדרכה רחבה, מוצלת חלקית, בלי חסימת מעבר.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>ציוד וחניה</h2>
-          <div class="equipment">
-            <div class="eq-row"><span>שולחן</span><strong>1</strong></div>
-            <div class="eq-row"><span>דגלי המפלגה</span><strong>2-3</strong></div>
-            <div class="eq-row"><span>פליירים</span><strong>300-500</strong></div>
-            <div class="eq-row"><span>כובעים</span><strong>10-15</strong></div>
-            <div class="eq-row"><span>חולצות</span><strong>4-6</strong></div>
-          </div>
-          <p class="muted" style="margin-top:10px">חניה חופשית ברחובות הסמוכים. פריקה קצרה אפשרית מול השער.</p>
-        </article>
-      </div>
-
-      <div class="panel point-output" id="point-signage">
-        <article class="card point-head">
-          <div class="headline-row">
-            <span class="badge">שילוט 008</span>
-            <span class="badge ready">מוכן ליום הבחירות</span>
-            <span class="badge warn">חשיבות 2</span>
-          </div>
-          <h2>שילוט 008 · חדרה</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעד: דניאל · בדיקה אחרונה: 09.07.2026 18:10</p>
-          <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%97%D7%93%D7%A8%D7%94&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%97%D7%93%D7%A8%D7%94" target="_blank" rel="noopener">Google Maps</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>מיקום ומדידות</h2>
-          <div class="facts">
-            <div class="fact"><small>מיקום מתוקן מהשטח</small><strong>32.176901, 34.906431</strong></div>
-            <div class="fact"><small>גודל שלט מקסימלי</small><strong>רוחב 2.4 מ' · גובה 1.1 מ'</strong></div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>איך תולים</h2>
-          <p>לתלות שלט גדול על הגדר המערבית, בגובה עיניים לרכבים שמגיעים ממרכז העיר. נדרשים שני אנשים לפחות. אין צורך בסולם.</p>
-        </article>
-
-        <article class="card">
-          <h2>תמונות והסברים</h2>
-          <div class="photo-list">
-            <div class="photo">
-              <div class="thumb"></div>
-              <div>
-                <h3>מבט מרחוק</h3>
-                <p class="muted">נראות גבוהה לרכבים בצומת. הצילום מסמן מאיזה כיוון השלט נראה הכי טוב.</p>
-              </div>
-            </div>
-            <div class="photo">
-              <div class="thumb"></div>
-              <div>
-                <h3>מקום תלייה מקרוב</h3>
-                <p class="muted">הגדר מתאימה לאזיקונים. אין נקודות חדות שעלולות לקרוע את השלט.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="card alert">
-          <h2>סיכון ותחרות על מקום</h2>
-          <p>בינוני. ייתכן שמפלגות אחרות ישתמשו באותה גדר. מומלץ לתלות מוקדם ולבדוק שוב בצהריים.</p>
-        </article>
-
-        <article class="card">
-          <h2>ציוד וחניה</h2>
-          <div class="equipment">
-            <div class="eq-row"><span>שלט גדול</span><strong>1-2</strong></div>
-            <div class="eq-row"><span>שלט קטן</span><strong>0-1</strong></div>
-            <div class="eq-row"><span>אזיקונים</span><strong>כן</strong></div>
-            <div class="eq-row"><span>חבל</span><strong>לא</strong></div>
-            <div class="eq-row"><span>אנשים</span><strong>2 לפחות</strong></div>
-          </div>
-          <p class="muted" style="margin-top:10px">אפשר לעצור לפריקה קצרה ברחוב הצדדי. חניה חופשית במרחק 2-3 דקות הליכה.</p>
-        </article>
-      </div>
-
-      <div class="panel point-output" id="point-booth">
-        <article class="card point-head">
-          <div class="headline-row">
-            <span class="badge">דוכן 006</span>
-            <span class="badge ready">מוכן ליום הבחירות</span>
-            <span class="badge warn">חשיבות 1</span>
-          </div>
-          <h2>דוכן 006 · זכרון יעקב</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: מאיה · בדיקה אחרונה: 08.07.2026 20:05</p>
-          <div class="actions">
-            <a class="button" href="https://www.waze.com/ul?q=%D7%96%D7%9B%D7%A8%D7%95%D7%9F%20%D7%99%D7%A2%D7%A7%D7%91&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
-            <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%96%D7%9B%D7%A8%D7%95%D7%9F%20%D7%99%D7%A2%D7%A7%D7%91" target="_blank" rel="noopener">Google Maps</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>הפעלה מומלצת</h2>
-          <p>להפעיל בין 16:00-20:00 ליד הכניסה הדרומית. תנועת הולכי רגל גבוהה אחרי העבודה. מומלץ דוכן מלא ולא דוכנוע.</p>
-        </article>
-
-        <article class="card">
-          <h2>תמונות והסברים</h2>
-          <div class="photo-list">
-            <div class="photo">
-              <div class="thumb"></div>
-              <div>
-                <h3>מבט מרחוק</h3>
-                <p class="muted">הכניסה הדרומית נראית היטב מהרחבה. להציב את הדוכן בצד ולא באמצע הציר.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <h2>ציוד וחניה</h2>
-          <div class="equipment">
-            <div class="eq-row"><span>שולחן</span><strong>1</strong></div>
-            <div class="eq-row"><span>פליירים בעברית</span><strong>500-700</strong></div>
-            <div class="eq-row"><span>פליירים ברוסית</span><strong>150-250</strong></div>
-            <div class="eq-row"><span>כובעים</span><strong>20-30</strong></div>
-            <div class="eq-row"><span>חולצות</span><strong>10-15</strong></div>
-          </div>
-          <p class="muted" style="margin-top:10px">חניה בתשלום בחניון הקניון. לפריקה זמנית אפשר לעצור ברחוב ברל כצנלסון ליד הכניסה הדרומית.</p>
-        </article>
-      </div>
-
-      <div class="panel point-output" id="point-needs-check">
-        <article class="card point-head">
-          <div class="headline-row">
-            <span class="badge">שילוט 012</span>
-            <span class="badge warn">חסר מידע</span>
-          </div>
-          <h2>שילוט 012 · בנימינה גבעת עדה</h2>
-          <p class="muted">הנקודה מופיעה כאן כדי להראות איך תוצר לא מוכן נראה לצוות מוביל. היא לא אמורה להופיע ברשימת יום הבחירות לצוותי השטח.</p>
-        </article>
-
-        <article class="card danger">
-          <h2>מה חסר</h2>
-          <ul>
-            <li>מדידת גובה מקסימלי לשלט.</li>
-            <li>תמונה מקרוב של מקום התלייה.</li>
-            <li>בדיקת חניה לפריקה זמנית.</li>
-          </ul>
-        </article>
-      </div>
     </section>
 
     <section class="section">
@@ -989,7 +816,7 @@
       selectedScopeLabel.textContent = scope.label;
       selectedSettlementsLabel.textContent = `${scope.settlements.length} יישובים`;
       pointsBreadcrumb.textContent = scope.breadcrumb;
-      pointsTitle.textContent = `נקודות מוכנות ליום הבחירות - ${scope.label}`;
+      pointsTitle.textContent = `נקודות לפי מוכנות ועדיפות - ${scope.label}`;
       statMerhavim.textContent = scope.merhavim;
       statSettlements.textContent = scope.settlements.length;
       statPoints.textContent = scope.points;
@@ -1022,22 +849,6 @@
     scopeSelect.addEventListener("change", () => renderScope(scopeSelect.value));
     renderScope(scopeSelect.value);
 
-    const pointButtons = document.querySelectorAll(".point-button");
-    const pointPanels = document.querySelectorAll(".point-output");
-
-    pointButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        pointButtons.forEach((item) => item.classList.remove("active"));
-        pointPanels.forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
-
-        const target = document.getElementById(`point-${button.dataset.point}`);
-        if (target) {
-          target.classList.add("active");
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-    });
   </script>
 </body>
 </html>

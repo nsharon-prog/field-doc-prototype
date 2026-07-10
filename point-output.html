@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>דף נקודה</title>
+  <style>
+    :root {
+      --ink: #15212b;
+      --muted: #61717f;
+      --bg: #edf1f4;
+      --surface: #ffffff;
+      --line: #d7e0e6;
+      --blue: #1769e0;
+      --green: #087a5a;
+      --amber: #a85b00;
+      --red: #b42b36;
+      --soft-blue: #edf5ff;
+      --soft-green: #e6f6ef;
+      --soft-amber: #fff4df;
+      --soft-red: #fff0f1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #dce4e9;
+      color: var(--ink);
+      font-family: Arial, "Noto Sans Hebrew", sans-serif;
+    }
+
+    a { -webkit-tap-highlight-color: transparent; }
+
+    .app {
+      max-width: 720px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--bg);
+      padding-bottom: 28px;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 14px;
+      background: #14202b;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(12, 25, 36, .18);
+    }
+
+    .back {
+      display: inline-grid;
+      min-height: 40px;
+      place-items: center;
+      margin-bottom: 8px;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 7px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .kicker {
+      display: block;
+      color: #c7d2dc;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: 1.35rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .section { padding: 12px 12px 0; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 6px 2px 10px;
+      color: #344453;
+      font-size: .86rem;
+      font-weight: 900;
+    }
+
+    .section-label:before {
+      content: "";
+      width: 7px;
+      height: 24px;
+      border-radius: 4px;
+      background: var(--blue);
+    }
+
+    .card {
+      margin-bottom: 12px;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .card.alert {
+      border-right: 5px solid var(--amber);
+      background: #fffaf1;
+    }
+
+    .card.danger {
+      border-right: 5px solid var(--red);
+      background: #fff7f8;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: .98rem;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin-bottom: 10px;
+      line-height: 1.48;
+    }
+
+    .muted { color: var(--muted); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-height: 29px;
+      padding: 6px 9px;
+      border-radius: 6px;
+      background: var(--soft-blue);
+      color: #174c93;
+      font-size: .78rem;
+      font-weight: 900;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .badge.ready { background: var(--soft-green); color: var(--green); }
+    .badge.warn { background: var(--soft-amber); color: var(--amber); }
+    .badge.danger { background: var(--soft-red); color: var(--red); }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .button {
+      display: grid;
+      min-height: 44px;
+      place-items: center;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: var(--blue);
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .button.secondary {
+      background: #eef6ff;
+      color: #1454ae;
+      border: 1px solid #bdd6f4;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .fact {
+      min-height: 68px;
+      padding: 10px;
+      border-radius: 7px;
+      background: #f6f8f9;
+    }
+
+    .fact small {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .fact strong {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .equipment {
+      display: grid;
+      gap: 7px;
+    }
+
+    .eq-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      background: #f6f8f9;
+    }
+
+    .eq-row strong { white-space: nowrap; }
+
+    .photo-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .photo {
+      display: grid;
+      grid-template-columns: 102px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    .photo:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .thumb {
+      position: relative;
+      height: 86px;
+      overflow: hidden;
+      border-radius: 7px;
+      border: 1px solid #c5d0d8;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,0) 38%),
+        linear-gradient(135deg, #92b3c0, #4b6370);
+    }
+
+    .thumb:after {
+      content: "→";
+      position: absolute;
+      left: 20px;
+      top: 16px;
+      color: #e53935;
+      font-size: 2rem;
+      font-weight: 900;
+      transform: rotate(-20deg);
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 20px 0 0;
+      line-height: 1.55;
+    }
+
+    li { margin-bottom: 6px; }
+
+    @media (max-width: 460px) {
+      .button-grid, .facts { grid-template-columns: 1fr; }
+      .photo { grid-template-columns: 88px 1fr; }
+      .thumb { height: 78px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <a class="back" href="output-mockups.html">חזרה לרשימת הנקודות</a>
+      <span class="kicker">דף תפעול נקודה · תיעוד שטח</span>
+      <h1 id="page-title">נקודה</h1>
+    </header>
+
+    <section class="section">
+      <div class="section-label">תקציר וניווט</div>
+      <article class="card">
+        <div class="badge-row" id="badges"></div>
+        <h2 id="point-title"></h2>
+        <p class="muted" id="point-meta"></p>
+        <div class="button-grid">
+          <a class="button" id="waze-link" target="_blank" rel="noopener">פתיחה ב-Waze</a>
+          <a class="button secondary" id="maps-link" target="_blank" rel="noopener">Google Maps</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-label">מיקום והנחיות</div>
+      <article class="card" id="location-card"></article>
+      <article class="card" id="instructions-card"></article>
+    </section>
+
+    <section class="section">
+      <div class="section-label">תמונות</div>
+      <article class="card">
+        <div class="photo-list" id="photos"></div>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-label">ציוד, חניה וסיכונים</div>
+      <article class="card" id="equipment-card"></article>
+      <article class="card alert" id="risk-card"></article>
+      <article class="card danger" id="missing-card"></article>
+    </section>
+  </main>
+
+  <script>
+    const points = {
+      booth: {
+        title: "דוכן 006 · זכרון יעקב",
+        type: "דוכן",
+        status: "מוכן ליום הבחירות",
+        statusClass: "ready",
+        priority: "עדיפות 1",
+        meta: "מחוז צפון השרון · מרחב זכרון יעקב והסביבה · תיעדה: מאיה · בדיקה אחרונה: 08.07.2026 20:05",
+        query: "זכרון יעקב",
+        location: [["כתובת מתוכננת", "זכרון יעקב"], ["מיקום מתוקן מהשטח", "32.573301, 34.951872"]],
+        instructions: "להפעיל בין 16:00-20:00 ליד הכניסה הדרומית. תנועת הולכי רגל גבוהה אחרי העבודה. מומלץ דוכן מלא ולא דוכנוע.",
+        photos: [["מבט מרחוק", "הכניסה הדרומית נראית היטב מהרחבה. להציב את הדוכן בצד ולא באמצע הציר."]],
+        equipment: [["שולחן", "1"], ["פליירים בעברית", "500-700"], ["פליירים ברוסית", "150-250"], ["כובעים", "20-30"], ["חולצות", "10-15"]],
+        parking: "חניה בתשלום באזור המרכז. לפריקה זמנית לעצור קרוב לכניסה ואז להעביר את הרכב.",
+        risk: "נמוך-בינוני. לבדוק שאין חסימה של מעבר הולכי רגל.",
+        missing: []
+      },
+      polling: {
+        title: "קלפי / אשכול 014 · פרדס חנה כרכור",
+        type: "קלפי / אשכול",
+        status: "מוכן ליום הבחירות",
+        statusClass: "ready",
+        priority: "עדיפות 1",
+        meta: "מחוז צפון השרון · מרחב פרדס חנה והסביבה · תיעדה: שירה · בדיקה אחרונה: 10.07.2026 14:35",
+        query: "פרדס חנה כרכור",
+        location: [["כתובת מתוכננת", "פרדס חנה כרכור"], ["מיקום מתוקן מהשטח", "32.478623, 34.974201"]],
+        instructions: "להקים את הדוכן מימין לשער הכניסה הראשית, על המדרכה הרחבה. להשאיר מעבר חופשי להולכי רגל.",
+        photos: [["כניסה לאשכול", "הכניסה הראשית ברורה מהרחוב. החץ מסמן את הצד שבו כדאי להציב את הדוכן."], ["מיקום צפוי לדוכן", "מדרכה רחבה, מוצלת חלקית, בלי חסימת מעבר."]],
+        equipment: [["שולחן", "1"], ["דגלי המפלגה", "2-3"], ["פליירים", "300-500"], ["כובעים", "10-15"], ["חולצות", "4-6"]],
+        parking: "חניה חופשית ברחובות הסמוכים. פריקה קצרה אפשרית מול השער.",
+        risk: "נמוך. נקודה מוכרת וברורה.",
+        missing: []
+      },
+      signage: {
+        title: "שילוט 008 · חדרה",
+        type: "שילוט",
+        status: "מוכן ליום הבחירות",
+        statusClass: "ready",
+        priority: "עדיפות 2",
+        meta: "מחוז צפון השרון · מרחב חדרה / חריש מנשה · תיעד: דניאל · בדיקה אחרונה: 09.07.2026 18:10",
+        query: "חדרה",
+        location: [["מיקום מתוקן מהשטח", "32.436431, 34.919724"], ["גודל שלט מקסימלי", "רוחב 2.4 מ' · גובה 1.1 מ'"]],
+        instructions: "לתלות שלט גדול על הגדר המערבית, בגובה עיניים לרכבים. נדרשים שני אנשים לפחות. אין צורך בסולם.",
+        photos: [["מבט מרחוק", "נראות גבוהה לרכבים בצומת. הצילום מסמן מאיזה כיוון השלט נראה הכי טוב."], ["מקום תלייה מקרוב", "הגדר מתאימה לאזיקונים. אין נקודות חדות שעלולות לקרוע את השלט."]],
+        equipment: [["שלט גדול", "1-2"], ["שלט קטן", "0-1"], ["אזיקונים", "כן"], ["חבל", "לא"], ["אנשים", "2 לפחות"]],
+        parking: "אפשר לעצור לפריקה קצרה ברחוב הצדדי. חניה חופשית במרחק 2-3 דקות הליכה.",
+        risk: "בינוני. ייתכן שמפלגות אחרות ישתמשו באותה גדר. מומלץ לתלות מוקדם ולבדוק שוב בצהריים.",
+        missing: []
+      },
+      "needs-check": {
+        title: "שילוט 012 · בנימינה גבעת עדה",
+        type: "שילוט",
+        status: "חסר מידע",
+        statusClass: "warn",
+        priority: "עדיפות 2",
+        meta: "מחוז צפון השרון · מרחב בנימינה והסביבה · לא מוכן לשימוש צוותי שטח",
+        query: "בנימינה גבעת עדה",
+        location: [["כתובת מתוכננת", "בנימינה גבעת עדה"], ["מיקום מתוקן מהשטח", "חסר"]],
+        instructions: "לא לפתוח לצוותי שטח עד השלמה. נדרשת בדיקה חוזרת לפני יום הבחירות.",
+        photos: [["מבט מרחוק", "קיים צילום כללי בלבד. חסר צילום מקרוב של מקום התלייה."]],
+        equipment: [["שלט גדול", "1"], ["אזיקונים", "כן"], ["חבל", "לא ידוע"]],
+        parking: "חסר מידע על פריקה זמנית וחניה קרובה.",
+        risk: "לא ידוע. חסרה בדיקת מקום.",
+        missing: ["מדידת גובה מקסימלי לשלט.", "תמונה מקרוב של מקום התלייה.", "בדיקת חניה לפריקה זמנית."]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const point = points[params.get("point")] || points.booth;
+    const encodedQuery = encodeURIComponent(point.query);
+
+    document.title = point.title;
+    document.getElementById("page-title").textContent = point.title;
+    document.getElementById("point-title").textContent = point.title;
+    document.getElementById("point-meta").textContent = point.meta;
+    document.getElementById("waze-link").href = `https://www.waze.com/ul?q=${encodedQuery}&navigate=yes`;
+    document.getElementById("maps-link").href = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+    document.getElementById("badges").innerHTML = [
+      `<span class="badge">${point.type}</span>`,
+      `<span class="badge ${point.statusClass}">${point.status}</span>`,
+      `<span class="badge">${point.priority}</span>`
+    ].join("");
+
+    document.getElementById("location-card").innerHTML = `<h2>מיקום</h2><div class="facts">${point.location.map(([label, value]) => `<div class="fact"><small>${label}</small><strong>${value}</strong></div>`).join("")}</div>`;
+    document.getElementById("instructions-card").innerHTML = `<h2>מה עושים בשטח</h2><p>${point.instructions}</p>`;
+    document.getElementById("photos").innerHTML = point.photos.map(([title, text]) => `<div class="photo"><div class="thumb"></div><div><h3>${title}</h3><p class="muted">${text}</p></div></div>`).join("");
+    document.getElementById("equipment-card").innerHTML = `<h2>ציוד וחניה</h2><div class="equipment">${point.equipment.map(([label, value]) => `<div class="eq-row"><span>${label}</span><strong>${value}</strong></div>`).join("")}</div><p class="muted" style="margin-top:10px">${point.parking}</p>`;
+    document.getElementById("risk-card").innerHTML = `<h2>סיכון / הערות</h2><p>${point.risk}</p>`;
+
+    const missingCard = document.getElementById("missing-card");
+    if (point.missing.length) {
+      missingCard.innerHTML = `<h2>מה חסר</h2><ul>${point.missing.map((item) => `<li>${item}</li>`).join("")}</ul>`;
+    } else {
+      missingCard.remove();
+    }
+  </script>
+</body>
+</html>
