@@ -120,7 +120,7 @@
       const url = getBackendUrl();
       if (!url) return;
       showResult({ ok: true, message: "Running one-time setup..." });
-      const data = await postJson(url, { action: "setup" });
+      const data = await getJson(`${url}?action=setup`);
       showResult(data);
     }
 

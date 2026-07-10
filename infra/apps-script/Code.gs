@@ -6,6 +6,7 @@ const FIELD_DOC_APP = {
 function doGet(event) {
   const action = (event.parameter.action || "health").toLowerCase();
   if (action === "health") return jsonResponse(getHealth_());
+  if (action === "setup") return jsonResponse(setupWorkspace_());
   if (action === "testpoint") return jsonResponse(getLatestTestPoint_());
   return jsonResponse({ ok: false, error: "Unknown action" });
 }
