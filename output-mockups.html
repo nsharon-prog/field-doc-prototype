@@ -6,76 +6,105 @@
   <title>תוצרי תיעוד שטח</title>
   <style>
     :root {
-      --ink: #16202a;
-      --muted: #64717c;
-      --bg: #eef2f4;
+      --ink: #15212b;
+      --muted: #61717f;
+      --bg: #edf1f4;
       --surface: #ffffff;
-      --line: #d9e1e6;
+      --line: #d7e0e6;
       --blue: #1769e0;
-      --green: #0b7f5f;
-      --amber: #b45f00;
+      --green: #087a5a;
+      --amber: #a85b00;
       --red: #b42b36;
       --soft-blue: #edf5ff;
-      --soft-green: #e5f6ee;
+      --soft-green: #e6f6ef;
       --soft-amber: #fff4df;
       --soft-red: #fff0f1;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      background: #dde4e8;
+      background: #dce4e9;
       color: var(--ink);
       font-family: Arial, "Noto Sans Hebrew", sans-serif;
     }
-    button, a { -webkit-tap-highlight-color: transparent; }
+
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+      font: inherit;
+    }
+
     .app {
-      max-width: 680px;
+      max-width: 720px;
       min-height: 100vh;
       margin: 0 auto;
       background: var(--bg);
-      padding-bottom: 24px;
+      padding-bottom: 28px;
     }
+
     .top {
-      padding: 18px 16px 16px;
-      background: #17202a;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 14px 14px 12px;
+      background: #14202b;
       color: #fff;
+      box-shadow: 0 2px 10px rgba(12, 25, 36, .18);
     }
-    .top small {
+
+    .kicker {
       display: block;
-      margin-bottom: 6px;
-      color: #c7d0d8;
-      font-weight: 700;
+      margin-bottom: 5px;
+      color: #c7d2dc;
+      font-size: .82rem;
+      font-weight: 800;
     }
+
+    h1, h2, h3, p { margin-top: 0; }
+
     .top h1 {
-      margin: 0 0 12px;
-      font-size: 1.55rem;
-      line-height: 1.2;
+      margin-bottom: 10px;
+      font-size: 1.32rem;
+      line-height: 1.25;
+      letter-spacing: 0;
     }
-    .top-actions, .action-grid {
+
+    .quick-nav {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
     }
+
     .button {
       display: grid;
       place-items: center;
       min-height: 44px;
-      padding: 10px;
+      padding: 10px 12px;
       border: 0;
       border-radius: 7px;
       background: var(--blue);
       color: #fff;
       text-decoration: none;
-      font: inherit;
-      font-weight: 800;
       text-align: center;
+      font-weight: 800;
+      line-height: 1.2;
     }
+
     .button.secondary {
-      background: #eef5ff;
-      color: var(--blue);
-      border: 1px solid #bfd5f2;
+      background: #eef6ff;
+      color: #1454ae;
+      border: 1px solid #bdd6f4;
     }
-    .section { padding: 14px; }
+
+    .button.ghost {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.24);
+    }
+
+    .section { padding: 12px 12px 0; }
+
     .card {
       margin-bottom: 12px;
       padding: 14px;
@@ -83,116 +112,269 @@
       border: 1px solid var(--line);
       border-radius: 8px;
     }
-    h2 { margin: 0 0 10px; font-size: 1.08rem; }
-    h3 { margin: 0 0 8px; font-size: 1rem; }
-    p { margin: 0 0 10px; line-height: 1.45; }
-    ul { margin: 0; padding: 0 20px 0 0; line-height: 1.55; }
-    li { margin-bottom: 6px; }
+
+    .card.alert {
+      border-right: 5px solid var(--amber);
+      background: #fffaf1;
+    }
+
+    .card.danger {
+      border-right: 5px solid var(--red);
+      background: #fff7f8;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.08rem;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 6px;
+      font-size: .98rem;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin-bottom: 10px;
+      line-height: 1.48;
+    }
+
     .muted { color: var(--muted); }
+
+    .breadcrumb {
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
     }
+
     .stat {
-      min-height: 74px;
-      padding: 10px 8px;
+      min-height: 70px;
       display: grid;
       align-content: center;
-      gap: 4px;
+      gap: 3px;
+      padding: 9px 7px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
       text-align: center;
     }
-    .stat strong { display: block; font-size: 1.35rem; }
-    .stat span { color: var(--muted); font-size: .82rem; }
-    .badge {
-      display: inline-grid;
-      place-items: center;
-      min-height: 30px;
-      padding: 6px 9px;
-      border-radius: 6px;
-      background: var(--soft-blue);
-      color: #174c93;
-      font-size: .82rem;
-      font-weight: 800;
-      white-space: nowrap;
+
+    .stat strong {
+      display: block;
+      font-size: 1.28rem;
+      line-height: 1;
     }
-    .badge.ready { background: var(--soft-green); color: var(--green); }
-    .badge.warn { background: var(--soft-amber); color: var(--amber); }
-    .badge.danger { background: var(--soft-red); color: var(--red); }
+
+    .stat span {
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.2;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .selectish {
+      display: grid;
+      gap: 3px;
+      min-height: 58px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f9fb;
+    }
+
+    .selectish small {
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 800;
+    }
+
+    .selectish strong { line-height: 1.25; }
+
     .list {
       display: grid;
       gap: 8px;
     }
+
     .row-button {
       width: 100%;
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 8px;
       align-items: center;
-      padding: 12px;
+      gap: 8px;
+      min-height: 72px;
+      padding: 11px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
       color: var(--ink);
       text-align: right;
-      font: inherit;
     }
+
     .row-button.active {
-      border-color: #86b7f4;
-      background: #f4f8ff;
+      border-color: #7fb2f0;
+      background: #f3f8ff;
+      box-shadow: inset 4px 0 0 var(--blue);
     }
+
     .row-title {
       display: block;
       margin-bottom: 4px;
-      font-weight: 800;
+      font-weight: 900;
       line-height: 1.25;
     }
+
     .row-meta {
       display: block;
       color: var(--muted);
-      font-size: .86rem;
+      font-size: .84rem;
       line-height: 1.35;
     }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-height: 29px;
+      padding: 6px 9px;
+      border-radius: 6px;
+      background: var(--soft-blue);
+      color: #174c93;
+      font-size: .78rem;
+      font-weight: 900;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .badge.ready { background: var(--soft-green); color: var(--green); }
+    .badge.warn { background: var(--soft-amber); color: var(--amber); }
+    .badge.danger { background: var(--soft-red); color: var(--red); }
+
     .panel { display: none; }
     .panel.active { display: block; }
-    .point-head { border-right: 5px solid var(--blue); }
+
+    .point-head {
+      border-right: 5px solid var(--blue);
+    }
+
     .headline-row {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       margin-bottom: 10px;
     }
+
     .point-head h2 {
-      margin-bottom: 6px;
-      font-size: 1.35rem;
-      line-height: 1.25;
+      margin-bottom: 7px;
+      font-size: 1.32rem;
     }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     .facts {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
+
     .fact {
-      min-height: 70px;
+      min-height: 68px;
       padding: 10px;
       border-radius: 7px;
       background: #f6f8f9;
     }
+
     .fact small {
       display: block;
       margin-bottom: 4px;
       color: var(--muted);
-      font-size: .8rem;
-      font-weight: 700;
+      font-size: .78rem;
+      font-weight: 800;
+      line-height: 1.25;
     }
-    .fact strong { display: block; line-height: 1.35; }
+
+    .fact strong {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .photo-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .photo {
+      display: grid;
+      grid-template-columns: 102px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    .photo:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .thumb {
+      position: relative;
+      height: 86px;
+      overflow: hidden;
+      border-radius: 7px;
+      border: 1px solid #c5d0d8;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,0) 38%),
+        linear-gradient(135deg, #92b3c0, #4b6370);
+    }
+
+    .thumb:before {
+      content: "";
+      position: absolute;
+      right: 12px;
+      left: 12px;
+      bottom: 14px;
+      height: 22px;
+      border-radius: 4px;
+      background: rgba(255,255,255,.45);
+    }
+
+    .thumb:after {
+      content: "→";
+      position: absolute;
+      left: 20px;
+      top: 16px;
+      color: #e53935;
+      font-size: 2rem;
+      font-weight: 900;
+      transform: rotate(-20deg);
+    }
+
     .equipment {
       display: grid;
       gap: 7px;
     }
+
     .eq-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -201,89 +383,9 @@
       border-radius: 7px;
       background: #f6f8f9;
     }
+
     .eq-row strong { white-space: nowrap; }
-    .photo-list {
-      display: grid;
-      gap: 10px;
-    }
-    .photo {
-      display: grid;
-      grid-template-columns: 104px 1fr;
-      gap: 10px;
-      align-items: start;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #edf0f2;
-    }
-    .photo:last-child { padding-bottom: 0; border-bottom: 0; }
-    .thumb {
-      height: 86px;
-      border-radius: 7px;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,0) 35%),
-        linear-gradient(135deg, #94b6c5, #4e6773);
-      position: relative;
-      overflow: hidden;
-    }
-    .thumb:before {
-      content: "";
-      position: absolute;
-      inset: auto 12px 14px 12px;
-      height: 22px;
-      border-radius: 4px;
-      background: rgba(255,255,255,.46);
-    }
-    .thumb:after {
-      content: "→";
-      position: absolute;
-      left: 20px;
-      top: 18px;
-      color: #e53935;
-      font-size: 2rem;
-      font-weight: 900;
-      transform: rotate(-20deg);
-    }
-    .alert {
-      border-right: 5px solid var(--amber);
-      background: #fffaf1;
-    }
-    .alert.danger {
-      border-right-color: var(--red);
-      background: #fff6f7;
-    }
-    .mini-map {
-      height: 220px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background:
-        linear-gradient(90deg, transparent 23%, rgba(255,255,255,.8) 24%, transparent 25%),
-        linear-gradient(0deg, transparent 35%, rgba(255,255,255,.85) 36%, transparent 37%),
-        #dce6eb;
-    }
-    .road {
-      position: absolute;
-      height: 28px;
-      background: rgba(255,255,255,.84);
-      border: 1px solid rgba(120,135,145,.2);
-      transform-origin: center;
-    }
-    .road.one { width: 125%; right: -10%; top: 48%; transform: rotate(-18deg); }
-    .road.two { width: 95%; right: 10%; top: 30%; transform: rotate(30deg); }
-    .pin {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: #fff;
-      font-weight: 900;
-      box-shadow: 0 4px 12px rgba(0,0,0,.22);
-    }
-    .pin.polling { background: var(--blue); right: 54%; top: 26%; }
-    .pin.signage { background: var(--amber); right: 28%; top: 48%; }
-    .pin.booth { background: var(--green); right: 60%; top: 62%; }
+
     .status-row {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -293,25 +395,70 @@
       border-radius: 7px;
       background: #f6f8f9;
     }
+
     .dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       background: var(--blue);
     }
+
     .dot.ready { background: var(--green); }
     .dot.warn { background: var(--amber); }
     .dot.danger { background: var(--red); }
-    .breadcrumb {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: .88rem;
-      font-weight: 700;
+
+    .mini-map {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, transparent 23%, rgba(255,255,255,.82) 24%, transparent 25%),
+        linear-gradient(0deg, transparent 35%, rgba(255,255,255,.82) 36%, transparent 37%),
+        #dbe6eb;
     }
-    @media (max-width: 420px) {
+
+    .road {
+      position: absolute;
+      height: 28px;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(120,135,145,.22);
+      transform-origin: center;
+    }
+
+    .road.one { width: 125%; right: -10%; top: 48%; transform: rotate(-18deg); }
+    .road.two { width: 95%; right: 10%; top: 30%; transform: rotate(30deg); }
+
+    .pin {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 5px 13px rgba(0,0,0,.24);
+    }
+
+    .pin.polling { background: var(--blue); right: 54%; top: 26%; }
+    .pin.signage { background: var(--amber); right: 28%; top: 48%; }
+    .pin.booth { background: var(--green); right: 60%; top: 62%; }
+
+    ul {
+      margin: 0;
+      padding: 0 20px 0 0;
+      line-height: 1.55;
+    }
+
+    li { margin-bottom: 6px; }
+
+    @media (max-width: 460px) {
       .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar, .quick-nav, .actions { grid-template-columns: 1fr; }
       .facts { grid-template-columns: 1fr; }
-      .top-actions, .action-grid { grid-template-columns: 1fr; }
       .photo { grid-template-columns: 88px 1fr; }
       .thumb { height: 78px; }
     }
@@ -320,16 +467,17 @@
 <body>
   <main class="app">
     <header class="top">
-      <small>תוצרי תיעוד שטח · יום הבחירות</small>
+      <span class="kicker">תוצרי תיעוד שטח · ליום הבחירות</span>
       <h1>מחוז צפון השרון</h1>
-      <div class="top-actions">
-        <a class="button" href="#merhav-summary">מרחבים במחוז</a>
-        <a class="button secondary" href="#equipment">ציוד כולל</a>
-      </div>
+      <nav class="quick-nav" aria-label="ניווט מהיר">
+        <a class="button ghost" href="#ready-points">נקודות מוכנות</a>
+        <a class="button ghost" href="#summary">סיכום מרחב</a>
+        <a class="button ghost" href="#equipment">ציוד</a>
+      </nav>
     </header>
 
-    <section class="section">
-      <div class="stats" aria-label="מצב כללי במחוז">
+    <section class="section" id="summary">
+      <div class="stats" aria-label="מצב כללי">
         <div class="stat"><strong>7</strong><span>מרחבים</span></div>
         <div class="stat"><strong>31</strong><span>יישובים</span></div>
         <div class="stat"><strong>164</strong><span>נקודות</span></div>
@@ -337,131 +485,56 @@
       </div>
     </section>
 
-    <section class="section" id="merhav-summary">
+    <section class="section">
       <article class="card">
-        <h2>מרחבים במחוז</h2>
-        <p class="muted">זה המסך למוביל המחוז: לראות במהירות איזה מרחב מוכן, איפה חסר מידע, ולאיזה מרחב חסר ציוד.</p>
-        <div class="list">
-          <button class="row-button active" data-merhav="east" type="button">
-            <span><span class="row-title">מרחב מזרח השרון</span><span class="row-meta">5 יישובים · 28 נקודות · 22 מוכנות</span></span>
-            <span class="badge ready">78%</span>
-          </button>
-          <button class="row-button" data-merhav="center" type="button">
-            <span><span class="row-title">מרחב מרכז השרון</span><span class="row-meta">6 יישובים · 34 נקודות · 21 מוכנות</span></span>
-            <span class="badge warn">62%</span>
-          </button>
-          <button class="row-button" data-merhav="coast" type="button">
-            <span><span class="row-title">מרחב חוף השרון</span><span class="row-meta">4 יישובים · 19 נקודות · 17 מוכנות</span></span>
-            <span class="badge ready">89%</span>
-          </button>
-          <button class="row-button" data-merhav="south" type="button">
-            <span><span class="row-title">מרחב דרום השרון</span><span class="row-meta">5 יישובים · 26 נקודות · 15 מוכנות</span></span>
-            <span class="badge warn">58%</span>
-          </button>
-          <button class="row-button" data-merhav="north" type="button">
-            <span><span class="row-title">מרחב צפון השרון</span><span class="row-meta">3 יישובים · 16 נקודות · 14 מוכנות</span></span>
-            <span class="badge ready">87%</span>
-          </button>
-          <button class="row-button" data-merhav="rural" type="button">
-            <span><span class="row-title">מרחב יישובים כפריים</span><span class="row-meta">5 יישובים · 23 נקודות · 16 מוכנות</span></span>
-            <span class="badge warn">70%</span>
-          </button>
-          <button class="row-button" data-merhav="backup" type="button">
-            <span><span class="row-title">מרחב גיבוי ותנועה</span><span class="row-meta">3 יישובים · 18 נקודות · 13 מוכנות</span></span>
-            <span class="badge warn">72%</span>
-          </button>
+        <h2>בחירת מרחב ויישוב</h2>
+        <div class="toolbar">
+          <div class="selectish">
+            <small>מרחב נבחר</small>
+            <strong>מרחב מזרח השרון</strong>
+          </div>
+          <div class="selectish">
+            <small>יישוב נבחר</small>
+            <strong>כפר סבא</strong>
+          </div>
         </div>
+        <p class="muted">במוצר האמיתי הבחירה תסנן את הרשימה. במוקאפ הזה אנחנו רואים דוגמה מלאה של יישוב אחד, כדי להחליט איך התוצר צריך להיראות.</p>
       </article>
     </section>
 
-    <section class="section">
-      <div class="panel active" id="merhav-east">
-        <article class="card">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב מזרח השרון</div>
-          <h2>יישובים במרחב מזרח השרון</h2>
-          <div class="list">
-            <button class="row-button active" data-settlement="kfar-saba" type="button">
-              <span><span class="row-title">כפר סבא</span><span class="row-meta">11 נקודות · 8 מוכנות · 2 בתהליך · 1 דורשת השלמה</span></span>
-              <span class="badge ready">מוביל: נועה</span>
-            </button>
-            <button class="row-button" data-settlement="hod-hasharon" type="button">
-              <span><span class="row-title">הוד השרון</span><span class="row-meta">7 נקודות · 5 מוכנות · חסרה בדיקת שילוט</span></span>
-              <span class="badge warn">למעקב</span>
-            </button>
-            <button class="row-button" data-settlement="raanana" type="button">
-              <span><span class="row-title">רעננה</span><span class="row-meta">10 נקודות · 9 מוכנות · דוכן אחד בתהליך</span></span>
-              <span class="badge ready">כמעט סגור</span>
-            </button>
-          </div>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-center">
-        <article class="card alert">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב מרכז השרון</div>
-          <h2>מרחב מרכז השרון</h2>
-          <p>במוקאפ הזה פירוט היישובים מוצג רק למרחב מזרח השרון. במוצר האמיתי כל מרחב ייפתח באותה צורה.</p>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-coast">
-        <article class="card">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב חוף השרון</div>
-          <h2>מרחב חוף השרון</h2>
-          <p>מצב טוב יחסית. נדרש בעיקר לוודא ציוד שילוט.</p>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-south">
-        <article class="card alert">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב דרום השרון</div>
-          <h2>מרחב דרום השרון</h2>
-          <p>כאן יש יותר נקודות להשלמה ולכן המרחב מקבל סימון צהוב בסיכום המחוז.</p>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-north">
-        <article class="card">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב צפון השרון</div>
-          <h2>מרחב צפון השרון</h2>
-          <p>מרחב קטן יחסית, רוב הנקודות מוכנות.</p>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-rural">
-        <article class="card alert">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב יישובים כפריים</div>
-          <h2>מרחב יישובים כפריים</h2>
-          <p>נדרש דגש על זמני נסיעה וציוד משותף בין יישובים.</p>
-        </article>
-      </div>
-
-      <div class="panel" id="merhav-backup">
-        <article class="card alert">
-          <div class="breadcrumb">מחוז צפון השרון / מרחב גיבוי ותנועה</div>
-          <h2>מרחב גיבוי ותנועה</h2>
-          <p>מרחב שמרכז נקודות תגבור, שילוט נייד ודוכנים שנפתחים לפי צורך.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section">
+    <section class="section" id="ready-points">
       <article class="card">
         <div class="breadcrumb">מחוז צפון השרון / מרחב מזרח השרון / כפר סבא</div>
-        <h2>נקודות מוכנות לפתיחה בכפר סבא</h2>
-        <p class="muted">ביום הבחירות צוות השטח פותח נקודה מהרשימה ומקבל דף תפעול קצר עם ניווט, ציוד, תמונות והערות.</p>
+        <h2>נקודות מוכנות ליום הבחירות</h2>
+        <p class="muted">זה החלק הראשון שהצוות רואה בטלפון. לוחצים על נקודה ומקבלים דף תפעול קצר: ניווט, תמונות, ציוד, חניה והערות.</p>
         <div class="list">
           <button class="row-button active point-button" data-point="polling" type="button">
-            <span><span class="row-title">קלפי / אשכול 014 · בית ספר הדרים</span><span class="row-meta">מיקום אומת בשטח · דוכן בכניסה הראשית</span></span>
+            <span>
+              <span class="row-title">קלפי / אשכול 014 · בית ספר הדרים</span>
+              <span class="row-meta">זהב · מיקום אומת בשטח · דוכן בכניסה הראשית</span>
+            </span>
             <span class="badge ready">מוכן</span>
           </button>
           <button class="row-button point-button" data-point="signage" type="button">
-            <span><span class="row-title">שילוט 008 · צומת ויצמן</span><span class="row-meta">חשיבות 2 · דרושים שני אנשים ואזיקונים</span></span>
+            <span>
+              <span class="row-title">שילוט 008 · צומת ויצמן</span>
+              <span class="row-meta">חשיבות 2 · שלט גדול · שני אנשים ואזיקונים</span>
+            </span>
             <span class="badge ready">מוכן</span>
           </button>
           <button class="row-button point-button" data-point="booth" type="button">
-            <span><span class="row-title">דוכן 006 · קניון ערים</span><span class="row-meta">מומלץ 16:00-20:00 · פליירים בעברית ורוסית</span></span>
+            <span>
+              <span class="row-title">דוכן 006 · קניון ערים</span>
+              <span class="row-meta">חשיבות 1 · מומלץ 16:00-20:00 · עברית ורוסית</span>
+            </span>
             <span class="badge ready">מוכן</span>
+          </button>
+          <button class="row-button point-button" data-point="needs-check" type="button">
+            <span>
+              <span class="row-title">שילוט 012 · רחוב טשרניחובסקי</span>
+              <span class="row-meta">חסר: מדידת גובה + תמונה מקרוב · לא לשימוש ביום הבחירות עדיין</span>
+            </span>
+            <span class="badge warn">חסר מידע</span>
           </button>
         </div>
       </article>
@@ -473,14 +546,16 @@
           <div class="headline-row">
             <span class="badge">קלפי / אשכול 014</span>
             <span class="badge ready">מוכן ליום הבחירות</span>
+            <span class="badge">אשכול זהב</span>
           </div>
           <h2>בית ספר הדרים · כפר סבא</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · נבדק: 10.07.2026 14:35 · תיעדה: שירה</p>
-          <div class="action-grid">
+          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: שירה · בדיקה אחרונה: 10.07.2026 14:35</p>
+          <div class="actions">
             <a class="button" href="https://www.waze.com/ul?q=%D7%91%D7%99%D7%AA%20%D7%A1%D7%A4%D7%A8%20%D7%94%D7%93%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
             <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%91%D7%99%D7%AA%20%D7%A1%D7%A4%D7%A8%20%D7%94%D7%93%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
+
         <article class="card">
           <h2>מיקום</h2>
           <div class="facts">
@@ -488,24 +563,40 @@
             <div class="fact"><small>מיקום מתוקן מהשטח</small><strong>32.178124, 34.907822</strong></div>
           </div>
         </article>
+
         <article class="card">
-          <h2>הוראות הקמה</h2>
+          <h2>מה עושים בשטח</h2>
           <p>להקים את הדוכן מימין לשער הכניסה הראשית, על המדרכה הרחבה. להשאיר מעבר חופשי להולכי רגל. מומלץ להגיע 20 דקות לפני פתיחת הקלפיות.</p>
         </article>
+
         <article class="card">
-          <h2>תמונות</h2>
+          <h2>תמונות והסברים</h2>
           <div class="photo-list">
-            <div class="photo"><div class="thumb"></div><div><h3>כניסה לאשכול</h3><p class="muted">הכניסה הראשית ברורה מהרחוב. החץ מסמן את הצד שבו כדאי להציב את הדוכן.</p></div></div>
-            <div class="photo"><div class="thumb"></div><div><h3>מקום צפוי לדוכן</h3><p class="muted">מדרכה רחבה, מוצלת חלקית, בלי חסימת מעבר.</p></div></div>
+            <div class="photo">
+              <div class="thumb"></div>
+              <div>
+                <h3>כניסה לאשכול</h3>
+                <p class="muted">הכניסה הראשית ברורה מהרחוב. החץ מסמן את הצד שבו כדאי להציב את הדוכן.</p>
+              </div>
+            </div>
+            <div class="photo">
+              <div class="thumb"></div>
+              <div>
+                <h3>מיקום צפוי לדוכן</h3>
+                <p class="muted">מדרכה רחבה, מוצלת חלקית, בלי חסימת מעבר.</p>
+              </div>
+            </div>
           </div>
         </article>
+
         <article class="card">
-          <h2>ציוד וגישה</h2>
+          <h2>ציוד וחניה</h2>
           <div class="equipment">
             <div class="eq-row"><span>שולחן</span><strong>1</strong></div>
             <div class="eq-row"><span>דגלי המפלגה</span><strong>2-3</strong></div>
             <div class="eq-row"><span>פליירים</span><strong>300-500</strong></div>
             <div class="eq-row"><span>כובעים</span><strong>10-15</strong></div>
+            <div class="eq-row"><span>חולצות</span><strong>4-6</strong></div>
           </div>
           <p class="muted" style="margin-top:10px">חניה חופשית ברחובות הסמוכים. פריקה קצרה אפשרית מול השער.</p>
         </article>
@@ -516,34 +607,64 @@
           <div class="headline-row">
             <span class="badge">שילוט 008</span>
             <span class="badge ready">מוכן ליום הבחירות</span>
+            <span class="badge warn">חשיבות 2</span>
           </div>
           <h2>צומת ויצמן · כפר סבא</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · חשיבות: 2 · תיעד: דניאל</p>
-          <div class="action-grid">
+          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעד: דניאל · בדיקה אחרונה: 09.07.2026 18:10</p>
+          <div class="actions">
             <a class="button" href="https://www.waze.com/ul?q=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%95%D7%99%D7%A6%D7%9E%D7%9F%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
             <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%95%D7%99%D7%A6%D7%9E%D7%9F%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
+
         <article class="card">
-          <h2>הוראות תלייה</h2>
-          <p>לתלות שלט גדול על הגדר המערבית, בגובה עיניים לרכבים המגיעים ממרכז העיר. נדרשים שני אנשים לפחות. אין צורך בסולם.</p>
-        </article>
-        <article class="card">
-          <h2>מדידות וציוד</h2>
+          <h2>מיקום ומדידות</h2>
           <div class="facts">
-            <div class="fact"><small>רוחב מקסימלי</small><strong>2.4 מטר</strong></div>
-            <div class="fact"><small>גובה מקסימלי</small><strong>1.1 מטר</strong></div>
+            <div class="fact"><small>מיקום מתוקן מהשטח</small><strong>32.176901, 34.906431</strong></div>
+            <div class="fact"><small>גודל שלט מקסימלי</small><strong>רוחב 2.4 מ' · גובה 1.1 מ'</strong></div>
           </div>
-          <div class="equipment" style="margin-top:8px">
+        </article>
+
+        <article class="card">
+          <h2>איך תולים</h2>
+          <p>לתלות שלט גדול על הגדר המערבית, בגובה עיניים לרכבים שמגיעים ממרכז העיר. נדרשים שני אנשים לפחות. אין צורך בסולם.</p>
+        </article>
+
+        <article class="card">
+          <h2>תמונות והסברים</h2>
+          <div class="photo-list">
+            <div class="photo">
+              <div class="thumb"></div>
+              <div>
+                <h3>מבט מרחוק</h3>
+                <p class="muted">נראות גבוהה לרכבים בצומת. הצילום מסמן מאיזה כיוון השלט נראה הכי טוב.</p>
+              </div>
+            </div>
+            <div class="photo">
+              <div class="thumb"></div>
+              <div>
+                <h3>מקום תלייה מקרוב</h3>
+                <p class="muted">הגדר מתאימה לאזיקונים. אין נקודות חדות שעלולות לקרוע את השלט.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card alert">
+          <h2>סיכון ותחרות על מקום</h2>
+          <p>בינוני. ייתכן שמפלגות אחרות ישתמשו באותה גדר. מומלץ לתלות מוקדם ולבדוק שוב בצהריים.</p>
+        </article>
+
+        <article class="card">
+          <h2>ציוד וחניה</h2>
+          <div class="equipment">
             <div class="eq-row"><span>שלט גדול</span><strong>1-2</strong></div>
             <div class="eq-row"><span>שלט קטן</span><strong>0-1</strong></div>
             <div class="eq-row"><span>אזיקונים</span><strong>כן</strong></div>
             <div class="eq-row"><span>חבל</span><strong>לא</strong></div>
+            <div class="eq-row"><span>אנשים</span><strong>2 לפחות</strong></div>
           </div>
-        </article>
-        <article class="card alert">
-          <h2>סיכון / תחרות על מקום</h2>
-          <p>בינוני. ייתכן שמפלגות אחרות ישתמשו באותה גדר. מומלץ לתלות מוקדם ולבדוק שוב בצהריים.</p>
+          <p class="muted" style="margin-top:10px">אפשר לעצור לפריקה קצרה ברחוב הצדדי. חניה חופשית במרחק 2-3 דקות הליכה.</p>
         </article>
       </div>
 
@@ -552,20 +673,36 @@
           <div class="headline-row">
             <span class="badge">דוכן 006</span>
             <span class="badge ready">מוכן ליום הבחירות</span>
+            <span class="badge warn">חשיבות 1</span>
           </div>
           <h2>קניון ערים · כפר סבא</h2>
-          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · חשיבות: 1 · תיעדה: מאיה</p>
-          <div class="action-grid">
+          <p class="muted">מחוז צפון השרון · מרחב מזרח השרון · תיעדה: מאיה · בדיקה אחרונה: 08.07.2026 20:05</p>
+          <div class="actions">
             <a class="button" href="https://www.waze.com/ul?q=%D7%A7%D7%A0%D7%99%D7%95%D7%9F%20%D7%A2%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90&navigate=yes" target="_blank" rel="noopener">פתיחה ב-Waze</a>
             <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=%D7%A7%D7%A0%D7%99%D7%95%D7%9F%20%D7%A2%D7%A8%D7%99%D7%9D%20%D7%9B%D7%A4%D7%A8%20%D7%A1%D7%91%D7%90" target="_blank" rel="noopener">Google Maps</a>
           </div>
         </article>
+
         <article class="card">
           <h2>הפעלה מומלצת</h2>
           <p>להפעיל בין 16:00-20:00 ליד הכניסה הדרומית. תנועת הולכי רגל גבוהה אחרי העבודה. מומלץ דוכן מלא ולא דוכנוע.</p>
         </article>
+
         <article class="card">
-          <h2>ציוד</h2>
+          <h2>תמונות והסברים</h2>
+          <div class="photo-list">
+            <div class="photo">
+              <div class="thumb"></div>
+              <div>
+                <h3>מבט מרחוק</h3>
+                <p class="muted">הכניסה הדרומית נראית היטב מהרחבה. להציב את הדוכן בצד ולא באמצע הציר.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>ציוד וחניה</h2>
           <div class="equipment">
             <div class="eq-row"><span>שולחן</span><strong>1</strong></div>
             <div class="eq-row"><span>פליירים בעברית</span><strong>500-700</strong></div>
@@ -573,17 +710,34 @@
             <div class="eq-row"><span>כובעים</span><strong>20-30</strong></div>
             <div class="eq-row"><span>חולצות</span><strong>10-15</strong></div>
           </div>
+          <p class="muted" style="margin-top:10px">חניה בתשלום בחניון הקניון. לפריקה זמנית אפשר לעצור ברחוב ברל כצנלסון ליד הכניסה הדרומית.</p>
         </article>
-        <article class="card">
-          <h2>חניה וגישה</h2>
-          <p>חניה בתשלום בחניון הקניון. לפריקה זמנית אפשר לעצור ברחוב ברל כצנלסון ליד הכניסה הדרומית.</p>
+      </div>
+
+      <div class="panel point-output" id="point-needs-check">
+        <article class="card point-head">
+          <div class="headline-row">
+            <span class="badge">שילוט 012</span>
+            <span class="badge warn">חסר מידע</span>
+          </div>
+          <h2>רחוב טשרניחובסקי · כפר סבא</h2>
+          <p class="muted">הנקודה מופיעה כאן כדי להראות איך תוצר לא מוכן נראה לצוות מוביל. היא לא אמורה להופיע ברשימת יום הבחירות לצוותי השטח.</p>
+        </article>
+
+        <article class="card danger">
+          <h2>מה חסר</h2>
+          <ul>
+            <li>מדידת גובה מקסימלי לשלט.</li>
+            <li>תמונה מקרוב של מקום התלייה.</li>
+            <li>בדיקת חניה לפריקה זמנית.</li>
+          </ul>
         </article>
       </div>
     </section>
 
     <section class="section">
       <article class="card">
-        <h2>מפת מרחב / רשימות ניווט</h2>
+        <h2>מפת מרחב / רשימת ניווט</h2>
         <div class="mini-map">
           <div class="road one"></div>
           <div class="road two"></div>
@@ -591,9 +745,9 @@
           <span class="pin signage">ש</span>
           <span class="pin booth">ד</span>
         </div>
-        <div class="action-grid">
+        <div class="actions">
           <a class="button secondary" href="https://www.google.com/maps/search/?api=1&query=Kfar%20Saba" target="_blank" rel="noopener">פתיחת מפת Google</a>
-          <a class="button secondary" href="#">רשימת קישורי Waze</a>
+          <a class="button secondary" href="#ready-points">חזרה לרשימת נקודות</a>
         </div>
       </article>
     </section>
@@ -613,18 +767,16 @@
           <div class="eq-row"><span>חבל</span><strong>כן</strong></div>
         </div>
       </article>
-    </section>
 
-    <section class="section">
       <article class="card danger">
         <h2>דורש טיפול לפני יום הבחירות</h2>
         <ul>
-          <li>מרחב מרכז השרון: חסרים שני סיורי שילוט.</li>
-          <li>כפר סבא / שילוט 012: חסרה מדידת גובה.</li>
+          <li>כפר סבא / שילוט 012: חסרה מדידת גובה ותמונה מקרוב.</li>
           <li>הוד השרון / דוכן 009: חניה וגישה לא נבדקו.</li>
           <li>רעננה / קלפי 021: המיקום לא אומת מהטלפון.</li>
         </ul>
       </article>
+
       <article class="card">
         <h2>מצב לפי סטטוס - מחוז</h2>
         <div class="list">
@@ -638,26 +790,20 @@
   </main>
 
   <script>
-    function activate(buttons, panels, keyName, prefix, clicked) {
-      buttons.forEach((item) => item.classList.remove("active"));
-      panels.forEach((item) => item.classList.remove("active"));
-      clicked.classList.add("active");
-      const target = document.getElementById(`${prefix}-${clicked.dataset[keyName]}`);
-      if (target) target.classList.add("active");
-    }
-
-    const merhavButtons = document.querySelectorAll("[data-merhav]");
-    const merhavPanels = document.querySelectorAll("[id^='merhav-']");
-    merhavButtons.forEach((button) => {
-      button.addEventListener("click", () => activate(merhavButtons, merhavPanels, "merhav", "merhav", button));
-    });
-
     const pointButtons = document.querySelectorAll(".point-button");
     const pointPanels = document.querySelectorAll(".point-output");
+
     pointButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        activate(pointButtons, pointPanels, "point", "point", button);
-        document.getElementById(`point-${button.dataset.point}`).scrollIntoView({ behavior: "smooth", block: "start" });
+        pointButtons.forEach((item) => item.classList.remove("active"));
+        pointPanels.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+
+        const target = document.getElementById(`point-${button.dataset.point}`);
+        if (target) {
+          target.classList.add("active");
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
   </script>
