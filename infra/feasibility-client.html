@@ -22,6 +22,7 @@
       <button id="saveConfig" class="secondary" type="button">Save URL on this phone</button>
       <button id="setupWorkspace" class="secondary" type="button">Run one-time workspace setup</button>
       <button id="healthCheck" class="secondary" type="button">Check backend</button>
+      <p id="configStatus" class="small">No URL saved yet.</p>
     </section>
 
     <section class="card">
@@ -90,7 +91,20 @@
 
     function saveConfig() {
       const url = backendInput.value.trim();
-      localStorage.setItem("fieldDocBackendUrl", url);
+      const status = document.getElementById("configStatus");
+      if (!url) {
+        status.textContent = "Paste the Apps Script Web App URL first.";
+        status.className = "small warn";
+        showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+        return;
+      }
+      try {
+        localStorage.setItem("fieldDocBackendUrl", url);
+        status.textContent = "URL saved. Now press Run one-time workspace setup.";
+      } catch (error) {
+        status.textContent = "URL accepted for this session. Phone storage did not allow permanent save.";
+      }
+      status.className = "small ok";
       showResult({ ok: true, message: "Saved backend URL locally on this phone.", savedUrlStart: url.slice(0, 45) });
     }
 
@@ -185,7 +199,11 @@
         showResult({ ok: false, error: "Missing Apps Script Web App URL." });
         return "";
       }
-      localStorage.setItem("fieldDocBackendUrl", url);
+      try {
+        localStorage.setItem("fieldDocBackendUrl", url);
+      } catch (error) {
+        // The URL still works for this session even if browser storage is blocked.
+      }
       return url;
     }
 
