@@ -73,7 +73,14 @@ function renderMission(type) {
       state = document.createElement("div");
       state.className = "step-state pending-state";
       state.textContent = "עוד לא בוצע";
-      step.insertBefore(state, step.querySelector(".big-actions, .location-card, .add-photo, .equipment-grid, .review-list"));
+      const anchor = step.querySelector(".step-title");
+      if (anchor && anchor.nextSibling) {
+        anchor.parentNode.insertBefore(state, anchor.nextSibling);
+      } else if (anchor) {
+        anchor.insertAdjacentElement("afterend", state);
+      } else {
+        step.appendChild(state);
+      }
     }
   });
   updateProgress();
