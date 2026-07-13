@@ -67,6 +67,15 @@ function renderMission(type) {
   document.getElementById("logisticsStepNumber").textContent = steps.length + 3;
   document.getElementById("equipmentStepNumber").textContent = steps.length + 4;
   document.getElementById("reviewStepNumber").textContent = steps.length + 5;
+  document.querySelectorAll("#documentScreen .mission-step").forEach((step) => {
+    let state = step.querySelector(".step-state");
+    if (!state) {
+      state = document.createElement("div");
+      state.className = "step-state pending-state";
+      state.textContent = "עוד לא בוצע";
+      step.insertBefore(state, step.querySelector(".big-actions, .location-card, .add-photo, .equipment-grid, .review-list"));
+    }
+  });
   updateProgress();
 }
 
@@ -233,8 +242,14 @@ document.addEventListener("click", (event) => {
   if (!button) return;
 
   if (button.classList.contains("complete-step")) {
-    button.closest(".mission-step").classList.add("done");
-    button.textContent = "✓ נשמר";
+    const step = button.closest(".mission-step");
+    step.classList.add("done");
+    const state = step.querySelector(".step-state");
+    if (state) {
+      state.textContent = "בוצע";
+      state.className = "step-state done-state";
+    }
+    button.textContent = "✓ בוצע";
     updateProgress();
     return;
   }

@@ -76,9 +76,14 @@ button{cursor:pointer}
 .progress-track i{display:block;width:0;height:100%;background:var(--teal);transition:width .2s ease}
 .step-title{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start;margin-bottom:14px}
 .step-title>span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e9eef2;font-weight:700}
+.step-num{box-shadow:inset 0 0 0 2px rgba(23,32,42,.05)}
 .step-title p{margin:4px 0 0;font-size:.83rem;line-height:1.35}
+.step-state{display:inline-flex;width:max-content;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:.75rem;font-weight:700}
+.pending-state{background:#fff4db;color:#8a5500}
+.done-state{background:#e2f6ee;color:#0f7758}
 .mission-step.done{border-color:#9bd5c9;background:#f7fcfa}
 .mission-step.done .step-title>span{background:#dff5eb;color:var(--teal)}
+.mission-step.done .complete-step{background:#dff5eb;color:var(--teal);border-color:#9bd5c9}
 .big-actions,.bottom-actions{display:grid;grid-template-columns:1.2fr .8fr}
 .primary,.ghost,.complete-step{min-height:46px;border-radius:6px;font-weight:700}
 .primary{border:0;background:var(--blue);color:#fff}
