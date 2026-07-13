@@ -68,10 +68,6 @@ button{cursor:pointer}
 .location-ok{color:var(--teal)!important;font-weight:700}
 .location-pending{color:var(--orange)!important;font-weight:700}
 .location-error{color:var(--red)!important;font-weight:700}
-.location-ok::before,.location-pending::before,.location-error::before{margin-left:6px;font-weight:700}
-.location-ok::before{content:"✓"}
-.location-pending::before{content:"…"}
-.location-error::before{content:"!"}
 .section-hint{margin-top:10px;padding:10px 12px;border-radius:6px;background:#f2f6fa;color:var(--muted);font-size:.84rem}
 .mission-progress,.mission-step{margin-bottom:12px;padding:15px}
 .mission-progress>div:first-child{display:flex;justify-content:space-between;gap:10px}
@@ -80,14 +76,9 @@ button{cursor:pointer}
 .progress-track i{display:block;width:0;height:100%;background:var(--teal);transition:width .2s ease}
 .step-title{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start;margin-bottom:14px}
 .step-title>span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e9eef2;font-weight:700}
-.step-num{box-shadow:inset 0 0 0 2px rgba(23,32,42,.05)}
 .step-title p{margin:4px 0 0;font-size:.83rem;line-height:1.35}
-.step-state{display:inline-flex;width:max-content;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:.75rem;font-weight:700}
-.pending-state{background:#fff4db;color:#8a5500}
-.done-state{background:#e2f6ee;color:#0f7758}
 .mission-step.done{border-color:#9bd5c9;background:#f7fcfa}
 .mission-step.done .step-title>span{background:#dff5eb;color:var(--teal)}
-.mission-step.done .complete-step{background:#dff5eb;color:var(--teal);border-color:#9bd5c9}
 .big-actions,.bottom-actions{display:grid;grid-template-columns:1.2fr .8fr}
 .primary,.ghost,.complete-step{min-height:46px;border-radius:6px;font-weight:700}
 .primary{border:0;background:var(--blue);color:#fff}
@@ -100,21 +91,10 @@ button{cursor:pointer}
 .photo-gallery{display:grid;gap:10px;margin:10px 0}
 .photo-item{display:grid;grid-template-columns:82px 1fr;gap:10px}
 .photo-thumb{width:82px;height:82px;border-radius:5px;background:linear-gradient(145deg,#b9ced7,#667c82);position:relative;overflow:hidden}
-.photo-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 .demo-arrow{position:absolute;left:17px;top:23px;color:#f04438;font-size:2rem;transform:rotate(-20deg)}
 .photo-actions{display:flex;gap:12px;margin-top:6px}
 .photo-actions button{border:0;background:transparent;color:var(--muted);padding:2px 0;font-size:.78rem}
 .photo-actions .annotate-button{color:var(--blue);font-weight:700}
-.compact-step{padding:12px}
-.compact-step .step-title{margin-bottom:10px}
-.compact-step .step-title p{margin-top:2px}
-.compact-step .equipment-grid{display:grid;gap:6px}
-.compact-step .equipment-row{display:grid;grid-template-columns:minmax(0,1fr) 58px 58px;gap:6px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:6px;background:#fafbfc}
-.compact-step .equipment-row.binary{grid-template-columns:minmax(0,1fr) 84px}
-.compact-step .equipment-row span{font-size:.88rem;line-height:1.1}
-.compact-step .equipment-row input,.compact-step .equipment-row select{min-height:34px;padding:6px 7px;font-size:.84rem;text-align:center}
-.compact-step label{margin-top:10px}
-.compact-step textarea{min-height:70px}
 label{display:grid;gap:7px;margin-top:13px;font-weight:700;font-size:.9rem}
 input,select,textarea{width:100%;min-height:46px;padding:10px 11px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
 textarea{resize:vertical}
