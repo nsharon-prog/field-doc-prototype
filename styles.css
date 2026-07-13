@@ -126,6 +126,7 @@ textarea{resize:vertical}
 .editor-tools{display:grid;grid-template-columns:repeat(4,1fr);padding:10px}
 .editor-tools button{border:0;background:#fff;display:grid;gap:5px;place-items:center;color:var(--muted)}
 .editor-tools b{font-size:1.5rem;color:var(--ink)}
+.editor-caption{display:grid;gap:7px;padding:0 14px 10px;font-weight:700}
 .editor>p{margin:0;padding:2px 14px 18px;text-align:center;color:var(--muted);font-size:.8rem}
 .review-dialog{padding:18px 14px 22px;border-radius:12px 12px 0 0}
 .review-dialog p{margin:7px 0 14px;color:var(--muted);line-height:1.4}

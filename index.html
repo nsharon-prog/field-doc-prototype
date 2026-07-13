@@ -357,6 +357,8 @@
     </nav>
   </div>
 
+  <input id="photoInput" type="file" accept="image/*" capture="environment" hidden>
+
   <div class="editor-overlay" id="photoEditor" hidden>
     <div class="editor">
       <header>
@@ -375,6 +377,9 @@
         <button type="button"><b>א</b>טקסט</button>
         <button type="button"><b>↶</b>ביטול</button>
       </div>
+      <label class="editor-caption">כיתוב לתמונה
+        <input id="editorCaption" placeholder="מה צריך לראות כאן?">
+      </label>
       <p>בגרסה הזו זה דמה, אבל זה ממחיש את זרימת סימון התמונה.</p>
     </div>
   </div>

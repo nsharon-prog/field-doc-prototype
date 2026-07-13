@@ -26,6 +26,11 @@ const missionPlans = {
 
 let currentType = "cluster";
 let selectedNewType = "";
+let activePhotoTarget = null;
+let activePhotoInput = null;
+let photoEditor = null;
+let editorCaption = null;
+const photoCache = new Map();
 
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -235,33 +240,49 @@ document.addEventListener("click", (event) => {
   }
 
   if (button.classList.contains("add-photo")) {
-    const step = button.closest(".mission-step");
-    const gallery = step.querySelector(".photo-gallery");
-    const item = document.createElement("div");
-    item.className = "photo-item";
-    item.innerHTML = `
-      <div class="photo-thumb"><span class="demo-arrow">➜</span></div>
-      <div>
-        <input placeholder="מה רואים בתמונה?">
-        <div class="photo-actions">
-          <button class="annotate-button" type="button">עריכת תמונה</button>
-          <button class="remove-photo" type="button">מחיקה</button>
-        </div>
-      </div>`;
-    gallery.appendChild(item);
-    selectedPhotoTarget = item;
+    activePhotoTarget = button.closest(".mission-step").querySelector(".photo-gallery");
+    activePhotoInput = document.getElementById("photoInput");
+    activePhotoInput.value = "";
+    activePhotoInput.click();
     return;
   }
 
   if (button.classList.contains("annotate-button")) {
-    document.getElementById("photoEditor").hidden = false;
-    selectedPhotoTarget = button.closest(".photo-item");
+    photoEditor.hidden = false;
+    activePhotoTarget = button.closest(".photo-item");
+    const captionInput = activePhotoTarget.querySelector("input[type='text']");
+    editorCaption.value = captionInput ? captionInput.value : "";
     return;
   }
 
   if (button.classList.contains("remove-photo")) {
     button.closest(".photo-item").remove();
   }
+});
+
+document.getElementById("photoInput").addEventListener("change", async (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (!file || !activePhotoTarget) return;
+  const compressed = await compressPhotoFile(file);
+  const item = document.createElement("div");
+  item.className = "photo-item";
+  item.innerHTML = `
+    <div class="photo-thumb"><img alt="" class="photo-preview" src="${compressed.dataUrl}"></div>
+    <div>
+      <input type="text" placeholder="מה רואים בתמונה?" value="">
+      <div class="photo-actions">
+        <button class="annotate-button" type="button">עריכת תמונה</button>
+        <button class="remove-photo" type="button">מחיקה</button>
+      </div>
+    </div>`;
+  item.dataset.fileName = compressed.fileName;
+  item.dataset.base64 = compressed.base64;
+  item.dataset.width = String(compressed.width);
+  item.dataset.height = String(compressed.height);
+  item.dataset.bytes = String(compressed.bytes);
+  activePhotoTarget.appendChild(item);
+  photoCache.set(item, compressed);
+  activePhotoTarget = null;
 });
 
 document.querySelectorAll("[data-new-type]").forEach((button) => {
@@ -295,8 +316,45 @@ document.getElementById("closeEditor").addEventListener("click", () => {
   document.getElementById("photoEditor").hidden = true;
 });
 document.getElementById("saveEditor").addEventListener("click", () => {
+  if (activePhotoTarget) {
+    const captionInput = activePhotoTarget.querySelector("input[type='text']");
+    if (captionInput) captionInput.value = editorCaption.value.trim();
+  }
   document.getElementById("photoEditor").hidden = true;
 });
+
+function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, maxWidth / bitmap.width);
+      const width = Math.round(bitmap.width * scale);
+      const height = Math.round(bitmap.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          reject(new Error("Photo compression failed"));
+          return;
+        }
+        const dataUrl = await blobToDataUrl(blob);
+        resolve({
+          dataUrl,
+          base64: dataUrl.split(",")[1],
+          bytes: blob.size,
+          width,
+          height,
+          fileName: file.name.replace(/\.[^.]+$/, "") + "-compressed.jpg",
+          mimeType: "image/jpeg"
+        });
+      }, "image/jpeg", quality);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
 
 renderMission("cluster");
 attachPointLaunchers();
