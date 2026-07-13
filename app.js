@@ -180,6 +180,11 @@ document.getElementById("confirmLocation").addEventListener("click", () => {
 
 document.getElementById("useCurrentLocation").addEventListener("click", () => {
   const status = document.getElementById("actualLocationText");
+  if (!window.isSecureContext) {
+    status.textContent = "מיקום עובד רק בחיבור מאובטח (https).";
+    status.className = "location-error";
+    return;
+  }
   if (!navigator.geolocation) {
     status.textContent = "הדפדפן לא תומך במיקום";
     status.className = "location-error";
@@ -263,11 +268,11 @@ document.addEventListener("click", (event) => {
 document.getElementById("photoInput").addEventListener("change", async (event) => {
   const file = event.target.files && event.target.files[0];
   if (!file || !activePhotoTarget) return;
-  const compressed = await compressPhotoFile(file);
+  const previewUrl = URL.createObjectURL(file);
   const item = document.createElement("div");
   item.className = "photo-item";
   item.innerHTML = `
-    <div class="photo-thumb"><img alt="" class="photo-preview" src="${compressed.dataUrl}"></div>
+    <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
     <div>
       <input type="text" placeholder="מה רואים בתמונה?" value="">
       <div class="photo-actions">
@@ -275,13 +280,23 @@ document.getElementById("photoInput").addEventListener("change", async (event) =
         <button class="remove-photo" type="button">מחיקה</button>
       </div>
     </div>`;
-  item.dataset.fileName = compressed.fileName;
-  item.dataset.base64 = compressed.base64;
-  item.dataset.width = String(compressed.width);
-  item.dataset.height = String(compressed.height);
-  item.dataset.bytes = String(compressed.bytes);
   activePhotoTarget.appendChild(item);
-  photoCache.set(item, compressed);
+  try {
+    const compressed = await compressPhotoFile(file);
+    item.dataset.fileName = compressed.fileName;
+    item.dataset.base64 = compressed.base64;
+    item.dataset.width = String(compressed.width);
+    item.dataset.height = String(compressed.height);
+    item.dataset.bytes = String(compressed.bytes);
+    photoCache.set(item, compressed);
+  } catch (error) {
+    item.dataset.fileName = file.name;
+    item.dataset.base64 = "";
+    item.dataset.bytes = "0";
+    photoCache.set(item, { error: String(error) });
+  } finally {
+    URL.revokeObjectURL(previewUrl);
+  }
   activePhotoTarget = null;
 });
 
