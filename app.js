@@ -150,6 +150,14 @@ function attachPointLaunchers() {
   });
 }
 
+document.addEventListener("click", (event) => {
+  const card = event.target.closest(".my-point, .point-card");
+  if (!card) return;
+  if (event.target.closest("button, input, select, textarea, a")) return;
+  setActivePoint(card);
+  showScreen("document");
+});
+
 document.getElementById("enterApp").addEventListener("click", () => {
   const merhav = document.getElementById("loginMerhav").value;
   const user = document.getElementById("loginUser").value;
