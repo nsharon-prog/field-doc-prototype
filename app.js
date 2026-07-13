@@ -110,6 +110,16 @@ function setActivePoint(card) {
   renderMission(type);
 }
 
+function openPointCard(card, allowConfirm) {
+  if (!card) return;
+  if (allowConfirm && card.classList.contains("point-card")) {
+    const ok = confirm(`לקחת את ${card.dataset.number}? הנקודה תישמר עבורך ל-10 שעות.`);
+    if (!ok) return;
+  }
+  setActivePoint(card);
+  showScreen("document");
+}
+
 function collectMissingItems() {
   const items = [];
   document.querySelectorAll("#documentScreen .mission-step").forEach((step) => {
@@ -140,12 +150,7 @@ function attachPointLaunchers() {
   document.querySelectorAll(".continue-assignment, .take-button, .point-open").forEach((button) => {
     button.addEventListener("click", () => {
       const card = button.closest("[data-type]");
-      if (button.classList.contains("take-button")) {
-        const ok = confirm(`לקחת את ${card.dataset.number}? הנקודה תישמר עבורך ל-10 שעות.`);
-        if (!ok) return;
-      }
-      setActivePoint(card);
-      showScreen("document");
+      openPointCard(card, button.classList.contains("take-button"));
     });
   });
 }
@@ -154,8 +159,7 @@ document.addEventListener("click", (event) => {
   const card = event.target.closest(".my-point, .point-card");
   if (!card) return;
   if (event.target.closest("button, input, select, textarea, a")) return;
-  setActivePoint(card);
-  showScreen("document");
+  openPointCard(card, false);
 });
 
 document.getElementById("enterApp").addEventListener("click", () => {
