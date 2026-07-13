@@ -265,10 +265,10 @@ document.addEventListener("click", (event) => {
   }
 
   if (button.classList.contains("annotate-button")) {
-    photoEditor.hidden = false;
+    document.getElementById("photoEditor").hidden = false;
     activePhotoTarget = button.closest(".photo-item");
     const captionInput = activePhotoTarget.querySelector("input[type='text']");
-    editorCaption.value = captionInput ? captionInput.value : "";
+    document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
     return;
   }
 
@@ -347,6 +347,7 @@ document.getElementById("closeEditor").addEventListener("click", () => {
 document.getElementById("saveEditor").addEventListener("click", () => {
   if (activePhotoTarget) {
     const captionInput = activePhotoTarget.querySelector("input[type='text']");
+    const editorCaption = document.getElementById("editorCaption");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
   document.getElementById("photoEditor").hidden = true;
