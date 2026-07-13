@@ -32,6 +32,12 @@ let photoEditor = null;
 let editorCaption = null;
 const photoCache = new Map();
 
+function getPhotoEditor() {
+  if (!photoEditor) photoEditor = document.getElementById("photoEditor");
+  if (!editorCaption) editorCaption = document.getElementById("editorCaption");
+  return photoEditor;
+}
+
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
   screens[name].classList.add("active");
@@ -172,6 +178,15 @@ document.addEventListener("pointerup", (event) => {
   openPointCard(card, false);
 });
 
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(".continue-assignment, .take-button, .point-open");
+  if (!button) return;
+  event.preventDefault();
+  event.stopPropagation();
+  const card = button.closest("[data-type]");
+  openPointCard(card, button.classList.contains("take-button"));
+}, true);
+
 document.getElementById("enterApp").addEventListener("click", () => {
   const merhav = document.getElementById("loginMerhav").value;
   const user = document.getElementById("loginUser").value;
@@ -285,8 +300,8 @@ document.addEventListener("click", (event) => {
   }
 
   if (button.classList.contains("annotate-button")) {
-    photoEditor.hidden = false;
     activePhotoTarget = button.closest(".photo-item");
+    getPhotoEditor().hidden = false;
     const captionInput = activePhotoTarget.querySelector("input[type='text']");
     editorCaption.value = captionInput ? captionInput.value : "";
     return;
@@ -350,14 +365,15 @@ document.getElementById("newPointForm").addEventListener("submit", (event) => {
 });
 
 document.getElementById("closeEditor").addEventListener("click", () => {
-  document.getElementById("photoEditor").hidden = true;
+  getPhotoEditor().hidden = true;
 });
 document.getElementById("saveEditor").addEventListener("click", () => {
+  if (!editorCaption) editorCaption = document.getElementById("editorCaption");
   if (activePhotoTarget) {
     const captionInput = activePhotoTarget.querySelector("input[type='text']");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
-  document.getElementById("photoEditor").hidden = true;
+  getPhotoEditor().hidden = true;
 });
 
 function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
