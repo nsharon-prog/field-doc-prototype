@@ -28,6 +28,7 @@ let currentType = "cluster";
 let selectedNewType = "";
 let activePhotoTarget = null;
 let activePhotoInput = null;
+let pendingPhotoItem = null;
 let photoEditor = null;
 let editorCaption = null;
 const photoCache = new Map();
@@ -248,6 +249,17 @@ document.addEventListener("click", (event) => {
     activePhotoTarget = button.closest(".mission-step").querySelector(".photo-gallery");
     activePhotoInput = document.getElementById("photoInput");
     activePhotoInput.value = "";
+    pendingPhotoItem = document.createElement("div");
+    pendingPhotoItem.className = "photo-item pending-photo";
+    pendingPhotoItem.innerHTML = `
+      <div class="photo-thumb photo-placeholder"></div>
+      <div>
+        <strong>ממתין לתמונה...</strong>
+        <div class="photo-actions">
+          <button class="remove-photo" type="button">מחיקה</button>
+        </div>
+      </div>`;
+    activePhotoTarget.appendChild(pendingPhotoItem);
     activePhotoInput.click();
     return;
   }
@@ -267,9 +279,10 @@ document.addEventListener("click", (event) => {
 
 document.getElementById("photoInput").addEventListener("change", async (event) => {
   const file = event.target.files && event.target.files[0];
-  if (!file || !activePhotoTarget) return;
+  const target = activePhotoTarget || (pendingPhotoItem && pendingPhotoItem.parentElement);
+  if (!file || !target) return;
   const previewUrl = URL.createObjectURL(file);
-  const item = document.createElement("div");
+  const item = pendingPhotoItem || document.createElement("div");
   item.className = "photo-item";
   item.innerHTML = `
     <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
@@ -280,7 +293,7 @@ document.getElementById("photoInput").addEventListener("change", async (event) =
         <button class="remove-photo" type="button">מחיקה</button>
       </div>
     </div>`;
-  activePhotoTarget.appendChild(item);
+  if (!item.parentElement) target.appendChild(item);
   try {
     const compressed = await compressPhotoFile(file);
     item.dataset.fileName = compressed.fileName;
@@ -298,6 +311,7 @@ document.getElementById("photoInput").addEventListener("change", async (event) =
     URL.revokeObjectURL(previewUrl);
   }
   activePhotoTarget = null;
+  pendingPhotoItem = null;
 });
 
 document.querySelectorAll("[data-new-type]").forEach((button) => {
