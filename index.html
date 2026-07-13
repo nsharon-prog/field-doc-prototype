@@ -161,17 +161,6 @@
             <a href="#" target="_blank" rel="noopener">Waze</a>
             <a href="#" target="_blank" rel="noopener">Google Maps</a>
           </div>
-          <div class="location-card">
-            <div>
-              <small>מיקום מתוכנן</small>
-              <strong id="plannedLocationText">לפי מוביל הצוות</strong>
-            </div>
-            <p id="actualLocationText">עדיין לא אומת מהמכשיר</p>
-            <div class="location-actions">
-              <button id="confirmLocation" type="button">המיקום נכון</button>
-              <button id="useCurrentLocation" type="button">עדכנו למיקום הנוכחי</button>
-            </div>
-          </div>
           <div class="section-hint">קודם הגעה וניווט, אחר כך שדות, תמונות והערות.</div>
         </div>
 
@@ -205,6 +194,27 @@
               <textarea rows="2" placeholder="מה צריך לדעת?"></textarea>
             </label>
             <button class="add-photo" type="button">צילום הבעיה</button>
+          </div>
+        </section>
+
+        <section class="mission-step location-step">
+          <div class="step-title">
+            <span>2</span>
+            <div>
+              <h2>מיקום מתוכנן מול מיקום נוכחי</h2>
+              <p>אחרי ההגעה, מאשרים את המקום או מתקנים אותו לפי ה-GPS של המכשיר.</p>
+            </div>
+          </div>
+          <div class="location-card">
+            <div>
+              <small>מיקום מתוכנן</small>
+              <strong id="plannedLocationText">לפי מוביל הצוות</strong>
+            </div>
+            <p id="actualLocationText">עדיין לא אומת מהמכשיר</p>
+            <div class="location-actions">
+              <button id="confirmLocation" type="button">המיקום נכון</button>
+              <button id="useCurrentLocation" type="button">עדכנו למיקום הנוכחי</button>
+            </div>
           </div>
         </section>
 

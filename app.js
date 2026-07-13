@@ -41,7 +41,7 @@ function renderMission(type) {
   target.innerHTML = steps.map((step, index) => `
     <section class="mission-step field-step">
       <div class="step-title">
-        <span>${index + 2}</span>
+        <span>${index + 3}</span>
         <div>
           <h2>${step.title}</h2>
           <p>${step.help}</p>
@@ -59,9 +59,9 @@ function renderMission(type) {
     </section>
   `).join("");
 
-  document.getElementById("logisticsStepNumber").textContent = steps.length + 2;
-  document.getElementById("equipmentStepNumber").textContent = steps.length + 3;
-  document.getElementById("reviewStepNumber").textContent = steps.length + 4;
+  document.getElementById("logisticsStepNumber").textContent = steps.length + 3;
+  document.getElementById("equipmentStepNumber").textContent = steps.length + 4;
+  document.getElementById("reviewStepNumber").textContent = steps.length + 5;
   updateProgress();
 }
 
