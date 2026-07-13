@@ -29,6 +29,7 @@ let selectedNewType = "";
 let activePhotoTarget = null;
 let activePhotoInput = null;
 let pendingPhotoItem = null;
+let activePhotoEditorItem = null;
 let photoEditor = null;
 let editorCaption = null;
 const photoCache = new Map();
@@ -265,9 +266,14 @@ document.addEventListener("click", (event) => {
   }
 
   if (button.classList.contains("annotate-button")) {
-    document.getElementById("photoEditor").hidden = false;
-    activePhotoTarget = button.closest(".photo-item");
-    const captionInput = activePhotoTarget.querySelector("input[type='text']");
+    const item = button.closest(".photo-item");
+    const editor = document.getElementById("photoEditor");
+    const editorPhoto = document.querySelector(".editor-photo");
+    const captionInput = item.querySelector("input[type='text']");
+    const preview = item.querySelector(".photo-preview");
+    activePhotoEditorItem = item;
+    editor.hidden = false;
+    editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
     return;
   }
@@ -342,15 +348,19 @@ document.getElementById("newPointForm").addEventListener("submit", (event) => {
 });
 
 document.getElementById("closeEditor").addEventListener("click", () => {
+  document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
+  activePhotoEditorItem = null;
 });
 document.getElementById("saveEditor").addEventListener("click", () => {
-  if (activePhotoTarget) {
-    const captionInput = activePhotoTarget.querySelector("input[type='text']");
+  if (activePhotoEditorItem) {
+    const captionInput = activePhotoEditorItem.querySelector("input[type='text']");
     const editorCaption = document.getElementById("editorCaption");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
+  document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
+  activePhotoEditorItem = null;
 });
 
 function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
