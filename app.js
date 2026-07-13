@@ -148,14 +148,17 @@ function openSubmitDecision() {
 
 function attachPointLaunchers() {
   document.querySelectorAll(".continue-assignment, .take-button, .point-open").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.style.touchAction = "manipulation";
+    button.onclick = () => {
       const card = button.closest("[data-type]");
       openPointCard(card, button.classList.contains("take-button"));
-    });
+    };
   });
 }
 
-document.addEventListener("click", (event) => {
+window.__openPointCard = openPointCard;
+
+document.addEventListener("pointerup", (event) => {
   const card = event.target.closest(".my-point, .point-card");
   if (!card) return;
   if (event.target.closest("button, input, select, textarea, a")) return;
