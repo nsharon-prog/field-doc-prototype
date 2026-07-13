@@ -137,8 +137,23 @@ function attachPointLaunchers() {
 }
 
 document.getElementById("enterApp").addEventListener("click", () => {
+  const merhav = document.getElementById("loginMerhav").value;
   const user = document.getElementById("loginUser").value;
+  const password = document.getElementById("loginPassword").value.trim();
+  if (!merhav || !user) {
+    alert("צריך לבחור מרחב ומשתמש");
+    return;
+  }
+  if (!password) {
+    alert("צריך להזין סיסמה");
+    return;
+  }
+  if (password.length < 4) {
+    alert("הסיסמה קצרה מדי");
+    return;
+  }
   document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
+  document.getElementById("welcomeLine").dataset.merhav = merhav;
   showScreen("queue");
 });
 
