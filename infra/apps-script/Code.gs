@@ -2,7 +2,6 @@ const FIELD_DOC_APP = {
   properties: PropertiesService.getScriptProperties(),
   sheetNames: ["Settings", "Districts", "Merhavim", "Settlements", "Teams", "Users", "Points", "Photos", "StatusHistory", "InfraTests"]
 };
-const SOURCE_HIERARCHY_SPREADSHEET_ID = "1F4vHhLNe6OPpEyZRzSaNd9hIJn4xHr4e-NdF1ECEGtU";
 
 function doGet(event) {
   const action = (event.parameter.action || "health").toLowerCase();
@@ -230,7 +229,12 @@ function seedHierarchy_(spreadsheet) {
 
 function syncHierarchyFromSource_(spreadsheet) {
   try {
-    const source = SpreadsheetApp.openById(SOURCE_HIERARCHY_SPREADSHEET_ID);
+    const sourceSpreadsheetId = FIELD_DOC_APP.properties.getProperty("HIERARCHY_SOURCE_SPREADSHEET_ID");
+    if (!sourceSpreadsheetId) {
+      Logger.log("Hierarchy source spreadsheet ID is not configured.");
+      return;
+    }
+    const source = SpreadsheetApp.openById(sourceSpreadsheetId);
     const sheet = source.getSheets()[0];
     const values = sheet.getDataRange().getValues();
     if (values.length < 2) return;

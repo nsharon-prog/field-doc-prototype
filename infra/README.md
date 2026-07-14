@@ -32,6 +32,12 @@ Do not share the password with Codex. The safe process is:
 4. You run `setupWorkspace_` or deploy the web app and POST `{ "action": "setup" }`.
 5. You approve Google permissions yourself.
 
+Set the hierarchy source spreadsheet ID in Apps Script Script Properties:
+
+- `HIERARCHY_SOURCE_SPREADSHEET_ID`
+
+Use the source sheet that contains the real `מרחב` and `יישוב` lists.
+
 ## Manual Setup Steps
 
 1. In Google Drive under `nsharon@democrats.org.il`, create a new Apps Script project.
