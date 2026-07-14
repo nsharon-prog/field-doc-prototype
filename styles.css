@@ -102,6 +102,12 @@ button{cursor:pointer}
 .photo-actions .annotate-button{color:var(--blue);font-weight:700}
 label{display:grid;gap:7px;margin-top:13px;font-weight:700;font-size:.9rem}
 input,select,textarea{width:100%;min-height:46px;padding:10px 11px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+.equipment-grid{display:grid;gap:8px}
+.equipment-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:8px;align-items:center}
+.equipment-row span{font-size:.8rem;font-weight:700;color:var(--ink)}
+.equipment-row input,.equipment-row select{min-height:38px;padding:7px 8px;font-size:.85rem}
+.equipment-row.binary{grid-template-columns:minmax(0,1fr) 84px}
+.equipment-row.binary select{min-width:84px}
 textarea{resize:vertical}
 .type-choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .type-choice button{min-height:70px;border:1px solid var(--line);border-radius:7px;background:#fff;display:grid;place-content:center;gap:7px}
@@ -125,13 +131,13 @@ textarea{resize:vertical}
 .editor header button{border:0;background:transparent;font-size:1.1rem}
 .editor header button:last-child{color:var(--blue);font-weight:700}
 .editor-canvas{position:relative;height:390px;background:#394b52;overflow:hidden}
-.editor-photo{position:absolute;inset:30px 12px;background:linear-gradient(150deg,#bed1d7,#657b82);border-radius:4px}
-.editor-mark{position:absolute;min-width:38px;min-height:38px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.92);border:2px solid #1769e0;color:#1769e0;font-weight:700;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:2}
+.editor-photo{position:absolute;inset:30px 12px;background:linear-gradient(150deg,#bed1d7,#657b82);border-radius:4px;overflow:hidden;touch-action:none}
+.editor-mark{position:absolute;min-width:38px;min-height:38px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.92);border:2px solid #1769e0;color:#1769e0;font-weight:700;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:2;touch-action:none;cursor:move;user-select:none}
 .editor-mark.circle{font-size:1.25rem;line-height:1}
 .editor-mark.arrow{font-size:1.2rem;line-height:1}
-.editor-mark.text{border-radius:6px;min-width:58px}
-.canvas-arrow{position:absolute;left:32%;top:42%;font-size:4rem;color:#f04438;transform:rotate(-18deg)}
-.canvas-label{position:absolute;left:50%;top:30%;padding:6px 10px;border-radius:4px;background:#f5c84c;color:#17202a;font-weight:700}
+.editor-mark.text{border-radius:6px;min-width:58px;cursor:text;user-select:text}
+.editor-mark.dragging{opacity:.85;transform:scale(1.02)}
+.canvas-arrow,.canvas-label{display:none}
 .editor-tools{display:grid;grid-template-columns:repeat(4,1fr);padding:10px}
 .editor-tools button{border:0;background:#fff;display:grid;gap:5px;place-items:center;color:var(--muted)}
 .editor-tools b{font-size:1.5rem;color:var(--ink)}
