@@ -1,4 +1,4 @@
-﻿const screens = {
+const screens = {
   login: document.getElementById("loginScreen"),
   queue: document.getElementById("queueScreen"),
   document: document.getElementById("documentScreen"),
@@ -8,19 +8,19 @@
 
 const missionPlans = {
   cluster: [
-    { title: "×¦×™×œ×•× ×”×›× ×™×¡×”", help: "×ª×ž×•× ×” ×¨×—×‘×” ×©×œ ×”×ž×§×•× ×ž×”×¦×“ ×©×œ ×”×”×’×¢×”.", photo: "×¦×™×œ×•× ×›× ×™×¡×”", control: `<select><option>×›×Ÿ, ×‘×¨×•×¨</option><option>×¦×¨×™×š ×¦×™×œ×•× × ×•×¡×£</option><option>×¢×“×™×™×Ÿ ×œ× ×‘×¨×•×¨</option></select>` },
-    { title: "×ž×™×§×•× ×“×•×›×Ÿ ×¦×¤×•×™", help: "××™×¤×” ×”×“×•×›×Ÿ ××ž×•×¨ ×œ×¢×ž×•×“ ×‘×¤×•×¢×œ.", photo: "×¦×™×œ×•× ×ž×™×§×•× ×“×•×›×Ÿ", control: `<input inputmode="decimal" placeholder="×›×ž×” ×ž×˜×¨×™×?">` },
-    { title: "×”×¢×¨×•×ª ×¢×œ ×¡×‘×™×‘×ª ×”×ž×§×•×", help: "×ž×” ×—×©×•×‘ ×©×”×¦×•×•×ª ×™×“×¢ ×œ×¤× ×™ ×”×’×¢×”.", photo: "×¦×™×œ×•× × ×•×¡×£ ×× ×¦×¨×™×š", control: `<textarea rows="3" placeholder="×’×™×©×”, ×ž×“×¨×’×•×ª, ×’×™×©×” ×œ×¨×›×‘, ×× ×©×™×, ×—×¡×™×ž×•×ª..."></textarea>` }
+    { title: "צילום הכניסה", help: "תמונה רחבה של המקום מהצד של ההגעה.", photo: "צילום כניסה", control: `<select><option>כן, ברור</option><option>צריך צילום נוסף</option><option>עדיין לא ברור</option></select>` },
+    { title: "מיקום דוכן צפוי", help: "איפה הדוכן אמור לעמוד בפועל.", photo: "צילום מיקום דוכן", control: `<input inputmode="decimal" placeholder="כמה מטרים?">` },
+    { title: "הערות על סביבת המקום", help: "מה חשוב שהצוות ידע לפני הגעה.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="גישה, מדרגות, גישה לרכב, אנשים, חסימות..."></textarea>` }
   ],
   signage: [
-    { title: "×¦×™×œ×•× ×ž×¨×—×•×§", help: "××™×š ×”×ž×§×•× × ×¨××” ×ž×¨×—×•×§.", photo: "×¦×™×œ×•× ×¨×—×•×§", control: `<select><option>×¦×œ× ×ž×¨×—×•×§</option><option>×¦×¨×™×š ×¢×•×“ ×ª×ž×•× ×”</option></select>` },
-    { title: "×¦×™×œ×•× ×ž×§×¨×•×‘", help: "×”×ž×§×•× ×©×‘×• ×™×™×ª×œ×” ×”×©×œ×˜.", photo: "×¦×™×œ×•× ×§×¨×•×‘", control: `<textarea rows="2" placeholder="×ž×” × ×“×¨×© ×œ×ª×œ×™×™×”?"></textarea>` },
-    { title: "×ž×“×™×“×•×ª ×•×”×¢×¨×•×ª", help: "×¨×•×—×‘, ×’×•×‘×”, ×—×•×ž×¨×™×, ×¡×™×›×•×Ÿ ×œ× ×–×§.", photo: "×¦×™×œ×•× ×¢× ×¡×™×ž×•×Ÿ", control: `<textarea rows="3" placeholder="×¨×•×—×‘, ×’×•×‘×”, ×¦×™×•×“, ×—× ×™×”, ×©×¤×” ×ž×™×•×—×“×ª..."></textarea>` }
+    { title: "צילום מרחוק", help: "איך המקום נראה מרחוק.", photo: "צילום רחוק", control: `<select><option>צלם מרחוק</option><option>צריך עוד תמונה</option></select>` },
+    { title: "צילום מקרוב", help: "המקום שבו ייתלה השלט.", photo: "צילום קרוב", control: `<textarea rows="2" placeholder="מה נדרש לתלייה?"></textarea>` },
+    { title: "מדידות והערות", help: "רוחב, גובה, חומרים, סיכון לנזק.", photo: "צילום עם סימון", control: `<textarea rows="3" placeholder="רוחב, גובה, ציוד, חניה, שפה מיוחדת..."></textarea>` }
   ],
   booth: [
-    { title: "×¦×™×œ×•× ×”×ž×§×•×", help: "××™×š ×”×ž×§×•× × ×¨××” ×•×ž×™ ×¢×•×‘×¨ ×‘×•.", photo: "×¦×™×œ×•× ×ž×§×•×", control: `<select><option>×¦×¤×•×£ ×•×ž×ª××™×</option><option>×¡×‘×™×¨</option><option>×“×•×¨×© ×‘×“×™×§×”</option></select>` },
-    { title: "×©×¢×•×ª ×ž×•×ž×œ×¦×•×ª", help: "×ž×ª×™ ×›×“××™ ×œ×”×’×™×¢ ×•××™×š ×œ×¤×¨×•×¡.", photo: "×¦×™×œ×•× ×¢× ×¡×™×ž×•×Ÿ", control: `<textarea rows="2" placeholder="×ž×ª×™ ×›×Ÿ ×•×ž×ª×™ ×œ×?"></textarea>` },
-    { title: "×”×¢×¨×•×ª ×¢×œ ×ª× ×•×¢×” ×•×¦×™×•×“", help: "×ž×ž×” ×œ×”×™×–×”×¨ ×•×ž×” ×œ×”×‘×™×.", photo: "×¦×™×œ×•× × ×•×¡×£ ×× ×¦×¨×™×š", control: `<textarea rows="3" placeholder="×¦×™×•×“, ×¦×¤×™×¤×•×ª, ×¡×™×›×•× ×™×, ×—× ×™×”..."></textarea>` }
+    { title: "צילום המקום", help: "איך המקום נראה ומי עובר בו.", photo: "צילום מקום", control: `<select><option>צפוף ומתאים</option><option>סביר</option><option>דורש בדיקה</option></select>` },
+    { title: "שעות מומלצות", help: "מתי כדאי להגיע ואיך לפרוס.", photo: "צילום עם סימון", control: `<textarea rows="2" placeholder="מתי כן ומתי לא?"></textarea>` },
+    { title: "הערות על תנועה וציוד", help: "ממה להיזהר ומה להביא.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="ציוד, צפיפות, סיכונים, חניה..."></textarea>` }
   ]
 };
 
@@ -32,44 +32,15 @@ let pendingPhotoItem = null;
 let activePhotoEditorItem = null;
 let photoEditor = null;
 let editorCaption = null;
-let editorMode = null;
 const photoCache = new Map();
+const buildInfo = {
+  version: "e42de3d",
+  updatedAt: "2026-07-14 11:37:09 IL"
+};
 
-function markLocationStepDone() {
-  const step = document.querySelector(".location-step");
-  if (!step) return;
-  step.classList.add("done");
-  let state = step.querySelector(".step-state");
-  if (!state) {
-    state = document.createElement("div");
-    state.className = "step-state done-state";
-    const anchor = step.querySelector(".step-title");
-    anchor?.insertAdjacentElement("afterend", state);
-  }
-  state.className = "step-state done-state";
-  state.textContent = "×‘×•×¦×¢";
-}
-
-function setEditorMark(type, x, y, text = "") {
-  const canvas = document.querySelector(".editor-canvas");
-  if (!canvas) return;
-  const mark = document.createElement("span");
-  mark.className = `editor-mark ${type}`;
-  mark.style.left = `${x}px`;
-  mark.style.top = `${y}px`;
-  if (type === "text") mark.textContent = text || "טקסט";
-  canvas.appendChild(mark);
-}
-
-function resetEditorCanvas() {
-  const canvas = document.querySelector(".editor-canvas");
-  const editorPhoto = document.querySelector(".editor-photo");
-  if (canvas) {
-    canvas.querySelectorAll(".editor-mark").forEach((mark) => mark.remove());
-  }
-  if (editorPhoto) {
-    editorPhoto.style.background = "#394b52";
-  }
+const buildStamp = document.getElementById("buildStamp");
+if (buildStamp) {
+  buildStamp.textContent = `Version: ${buildInfo.version} · Last updated: ${buildInfo.updatedAt}`;
 }
 
 function showScreen(name) {
@@ -93,14 +64,14 @@ function renderMission(type) {
         </div>
       </div>
       <div class="photo-line">
-        <button class="add-photo" type="button">ðŸ“· ${step.photo}</button>
-        <small>××¤×©×¨ ×œ×”×•×¡×™×£ ×™×•×ª×¨ ×ž×ª×ž×•× ×” ××—×ª</small>
+        <button class="add-photo" type="button">📷 ${step.photo}</button>
+        <small>אפשר להוסיף יותר מתמונה אחת</small>
       </div>
       <div class="photo-gallery"></div>
-      <label>×¤×¨×˜×™ ×”×©×œ×‘
+      <label>פרטי השלב
         ${step.control}
       </label>
-      <button class="complete-step" type="button">×¡×™×™×ž×ª×™ ×©×œ×‘ ×–×”</button>
+      <button class="complete-step" type="button">סיימתי שלב זה</button>
     </section>
   `).join("");
 
@@ -113,7 +84,7 @@ function renderMission(type) {
 function updateProgress() {
   const total = document.querySelectorAll("#documentScreen .complete-step").length;
   const done = document.querySelectorAll("#documentScreen .mission-step.done").length;
-  document.getElementById("progressText").textContent = `${done} ×ž×ª×•×š ${total}`;
+  document.getElementById("progressText").textContent = `${done} מתוך ${total}`;
   document.getElementById("progressBar").style.width = `${Math.min(100, total ? (done / total) * 100 : 0)}%`;
 }
 
@@ -125,13 +96,13 @@ function setActivePoint(card) {
   document.getElementById("documentPointNumber").textContent = card.dataset.number || "";
   document.getElementById("documentPointName").textContent = card.dataset.name || "";
   document.getElementById("documentPointAddress").textContent = card.dataset.address || "";
-  document.getElementById("submittedPointName").textContent = `${card.dataset.number || ""} Â· ${card.dataset.name || ""}`;
-  document.getElementById("plannedLocationText").textContent = card.dataset.address || "×œ×¤×™ ×ž×•×‘×™×œ ×”×¦×•×•×ª";
+  document.getElementById("submittedPointName").textContent = `${card.dataset.number || ""} · ${card.dataset.name || ""}`;
+  document.getElementById("plannedLocationText").textContent = card.dataset.address || "לפי מוביל הצוות";
   const actual = document.getElementById("actualLocationText");
-  actual.textContent = "×¢×“×™×™×Ÿ ×œ× ××•×ž×ª ×ž×”×ž×›×©×™×¨";
+  actual.textContent = "עדיין לא אומת מהמכשיר";
   actual.className = "";
 
-  const query = encodeURIComponent((card.dataset.address || "").replace("Â·", " "));
+  const query = encodeURIComponent((card.dataset.address || "").replace("·", " "));
   const navLinks = document.querySelectorAll(".nav-actions a");
   navLinks[0].href = `https://www.waze.com/ul?q=${query}`;
   navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
@@ -144,16 +115,16 @@ function setActivePoint(card) {
 function collectMissingItems() {
   const items = [];
   document.querySelectorAll("#documentScreen .mission-step").forEach((step) => {
-    const title = step.querySelector("h2")?.textContent || "×©×œ×‘";
+    const title = step.querySelector("h2")?.textContent || "שלב";
     if (!step.classList.contains("done")) {
-      items.push(`×œ× ×¡×•×ž×Ÿ ×©×”×•×©×œ×: "${title}"`);
+      items.push(`לא סומן שהושלם: "${title}"`);
     }
     if (step.classList.contains("field-step") && step.querySelectorAll(".photo-item").length === 0) {
-      items.push(`××™×Ÿ ×ª×ž×•× ×” ×‘-"${title}"`);
+      items.push(`אין תמונה ב-"${title}"`);
     }
   });
   if (!document.getElementById("actualLocationText").classList.contains("location-ok")) {
-    items.push("×”×ž×™×§×•× ×¢×“×™×™×Ÿ ×œ× ××•×©×¨");
+    items.push("המיקום עדיין לא אושר");
   }
   return items;
 }
@@ -163,7 +134,7 @@ function openSubmitDecision() {
   const list = document.getElementById("missingList");
   list.innerHTML = missing.length
     ? missing.map((item) => `<span>${item}</span>`).join("")
-    : `<span class="all-good">××™×Ÿ ×—×•×¡×¨×™× ×‘×•×œ×˜×™×</span>`;
+    : `<span class="all-good">אין חוסרים בולטים</span>`;
   document.getElementById("submitDecision").hidden = false;
 }
 
@@ -172,7 +143,7 @@ function attachPointLaunchers() {
     button.addEventListener("click", () => {
       const card = button.closest("[data-type]");
       if (button.classList.contains("take-button")) {
-        const ok = confirm(`×œ×§×—×ª ××ª ${card.dataset.number}? ×”× ×§×•×“×” ×ª×™×©×ž×¨ ×¢×‘×•×¨×š ×œ-10 ×©×¢×•×ª.`);
+        const ok = confirm(`לקחת את ${card.dataset.number}? הנקודה תישמר עבורך ל-10 שעות.`);
         if (!ok) return;
       }
       setActivePoint(card);
@@ -186,18 +157,18 @@ document.getElementById("enterApp").addEventListener("click", () => {
   const user = document.getElementById("loginUser").value;
   const password = document.getElementById("loginPassword").value.trim();
   if (!merhav || !user) {
-    alert("×¦×¨×™×š ×œ×‘×—×•×¨ ×ž×¨×—×‘ ×•×ž×©×ª×ž×©");
+    alert("צריך לבחור מרחב ומשתמש");
     return;
   }
   if (!password) {
-    alert("×¦×¨×™×š ×œ×”×–×™×Ÿ ×¡×™×¡×ž×”");
+    alert("צריך להזין סיסמה");
     return;
   }
   if (password.length < 4) {
-    alert("×”×¡×™×¡×ž×” ×§×¦×¨×” ×ž×“×™");
+    alert("הסיסמה קצרה מדי");
     return;
   }
-  document.getElementById("welcomeLine").textContent = `×©×œ×•×, ${user}`;
+  document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
   document.getElementById("welcomeLine").dataset.merhav = merhav;
   showScreen("queue");
 });
@@ -209,29 +180,28 @@ document.querySelectorAll("[data-nav]").forEach((button) => {
 document.getElementById("addFieldPoint").addEventListener("click", () => showScreen("newPoint"));
 
 document.getElementById("releaseButton").addEventListener("click", () => {
-  if (confirm("×œ×©×—×¨×¨ ××ª ×”× ×§×•×“×” ×•×œ×—×–×•×¨ ×œ×¨×©×™×ž×”?")) showScreen("queue");
+  if (confirm("לשחרר את הנקודה ולחזור לרשימה?")) showScreen("queue");
 });
 
 document.getElementById("confirmLocation").addEventListener("click", () => {
   const status = document.getElementById("actualLocationText");
-  status.textContent = "×”×ž×™×§×•× ×”×ž×ª×•×›× ×Ÿ ××•×©×¨ ×‘×©×˜×—";
+  status.textContent = "המיקום המתוכנן אושר בשטח";
   status.className = "location-ok";
-  markLocationStepDone();
 });
 
 document.getElementById("useCurrentLocation").addEventListener("click", () => {
   const status = document.getElementById("actualLocationText");
   if (!window.isSecureContext) {
-    status.textContent = "×ž×™×§×•× ×¢×•×‘×“ ×¨×§ ×‘×—×™×‘×•×¨ ×ž××•×‘×˜×— (https).";
+    status.textContent = "מיקום עובד רק בחיבור מאובטח (https).";
     status.className = "location-error";
     return;
   }
   if (!navigator.geolocation) {
-    status.textContent = "×”×“×¤×“×¤×Ÿ ×œ× ×ª×•×ž×š ×‘×ž×™×§×•×";
+    status.textContent = "הדפדפן לא תומך במיקום";
     status.className = "location-error";
     return;
   }
-  status.textContent = "×§×•×¨× ×ž×™×§×•× × ×•×›×—×™...";
+  status.textContent = "קורא מיקום נוכחי...";
   status.className = "location-pending";
   navigator.geolocation.getCurrentPosition(
     (position) => {
@@ -241,12 +211,11 @@ document.getElementById("useCurrentLocation").addEventListener("click", () => {
       const navLinks = document.querySelectorAll(".nav-actions a");
       navLinks[0].href = `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`;
       navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-      status.textContent = `×¢×•×“×›×Ÿ ×œ×ž×™×§×•× ×”× ×•×›×—×™: ${lat}, ${lng}`;
+      status.textContent = `עודכן למיקום הנוכחי: ${lat}, ${lng}`;
       status.className = "location-ok";
-      markLocationStepDone();
     },
     () => {
-      status.textContent = "×œ× ×”×¦×œ×—× ×• ×œ×§×¨×•× GPS";
+      status.textContent = "לא הצלחנו לקרוא GPS";
       status.className = "location-error";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -281,7 +250,7 @@ document.addEventListener("click", (event) => {
 
   if (button.classList.contains("complete-step")) {
     button.closest(".mission-step").classList.add("done");
-    button.textContent = "âœ“ × ×©×ž×¨";
+    button.textContent = "✓ נשמר";
     updateProgress();
     return;
   }
@@ -295,9 +264,9 @@ document.addEventListener("click", (event) => {
     pendingPhotoItem.innerHTML = `
       <div class="photo-thumb photo-placeholder"></div>
       <div>
-        <strong>×ž×ž×ª×™×Ÿ ×œ×ª×ž×•× ×”...</strong>
+        <strong>ממתין לתמונה...</strong>
         <div class="photo-actions">
-          <button class="remove-photo" type="button">×ž×—×™×§×”</button>
+          <button class="remove-photo" type="button">מחיקה</button>
         </div>
       </div>`;
     activePhotoTarget.appendChild(pendingPhotoItem);
@@ -312,12 +281,9 @@ document.addEventListener("click", (event) => {
     const captionInput = item.querySelector("input[type='text']");
     const preview = item.querySelector(".photo-preview");
     activePhotoEditorItem = item;
-    editorMode = null;
-    resetEditorCanvas();
     editor.hidden = false;
     editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
-    editorMode = null;
     return;
   }
 
@@ -336,10 +302,10 @@ document.getElementById("photoInput").addEventListener("change", async (event) =
   item.innerHTML = `
     <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
     <div>
-      <input type="text" placeholder="×ž×” ×¨×•××™× ×‘×ª×ž×•× ×”?" value="">
+      <input type="text" placeholder="מה רואים בתמונה?" value="">
       <div class="photo-actions">
-        <button class="annotate-button" type="button">×¢×¨×™×›×ª ×ª×ž×•× ×”</button>
-        <button class="remove-photo" type="button">×ž×—×™×§×”</button>
+        <button class="annotate-button" type="button">עריכת תמונה</button>
+        <button class="remove-photo" type="button">מחיקה</button>
       </div>
     </div>`;
   if (!item.parentElement) target.appendChild(item);
@@ -374,16 +340,16 @@ document.querySelectorAll("[data-new-type]").forEach((button) => {
 document.getElementById("newPointForm").addEventListener("submit", (event) => {
   event.preventDefault();
   if (!selectedNewType) {
-    alert("×¦×¨×™×š ×œ×‘×—×•×¨ ×¡×•×’ × ×§×•×“×”");
+    alert("צריך לבחור סוג נקודה");
     return;
   }
   const virtualCard = {
     dataset: {
       type: selectedNewType,
-      number: `${selectedNewType === "cluster" ? "××©×›×•×œ" : selectedNewType === "signage" ? "×©×™×œ×•×˜" : "×“×•×›×Ÿ"} ×—×“×©`,
-      name: document.getElementById("newName").value || "× ×§×•×“×” ×—×“×©×”",
-      address: `${document.getElementById("newTown").value} Â· ×ž×™×§×•× × ×•×›×—×™`,
-      badge: selectedNewType === "cluster" ? "××©×›×•×œ ×–×”×‘" : selectedNewType === "signage" ? "×©×™×œ×•×˜" : "×“×•×›×Ÿ"
+      number: `${selectedNewType === "cluster" ? "אשכול" : selectedNewType === "signage" ? "שילוט" : "דוכן"} חדש`,
+      name: document.getElementById("newName").value || "נקודה חדשה",
+      address: `${document.getElementById("newTown").value} · מיקום נוכחי`,
+      badge: selectedNewType === "cluster" ? "אשכול זהב" : selectedNewType === "signage" ? "שילוט" : "דוכן"
     }
   };
   setActivePoint(virtualCard);
@@ -391,10 +357,9 @@ document.getElementById("newPointForm").addEventListener("submit", (event) => {
 });
 
 document.getElementById("closeEditor").addEventListener("click", () => {
-  resetEditorCanvas();
+  document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
-  editorMode = null;
 });
 document.getElementById("saveEditor").addEventListener("click", () => {
   if (activePhotoEditorItem) {
@@ -402,67 +367,9 @@ document.getElementById("saveEditor").addEventListener("click", () => {
     const editorCaption = document.getElementById("editorCaption");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
-  resetEditorCanvas();
+  document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
-  editorMode = null;
-});
-
-document.querySelectorAll(".editor-tools button").forEach((button) => {
-  button.addEventListener("click", () => {
-    const editorCaption = document.getElementById("editorCaption");
-    const canvas = document.querySelector(".editor-canvas");
-    const rect = canvas.getBoundingClientRect();
-    const x = rect.width * 0.5;
-    const y = rect.height * 0.5;
-    const action = button.dataset.editorAction;
-    if (action === "arrow") {
-      editorMode = "arrow";
-      setEditorMark("arrow", x, y);
-      return;
-    }
-    if (action === "circle") {
-      editorMode = "circle";
-      setEditorMark("circle", x, y);
-      return;
-    }
-    if (action === "text") {
-      editorMode = "text";
-      setEditorMark("text", x, y, editorCaption.value.trim());
-      return;
-    }
-    editorMode = "undo";
-    const marks = canvas.querySelectorAll(".editor-mark");
-    const last = marks[marks.length - 1];
-    if (last) last.remove();
-  });
-});
-
-document.querySelector(".editor-canvas").addEventListener("click", (event) => {
-  if (!editorMode) return;
-  const canvas = event.currentTarget;
-  const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  if (editorMode === "undo") {
-    const marks = canvas.querySelectorAll(".editor-mark");
-    const last = marks[marks.length - 1];
-    if (last) last.remove();
-    return;
-  }
-  const mark = document.createElement("span");
-  mark.className = `editor-mark ${editorMode}`;
-  mark.style.left = `${x}px`;
-  mark.style.top = `${y}px`;
-  mark.textContent = editorMode === "text" ? (document.getElementById("editorCaption").value.trim() || "×˜×§×¡×˜") : "";
-  canvas.appendChild(mark);
-});
-
-window.addEventListener("load", () => {
-  const status = document.getElementById("actualLocationText");
-  if (status && status.classList.contains("location-ok")) {
-    markLocationStepDone();
-  }
 });
 
 function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
@@ -504,7 +411,3 @@ attachPointLaunchers();
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("sw.js");
 }
-
-
-
-

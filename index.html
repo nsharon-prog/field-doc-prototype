@@ -29,6 +29,7 @@
           <p>מסך כניסה מהיר לצוותי שטח. בוחרים משתמש, בוחרים מרחב, ונכנסים לרשימת הנקודות.</p>
         </div>
         <section class="panel">
+          <div class="build-stamp" id="buildStamp"></div>
           <label>מרחב
             <select id="loginMerhav">
               <option>כל המחוז</option>
@@ -368,12 +369,14 @@
       </header>
       <div class="editor-canvas">
         <div class="editor-photo"></div>
+        <span class="canvas-arrow">➜</span>
+        <span class="canvas-label">מקום</span>
       </div>
       <div class="editor-tools">
-        <button type="button" data-editor-action="arrow"><b>➜</b>חץ</button>
-        <button type="button" data-editor-action="circle"><b>◌</b>עיגול</button>
-        <button type="button" data-editor-action="text"><b>א</b>טקסט</button>
-        <button type="button" data-editor-action="undo"><b>↶</b>ביטול</button>
+        <button type="button"><b>➜</b>חץ</button>
+        <button type="button"><b>◌</b>עיגול</button>
+        <button type="button"><b>א</b>טקסט</button>
+        <button type="button"><b>↶</b>ביטול</button>
       </div>
       <label class="editor-caption">כיתוב לתמונה
         <input id="editorCaption" placeholder="מה צריך לראות כאן?">
