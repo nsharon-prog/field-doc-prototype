@@ -158,7 +158,7 @@ textarea{resize:vertical}
 .decision-actions button:first-child{border:1px solid var(--line);background:#fff;color:var(--ink)}
 .decision-actions button:nth-child(2){border:0;background:var(--blue);color:#fff}
 .decision-actions button:last-child{border:1px solid #b5c7d9;background:#f7fbff;color:var(--blue)}
-.bottom-nav{position:fixed;bottom:0;right:50%;transform:translateX(50%);z-index:10;display:grid;grid-template-columns:repeat(2,1fr);width:min(620px,100%);height:66px;padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line)}
+.bottom-nav{position:fixed;bottom:0;right:50%;transform:translateX(50%);z-index:10;display:grid;grid-template-columns:1fr;width:min(620px,100%);height:66px;padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line)}
 .bottom-nav button{border:0;background:transparent;color:var(--muted);font-size:.72rem;display:grid;place-content:center;gap:3px}
 .bottom-nav button span{font-size:1.2rem}
 .bottom-nav button.active{color:var(--blue);font-weight:700}
