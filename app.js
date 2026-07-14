@@ -32,6 +32,7 @@ let pendingPhotoItem = null;
 let activePhotoEditorItem = null;
 let photoEditor = null;
 let editorCaption = null;
+let editorToolMode = "arrow";
 const photoCache = new Map();
 const buildInfo = {
   version: "e42de3d",
@@ -41,6 +42,51 @@ const buildInfo = {
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `Version: ${buildInfo.version} · Last updated: ${buildInfo.updatedAt}`;
+}
+
+function getEditorSurface() {
+  return document.querySelector(".editor-canvas");
+}
+
+function clearEditorMarks() {
+  const surface = getEditorSurface();
+  if (!surface) return;
+  surface.querySelectorAll(".editor-mark").forEach((mark) => mark.remove());
+}
+
+function resetEditorOverlay() {
+  clearEditorMarks();
+  const arrow = document.querySelector(".canvas-arrow");
+  const label = document.querySelector(".canvas-label");
+  if (arrow) arrow.style.display = "none";
+  if (label) label.style.display = "none";
+}
+
+function addEditorMark(mode) {
+  const surface = getEditorSurface();
+  if (!surface) return;
+  const mark = document.createElement("span");
+  mark.className = `editor-mark ${mode}`;
+  if (mode === "text") {
+    mark.textContent = document.getElementById("editorCaption").value.trim() || "טקסט";
+  } else if (mode === "circle") {
+    mark.textContent = "◌";
+  } else {
+    mark.textContent = "→";
+  }
+  const offset = surface.querySelectorAll(".editor-mark").length * 18;
+  mark.style.left = `${24 + offset}px`;
+  mark.style.top = `${24 + offset}px`;
+  surface.appendChild(mark);
+}
+
+function markLocationStepDone() {
+  const step = document.querySelector(".location-step");
+  if (!step) return;
+  step.classList.add("done");
+  const button = step.querySelector(".complete-step");
+  if (button) button.textContent = "✓ נשמר";
+  updateProgress();
 }
 
 function showScreen(name) {
@@ -110,6 +156,7 @@ function setActivePoint(card) {
   document.querySelectorAll("#documentScreen .mission-step").forEach((step) => step.classList.remove("done"));
   document.getElementById("blockerBox").hidden = true;
   renderMission(type);
+  updateProgress();
 }
 
 function collectMissingItems() {
@@ -187,6 +234,7 @@ document.getElementById("confirmLocation").addEventListener("click", () => {
   const status = document.getElementById("actualLocationText");
   status.textContent = "המיקום המתוכנן אושר בשטח";
   status.className = "location-ok";
+  markLocationStepDone();
 });
 
 document.getElementById("useCurrentLocation").addEventListener("click", () => {
@@ -213,6 +261,7 @@ document.getElementById("useCurrentLocation").addEventListener("click", () => {
       navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
       status.textContent = `עודכן למיקום הנוכחי: ${lat}, ${lng}`;
       status.className = "location-ok";
+      markLocationStepDone();
     },
     () => {
       status.textContent = "לא הצלחנו לקרוא GPS";
@@ -281,6 +330,7 @@ document.addEventListener("click", (event) => {
     const captionInput = item.querySelector("input[type='text']");
     const preview = item.querySelector(".photo-preview");
     activePhotoEditorItem = item;
+    resetEditorOverlay();
     editor.hidden = false;
     editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
@@ -329,6 +379,20 @@ document.getElementById("photoInput").addEventListener("change", async (event) =
   pendingPhotoItem = null;
 });
 
+document.querySelectorAll(".editor-tools button").forEach((button, index) => {
+  const actions = ["arrow", "circle", "text", "undo"];
+  button.dataset.editorAction = actions[index] || "arrow";
+  button.addEventListener("click", () => {
+    const action = button.dataset.editorAction;
+    if (action === "undo") {
+      const marks = getEditorSurface()?.querySelectorAll(".editor-mark");
+      if (marks && marks.length) marks[marks.length - 1].remove();
+      return;
+    }
+    addEditorMark(action);
+  });
+});
+
 document.querySelectorAll("[data-new-type]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll("[data-new-type]").forEach((item) => item.classList.remove("selected"));
@@ -357,6 +421,7 @@ document.getElementById("newPointForm").addEventListener("submit", (event) => {
 });
 
 document.getElementById("closeEditor").addEventListener("click", () => {
+  resetEditorOverlay();
   document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
@@ -367,6 +432,7 @@ document.getElementById("saveEditor").addEventListener("click", () => {
     const editorCaption = document.getElementById("editorCaption");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
+  resetEditorOverlay();
   document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
