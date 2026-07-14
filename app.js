@@ -34,14 +34,10 @@ let photoEditor = null;
 let editorCaption = null;
 let editorToolMode = "arrow";
 const photoCache = new Map();
-const buildInfo = {
-  version: "e42de3d",
-  updatedAt: "2026-07-14 11:37:09 IL"
-};
-
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
-  buildStamp.textContent = `Version: ${buildInfo.version} · Last updated: ${buildInfo.updatedAt}`;
+  const updatedAt = document.lastModified || "";
+  buildStamp.textContent = updatedAt ? `Last updated: ${updatedAt}` : "Last updated: unknown";
 }
 
 function getEditorSurface() {
