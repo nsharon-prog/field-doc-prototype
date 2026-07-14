@@ -428,7 +428,7 @@ function attachPointLaunchers() {
 
     if (trigger.id === "confirmLocation") {
       const status = document.getElementById("actualLocationText");
-      status.textContent = "המיקום נכון";
+      status.textContent = "המיקום אושר";
       status.className = "location-ok";
       markLocationStepDone();
       return;
@@ -510,7 +510,7 @@ function attachPointLaunchers() {
         const navLinks = document.querySelectorAll(".nav-actions a");
         navLinks[0].href = `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`;
         navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-        status.textContent = `עודכן למיקום הנוכחי: ${lat}, ${lng}`;
+        status.textContent = `עודכן לפי GPS: ${lat}, ${lng}`;
         status.className = "location-ok";
         markLocationStepDone();
       },
