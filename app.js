@@ -8,19 +8,19 @@ const screens = {
 
 const missionPlans = {
   cluster: [
-    { title: "צילום הכניסה", help: "צילום ברור של המקום והכניסה.", photo: "צלם כניסה", control: `<select><option>כן, ברור</option><option>צריך צילום נוסף</option><option>עדיין לא ברור</option></select>` },
-    { title: "מיקום הדוכן", help: "איפה בדיוק עומדים.", photo: "צלם מיקום", control: `<input inputmode="decimal" placeholder="כמה מטרים?">` },
-    { title: "הערות למיקום", help: "כל מה שצריך לדעת לפני שמגיעים.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="גישה, מדרכות, אנשים, חסימות..."></textarea>` }
+    { title: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â‚¬Â", help: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨ Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œ Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â‚¬Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â‚¬Â", control: `<select><option>Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸, Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨</option><option>Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã‚Â£</option><option>Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨</option></select>` },
+    { title: "Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸", help: "Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â§ Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â", control: `<input inputmode="decimal" placeholder="Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‹Å“Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â?">` },
+    { title: "Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª Ãƒâ€”Ã…â€œÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â", help: "Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…â€œ Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Âª Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â¤Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã‚Â£ Ãƒâ€”Ã‚ÂÃƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡", control: `<textarea rows="3" placeholder="Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â©Ãƒâ€”Ã¢â‚¬Â, Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª, Ãƒâ€”Ã‚ÂÃƒâ€”Ã‚Â Ãƒâ€”Ã‚Â©Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â, Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª..."></textarea>` }
   ],
   signage: [
-    { title: "צילום מרחוק", help: "איך המקום נראה מהרחוב.", photo: "צלם מרחוק", control: `<select><option>כן, ברור</option><option>צריך עוד תמונה</option></select>` },
-    { title: "צילום תקריב", help: "איפה השלט ייתלה.", photo: "צלם תקריב", control: `<textarea rows="2" placeholder="מה נדרש לתלייה?"></textarea>` },
-    { title: "מדידות והערות", help: "רוחב, גובה, גישה וסיכון.", photo: "צילום עם סימון", control: `<textarea rows="3" placeholder="רוחב, גובה, ציוד, חניה, שפה מיוחדת..."></textarea>` }
+    { title: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â§", help: "Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Ëœ.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â§", control: `<select><option>Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸, Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨</option><option>Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“ Ãƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â</option></select>` },
+    { title: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚ÂªÃƒâ€”Ã‚Â§Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Ëœ", help: "Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã‹Å“ Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚ÂªÃƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã‚ÂªÃƒâ€”Ã‚Â§Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Ëœ", control: `<textarea rows="2" placeholder="Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚Â© Ãƒâ€”Ã…â€œÃƒâ€”Ã‚ÂªÃƒâ€”Ã…â€œÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â?"></textarea>` },
+    { title: "Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª", help: "Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Ëœ, Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Â, Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â©Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¸.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¸", control: `<textarea rows="3" placeholder="Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Ëœ, Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Â, Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“, Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â, Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Âª..."></textarea>` }
   ],
   booth: [
-    { title: "צילום המקום", help: "איך המקום נראה ומה עובר שם.", photo: "צלם מקום", control: `<select><option>צפוף ומתאים</option><option>סביר</option><option>דורש בדיקה</option></select>` },
-    { title: "שעות מומלצות", help: "מתי כן ומתי לא.", photo: "צילום עם סימון", control: `<textarea rows="2" placeholder="מתי כן ומתי לא?"></textarea>` },
-    { title: "הערות למקום", help: "ציוד, קהל, גישה וסיכון.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="ציוד, צפיפות, חסימות, חניה..."></textarea>` }
+    { title: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â", help: "Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚Â¨ Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â", control: `<select><option>Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â£ Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â</option><option>Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¨</option><option>Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚Â© Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â</option></select>` },
+    { title: "Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª", help: "Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸ Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¸", control: `<textarea rows="2" placeholder="Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸ Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â?"></textarea>` },
+    { title: "Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª Ãƒâ€”Ã…â€œÃƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â", help: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“, Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…â€œ, Ãƒâ€”Ã¢â‚¬â„¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â©Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¸.", photo: "Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã‚Â£ Ãƒâ€”Ã‚ÂÃƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡", control: `<textarea rows="3" placeholder="Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“, Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª, Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Âª, Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â..."></textarea>` }
   ]
 };
 
@@ -38,7 +38,7 @@ const photoCache = new Map();
 const buildStampValue = "2026-07-14 15:32:49";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
-  buildStamp.textContent = `עודכן לאחרונה: ${buildStampValue} IL`;
+  buildStamp.textContent = `Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â: ${buildStampValue} IL`;
 }
 
 function getEditorSurface() {
@@ -69,11 +69,11 @@ function addEditorMark(mode) {
   mark.dataset.editing = "false";
   if (mode === "text") {
     mark.contentEditable = "false";
-    mark.textContent = document.getElementById("editorCaption").value.trim() || "טקסט";
+    mark.textContent = document.getElementById("editorCaption").value.trim() || "Ãƒâ€”Ã‹Å“Ãƒâ€”Ã‚Â§Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã‹Å“";
   } else if (mode === "circle") {
-    mark.textContent = "◌";
+    mark.textContent = "ÃƒÂ¢Ã¢â‚¬â€Ã…â€™";
   } else {
-    mark.textContent = "➜";
+    mark.textContent = "ÃƒÂ¢Ã…Â¾Ã…â€œ";
   }
   const offset = surface.querySelectorAll(".editor-mark").length * 18;
   mark.style.left = `${24 + offset}px`;
@@ -139,7 +139,7 @@ function makeEditorMarkInteractive(mark) {
     if (mark.dataset.mode !== "text") return;
     mark.dataset.editing = "false";
     mark.contentEditable = "false";
-    if (!mark.textContent.trim()) mark.textContent = "טקסט";
+    if (!mark.textContent.trim()) mark.textContent = "Ãƒâ€”Ã‹Å“Ãƒâ€”Ã‚Â§Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã‹Å“";
   });
 }
 
@@ -216,7 +216,7 @@ async function flattenEditorPhoto() {
     } else {
       ctx.font = "700 24px Arial";
       ctx.fillStyle = "#1769e0";
-      ctx.fillText("➜", left, top + 24);
+      ctx.fillText("ÃƒÂ¢Ã…Â¾Ã…â€œ", left, top + 24);
     }
     ctx.restore();
   });
@@ -249,14 +249,14 @@ function renderMission(type) {
         </div>
       </div>
       <div class="photo-line">
-        <button class="add-photo" type="button">📷 ${step.photo}</button>
-        <small>אפשר להוסיף יותר מתמונה אחת</small>
+        <button class="add-photo" type="button">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â· ${step.photo}</button>
+        <small>Ãƒâ€”Ã‚ÂÃƒâ€”Ã‚Â¤Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â¨ Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â£ Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚ÂªÃƒâ€”Ã‚Â¨ Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Âª</small>
       </div>
       <div class="photo-gallery"></div>
-      <label>פרטי השלב
+      <label>Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‹Å“Ãƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Ëœ
         ${step.control}
       </label>
-      <button class="complete-step" type="button">סיימתי שלב זה</button>
+      <button class="complete-step" type="button">Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢ Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Ëœ Ãƒâ€”Ã¢â‚¬â€œÃƒâ€”Ã¢â‚¬Â</button>
     </section>
   `).join("");
 
@@ -269,7 +269,7 @@ function renderMission(type) {
 function updateProgress() {
   const total = document.querySelectorAll("#documentScreen .complete-step").length;
   const done = document.querySelectorAll("#documentScreen .mission-step.done").length;
-  document.getElementById("progressText").textContent = `${done} מתוך ${total}`;
+  document.getElementById("progressText").textContent = `${done} Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¡ ${total}`;
   document.getElementById("progressBar").style.width = `${Math.min(100, total ? (done / total) * 100 : 0)}%`;
 }
 
@@ -281,13 +281,12 @@ function setActivePoint(card) {
   document.getElementById("documentPointNumber").textContent = card.dataset.number || "";
   document.getElementById("documentPointName").textContent = card.dataset.name || "";
   document.getElementById("documentPointAddress").textContent = card.dataset.address || "";
-  document.getElementById("submittedPointName").textContent = `${card.dataset.number || ""} · ${card.dataset.name || ""}`;
-  document.getElementById("plannedLocationText").textContent = card.dataset.address || "לפי מוביל הצוות";
+  document.getElementById("submittedPointName").textContent = `${card.dataset.number || ""} Ã‚Â· ${card.dataset.name || ""}`;
+  document.getElementById("plannedLocationText").textContent = card.dataset.address || "Ã—Å“Ã—Â¤Ã—â„¢ Ã—Å¾Ã—â€¢Ã—â€˜Ã—â„¢Ã—Å“ Ã—â€Ã—Â¦Ã—â€¢Ã—â€¢Ã—Âª";
   const actual = document.getElementById("actualLocationText");
-  actual.textContent = "עדיין לא אומת מהמכשיר";
+  actual.textContent = "Ã—Â¢Ã—â€œÃ—â„¢Ã—â„¢Ã—Å¸ Ã—Å“Ã—Â Ã—ÂÃ—â€¢Ã—Å¾Ã—Âª Ã—Å¾Ã—â€Ã—Å¾Ã—â€ºÃ—Â©Ã—â„¢Ã—Â¨";
   actual.className = "";
-
-  const query = encodeURIComponent((card.dataset.address || "").replace("·", " "));
+  const query = encodeURIComponent((card.dataset.location || card.dataset.address || card.dataset.name || "").replace(/\s+/g, " ").trim());
   const navLinks = document.querySelectorAll(".nav-actions a");
   navLinks[0].href = `https://www.waze.com/ul?q=${query}`;
   navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
@@ -301,16 +300,16 @@ function setActivePoint(card) {
 function collectMissingItems() {
   const items = [];
   document.querySelectorAll("#documentScreen .mission-step").forEach((step) => {
-    const title = step.querySelector("h2")?.textContent || "שלב";
+    const title = step.querySelector("h2")?.textContent || "Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Ëœ";
     if (!step.classList.contains("done")) {
-      items.push(`לא סומן שהושלם: "${title}"`);
+      items.push(`Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã‚Â©Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â: "${title}"`);
     }
     if (step.classList.contains("field-step") && step.querySelectorAll(".photo-item").length === 0) {
-      items.push(`אין תמונה ב-"${title}"`);
+      items.push(`Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã¢â‚¬Ëœ-"${title}"`);
     }
   });
   if (!document.getElementById("actualLocationText").classList.contains("location-ok")) {
-    items.push("המיקום עדיין לא אושר");
+    items.push("Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â©Ãƒâ€”Ã‚Â¨");
   }
   return items;
 }
@@ -321,7 +320,7 @@ function openSubmitDecision() {
   const list = document.getElementById("missingList");
   list.innerHTML = missing.length
     ? missing.map((item) => `<span>${item}</span>`).join("")
-    : '<span class="all-good">הכול נראה מוכן לשליחה</span>';
+    : '<span class="all-good">Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…â€œ Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â‚¬Â</span>';
   document.getElementById("submitDecision").hidden = false;
 }
 
@@ -381,7 +380,7 @@ function attachPointLaunchers() {
 
     if (trigger.classList.contains("complete-step")) {
       trigger.closest(".mission-step")?.classList.add("done");
-      trigger.textContent = "✓ נשמר";
+      trigger.textContent = "ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚Â¨";
       updateProgress();
       return;
     }
@@ -397,9 +396,9 @@ function attachPointLaunchers() {
       pendingPhotoItem.innerHTML = `
         <div class="photo-thumb photo-placeholder"></div>
         <div>
-          <strong>ממתין לתמונה...</strong>
+          <strong>Ãƒâ€”Ã…Â¾Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â...</strong>
           <div class="photo-actions">
-            <button class="remove-photo" type="button">מחיקה</button>
+            <button class="remove-photo" type="button">Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â</button>
           </div>
         </div>`;
       activePhotoTarget.appendChild(pendingPhotoItem);
@@ -424,7 +423,7 @@ function attachPointLaunchers() {
 
     if (trigger.id === "confirmLocation") {
       const status = document.getElementById("actualLocationText");
-      status.textContent = "המיקום נכון";
+      status.textContent = "Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¸";
       status.className = "location-ok";
       markLocationStepDone();
       return;
@@ -436,10 +435,10 @@ function attachPointLaunchers() {
     const user = document.getElementById("loginUser").value;
     const password = document.getElementById("loginPassword").value.trim();
     if (!password) {
-      alert("צריך להזין סיסמה");
+      alert("Ãƒâ€”Ã‚Â¦Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬â€œÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â¡Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â");
       return;
     }
-    document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
+    document.getElementById("welcomeLine").textContent = `Ãƒâ€”Ã‚Â©Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â, ${user}`;
     showScreen("queue");
   });
 
@@ -453,10 +452,10 @@ function attachPointLaunchers() {
     item.innerHTML = `
       <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
       <div>
-        <input type="text" placeholder="מה רואים בתמונה?" value="">
+        <input type="text" placeholder="Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â?" value="">
         <div class="photo-actions">
-          <button class="annotate-button" type="button">עריכת תמונה</button>
-          <button class="remove-photo" type="button">מחיקה</button>
+          <button class="annotate-button" type="button">Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã‚Âª Ãƒâ€”Ã‚ÂªÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â</button>
+          <button class="remove-photo" type="button">Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â</button>
         </div>
       </div>`;
     if (!item.parentElement) target.appendChild(item);
@@ -487,16 +486,16 @@ function attachPointLaunchers() {
   document.getElementById("useCurrentLocation").addEventListener("click", () => {
     const status = document.getElementById("actualLocationText");
     if (!window.isSecureContext) {
-      status.textContent = "מיקום עובד רק בחיבור מאובטח (https).";
+      status.textContent = "Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Å“ Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚Â§ Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨ Ãƒâ€”Ã…Â¾Ãƒâ€”Ã‚ÂÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã‹Å“Ãƒâ€”Ã¢â‚¬â€ (https).";
       status.className = "location-error";
       return;
     }
     if (!navigator.geolocation) {
-      status.textContent = "הדפדפן לא תומך במיקום";
+      status.textContent = "Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã‚Â¤Ãƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã‚ÂªÃƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã…Â¾Ãƒâ€”Ã…Â¡ Ãƒâ€”Ã¢â‚¬ËœÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â";
       status.className = "location-error";
       return;
     }
-    status.textContent = "קורא מיקום נוכחי...";
+    status.textContent = "Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã‚Â Ãƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â€žÂ¢...";
     status.className = "location-pending";
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -506,12 +505,12 @@ function attachPointLaunchers() {
         const navLinks = document.querySelectorAll(".nav-actions a");
         navLinks[0].href = `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`;
         navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-        status.textContent = `עודכן למיקום הנוכחי: ${lat}, ${lng}`;
+        status.textContent = `Ãƒâ€”Ã‚Â¢Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬Å“Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã…Â¸ Ãƒâ€”Ã…â€œÃƒâ€”Ã…Â¾Ãƒâ€”Ã¢â€žÂ¢Ãƒâ€”Ã‚Â§Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã¢â‚¬ÂºÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã¢â€žÂ¢: ${lat}, ${lng}`;
         status.className = "location-ok";
         markLocationStepDone();
       },
       () => {
-        status.textContent = "לא הצלחנו לקרוא GPS";
+        status.textContent = "Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬ÂÃƒâ€”Ã‚Â¦Ãƒâ€”Ã…â€œÃƒâ€”Ã¢â‚¬â€Ãƒâ€”Ã‚Â Ãƒâ€”Ã¢â‚¬Â¢ Ãƒâ€”Ã…â€œÃƒâ€”Ã‚Â§Ãƒâ€”Ã‚Â¨Ãƒâ€”Ã¢â‚¬Â¢Ãƒâ€”Ã‚Â GPS";
         status.className = "location-error";
       },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -597,7 +596,9 @@ function attachPointLaunchers() {
         type: selectedNewType,
         number: `${selectedNewType === "cluster" ? "אשכול" : selectedNewType === "signage" ? "שילוט" : "דוכן"} חדש`,
         name: document.getElementById("newName").value || "נקודה חדשה",
-        address: `${document.getElementById("newTown").value} · מיקום נוכחי`,
+        town: document.getElementById("newTown").value,
+        location: document.getElementById("newLocation").value.trim(),
+        address: document.getElementById("newLocation").value.trim() || `${document.getElementById("newTown").value} · מיקום נוכחי`,
         badge: selectedNewType === "cluster" ? "אשכול זהב" : selectedNewType === "signage" ? "שילוט" : "דוכן"
       }
     };
