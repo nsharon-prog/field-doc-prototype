@@ -57,8 +57,19 @@ function setEditorMark(type, x, y, text = "") {
   mark.className = `editor-mark ${type}`;
   mark.style.left = `${x}px`;
   mark.style.top = `${y}px`;
-  if (type === "text") mark.textContent = text || "×˜×§×¡×˜";
+  if (type === "text") mark.textContent = text || "טקסט";
   canvas.appendChild(mark);
+}
+
+function resetEditorCanvas() {
+  const canvas = document.querySelector(".editor-canvas");
+  const editorPhoto = document.querySelector(".editor-photo");
+  if (canvas) {
+    canvas.querySelectorAll(".editor-mark").forEach((mark) => mark.remove());
+  }
+  if (editorPhoto) {
+    editorPhoto.style.background = "#394b52";
+  }
 }
 
 function showScreen(name) {
@@ -302,6 +313,7 @@ document.addEventListener("click", (event) => {
     const preview = item.querySelector(".photo-preview");
     activePhotoEditorItem = item;
     editorMode = null;
+    resetEditorCanvas();
     editor.hidden = false;
     editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
@@ -379,7 +391,7 @@ document.getElementById("newPointForm").addEventListener("submit", (event) => {
 });
 
 document.getElementById("closeEditor").addEventListener("click", () => {
-  document.querySelector(".editor-photo").style.background = "#394b52";
+  resetEditorCanvas();
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
   editorMode = null;
@@ -390,7 +402,7 @@ document.getElementById("saveEditor").addEventListener("click", () => {
     const editorCaption = document.getElementById("editorCaption");
     if (captionInput) captionInput.value = editorCaption.value.trim();
   }
-  document.querySelector(".editor-photo").style.background = "#394b52";
+  resetEditorCanvas();
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
   editorMode = null;
@@ -492,5 +504,7 @@ attachPointLaunchers();
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("sw.js");
 }
+
+
 
 
