@@ -28,6 +28,15 @@
     </section>
 
     <section class="card">
+      <label>District / region
+        <select id="districtSelect"></select>
+      </label>
+      <label>Merhav
+        <select id="merhavSelect"></select>
+      </label>
+      <label>Settlement / point area
+        <select id="settlementSelect"></select>
+      </label>
       <label>Point type
         <select id="pointType">
           <option value="signage">Signage</option>
@@ -35,8 +44,8 @@
           <option value="cluster">Polling place / cluster</option>
         </select>
       </label>
-      <label>Town <input id="town" value="North Sharon"></label>
-      <label>Planned address <input id="plannedAddress" value="Kfar Saba, Weizmann Junction"></label>
+      <label>Point number / title <input id="pointNumber" value="אשכול זהב 014"></label>
+      <label>Approx address / landmark <input id="plannedAddress" value="Kfar Saba, Weizmann Junction"></label>
       <label>Documented by <input id="documentedBy" placeholder="Name / phone"></label>
       <label>Notes <textarea id="notes" rows="3" placeholder="Short field note"></textarea></label>
       <button id="captureLocation" type="button" class="secondary">Capture current GPS</button>
@@ -53,14 +62,14 @@
     </section>
 
     <section class="card">
-      <button id="submitTest" type="button">Submit feasibility test</button>
-      <p class="small">Expected result: one row in Sheets and one compressed photo in Drive.</p>
+      <button id="submitTest" type="button">Save point</button>
+      <p class="small">Expected result: one row in Sheets and one compressed photo in Drive, sorted by district and merhav.</p>
       <div id="result" class="result" hidden></div>
     </section>
   </main>
 
   <script>
-    const state = { photo: null, location: null };
+    const state = { photo: null, location: null, hierarchy: null };
     let backendInput;
 
     window.addEventListener("error", (event) => {
@@ -78,6 +87,11 @@
       bind("captureLocation", captureLocation);
       bind("submitTest", submitTest);
       bindPhotoInput();
+      document.getElementById("districtSelect").addEventListener("change", renderHierarchy);
+      document.getElementById("merhavSelect").addEventListener("change", renderHierarchy);
+      if (backendInput.value.trim()) {
+        loadHierarchy();
+      }
       setStartup("Controls ready. Paste the Apps Script Web App URL, then press Save URL.", true);
     });
 
@@ -110,6 +124,7 @@
       }
       status.className = "small ok";
       showResult({ ok: true, message: "Saved backend URL locally on this phone.", savedUrlStart: url.slice(0, 45) });
+      loadHierarchy();
     }
 
     async function checkBackend() {
@@ -135,6 +150,9 @@
       showResult({ ok: true, message: "Running one-time setup..." });
       const data = await getJson(`${url}?action=setup`);
       showResult(data);
+      if (data && data.ok) {
+        loadHierarchy();
+      }
     }
 
     function openSetupDirectly() {
@@ -144,6 +162,90 @@
       document.getElementById("configStatus").textContent = "Opening setup directly. Come back here after it shows ok:true.";
       showResult({ ok: true, message: "Opening direct setup URL. If a new tab opens with ok:true, setup worked.", setupUrl });
       window.open(setupUrl, "_blank", "noopener");
+    }
+
+    async function loadHierarchy() {
+      const url = getBackendUrl();
+      if (!url) return;
+      const status = document.getElementById("configStatus");
+      status.textContent = "Loading districts, merhavs, and settlements...";
+      status.className = "small";
+      const data = await getJson(`${url}?action=hierarchy`);
+      if (!data.ok) {
+        status.textContent = "Could not load hierarchy yet. Run workspace setup first.";
+        status.className = "small warn";
+        showResult(data);
+        return;
+      }
+      state.hierarchy = data;
+      renderHierarchy();
+      const districtCount = (data.districts || []).length;
+      const merhavCount = (data.merhavim || []).length;
+      const settlementCount = (data.settlements || []).length;
+      status.textContent = `Loaded ${districtCount} district(s), ${merhavCount} merhav(s), ${settlementCount} settlement(s).`;
+      status.className = "small ok";
+    }
+
+    function renderHierarchy() {
+      const data = state.hierarchy || {};
+      const districts = data.districts || [];
+      const merhavim = data.merhavim || [];
+      const settlements = data.settlements || [];
+      const districtSelect = document.getElementById("districtSelect");
+      const merhavSelect = document.getElementById("merhavSelect");
+      const settlementSelect = document.getElementById("settlementSelect");
+      const currentDistrict = districtSelect.value;
+      const currentMerhav = merhavSelect.value;
+      const currentSettlement = settlementSelect.value;
+
+      fillSelect(districtSelect, districts.map((item) => ({
+        value: item.districtId,
+        label: item.districtName
+      })), "No districts loaded");
+
+      if (currentDistrict && districts.some((item) => item.districtId === currentDistrict)) {
+        districtSelect.value = currentDistrict;
+      }
+
+      const selectedDistrict = districtSelect.value;
+      const filteredMerhavim = merhavim.filter((item) => !selectedDistrict || item.districtId === selectedDistrict);
+      fillSelect(merhavSelect, filteredMerhavim.map((item) => ({
+        value: item.merhavId,
+        label: item.merhavName
+      })), "No merhavs loaded");
+      if (currentMerhav && filteredMerhavim.some((item) => item.merhavId === currentMerhav)) {
+        merhavSelect.value = currentMerhav;
+      }
+
+      const selectedMerhav = merhavSelect.value;
+      const filteredSettlements = settlements.filter((item) => !selectedMerhav || item.merhavId === selectedMerhav);
+      fillSelect(settlementSelect, filteredSettlements.map((item) => ({
+        value: item.settlementId,
+        label: item.settlementName
+      })), "No settlements loaded");
+      if (currentSettlement && filteredSettlements.some((item) => item.settlementId === currentSettlement)) {
+        settlementSelect.value = currentSettlement;
+      }
+    }
+
+    function fillSelect(select, options, emptyLabel) {
+      const previous = select.value;
+      select.innerHTML = "";
+      if (!options.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = emptyLabel;
+        select.appendChild(option);
+        select.value = "";
+        return;
+      }
+      options.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        select.appendChild(option);
+      });
+      select.value = options.some((item) => item.value === previous) ? previous : options[0].value;
     }
 
     function captureLocation() {
@@ -190,12 +292,25 @@
     async function submitTest() {
       const url = getBackendUrl();
       if (!url) return;
+      const districtSelect = document.getElementById("districtSelect");
+      const merhavSelect = document.getElementById("merhavSelect");
+      const settlementSelect = document.getElementById("settlementSelect");
+      const hierarchy = state.hierarchy || {};
+      const district = (hierarchy.districts || []).find((item) => item.districtId === districtSelect.value) || {};
+      const merhav = (hierarchy.merhavim || []).find((item) => item.merhavId === merhavSelect.value) || {};
+      const settlement = (hierarchy.settlements || []).find((item) => item.settlementId === settlementSelect.value) || {};
       const payload = {
         action: "submitFeasibility",
-        pointId: `TEST-${Date.now()}`,
+        pointId: `POINT-${Date.now()}`,
+        districtId: district.districtId || "",
+        districtName: district.districtName || "",
+        merhavId: merhav.merhavId || "",
+        merhavName: merhav.merhavName || "",
+        settlementId: settlement.settlementId || "",
+        settlementName: settlement.settlementName || "",
         type: document.getElementById("pointType").value,
-        number: "TEST 001",
-        town: document.getElementById("town").value,
+        number: document.getElementById("pointNumber").value || "TEST 001",
+        town: settlement.settlementName || "",
         plannedAddress: document.getElementById("plannedAddress").value,
         correctedLocation: state.location,
         documentedBy: document.getElementById("documentedBy").value,
@@ -210,7 +325,7 @@
           height: state.photo.height
         }] : []
       };
-      showResult({ ok: true, message: "Submitting test point..." });
+      showResult({ ok: true, message: "Saving point..." });
       const data = await postJson(url, payload);
       showResult(data);
     }

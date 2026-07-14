@@ -7,6 +7,7 @@ function doGet(event) {
   const action = (event.parameter.action || "health").toLowerCase();
   if (action === "health") return jsonResponse(getHealth_());
   if (action === "setup") return jsonResponse(setupWorkspace_());
+  if (action === "hierarchy") return jsonResponse(getHierarchy_());
   if (action === "testpoint") return jsonResponse(getLatestTestPoint_());
   return jsonResponse({ ok: false, error: "Unknown action" });
 }
@@ -172,6 +173,19 @@ function getLatestTestPoint_() {
   };
 }
 
+function getHierarchy_() {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  return {
+    ok: true,
+    districts: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Districts"))),
+    merhavim: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim"))),
+    settlements: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements"))),
+    teams: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Teams"))),
+    settings: sheetObjects_(spreadsheet.getSheetByName("Settings"))
+  };
+}
+
 function ensureSheets_(spreadsheet) {
   FIELD_DOC_APP.sheetNames.forEach((name) => {
     if (!spreadsheet.getSheetByName(name)) spreadsheet.insertSheet(name);
@@ -266,6 +280,10 @@ function sheetObjects_(sheet) {
     headers.forEach((header, index) => object[header] = row[index]);
     return object;
   });
+}
+
+function activeRows_(rows) {
+  return rows.filter((row) => String(row.active).toLowerCase() !== "false");
 }
 
 function getOrCreateChildFolder_(parent, name) {
