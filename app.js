@@ -8,19 +8,19 @@ const screens = {
 
 const missionPlans = {
   cluster: [
-    { title: "צילום הכניסה", help: "תמונה רחבה של המקום מהצד של ההגעה.", photo: "צילום כניסה", control: `<select><option>כן, ברור</option><option>צריך צילום נוסף</option><option>עדיין לא ברור</option></select>` },
-    { title: "מיקום דוכן צפוי", help: "איפה הדוכן אמור לעמוד בפועל.", photo: "צילום מיקום דוכן", control: `<input inputmode="decimal" placeholder="כמה מטרים?">` },
-    { title: "הערות על סביבת המקום", help: "מה חשוב שהצוות ידע לפני הגעה.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="גישה, מדרגות, גישה לרכב, אנשים, חסימות..."></textarea>` }
+    { title: "צילום הכניסה", help: "צילום ברור של המקום והכניסה.", photo: "צלם כניסה", control: `<select><option>כן, ברור</option><option>צריך צילום נוסף</option><option>עדיין לא ברור</option></select>` },
+    { title: "מיקום הדוכן", help: "איפה בדיוק עומדים.", photo: "צלם מיקום", control: `<input inputmode="decimal" placeholder="כמה מטרים?">` },
+    { title: "הערות למיקום", help: "כל מה שצריך לדעת לפני שמגיעים.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="גישה, מדרכות, אנשים, חסימות..."></textarea>` }
   ],
   signage: [
-    { title: "צילום מרחוק", help: "איך המקום נראה מרחוק.", photo: "צילום רחוק", control: `<select><option>צלם מרחוק</option><option>צריך עוד תמונה</option></select>` },
-    { title: "צילום מקרוב", help: "המקום שבו ייתלה השלט.", photo: "צילום קרוב", control: `<textarea rows="2" placeholder="מה נדרש לתלייה?"></textarea>` },
-    { title: "מדידות והערות", help: "רוחב, גובה, חומרים, סיכון לנזק.", photo: "צילום עם סימון", control: `<textarea rows="3" placeholder="רוחב, גובה, ציוד, חניה, שפה מיוחדת..."></textarea>` }
+    { title: "צילום מרחוק", help: "איך המקום נראה מהרחוב.", photo: "צלם מרחוק", control: `<select><option>כן, ברור</option><option>צריך עוד תמונה</option></select>` },
+    { title: "צילום תקריב", help: "איפה השלט ייתלה.", photo: "צלם תקריב", control: `<textarea rows="2" placeholder="מה נדרש לתלייה?"></textarea>` },
+    { title: "מדידות והערות", help: "רוחב, גובה, גישה וסיכון.", photo: "צילום עם סימון", control: `<textarea rows="3" placeholder="רוחב, גובה, ציוד, חניה, שפה מיוחדת..."></textarea>` }
   ],
   booth: [
-    { title: "צילום המקום", help: "איך המקום נראה ומי עובר בו.", photo: "צילום מקום", control: `<select><option>צפוף ומתאים</option><option>סביר</option><option>דורש בדיקה</option></select>` },
-    { title: "שעות מומלצות", help: "מתי כדאי להגיע ואיך לפרוס.", photo: "צילום עם סימון", control: `<textarea rows="2" placeholder="מתי כן ומתי לא?"></textarea>` },
-    { title: "הערות על תנועה וציוד", help: "ממה להיזהר ומה להביא.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="ציוד, צפיפות, סיכונים, חניה..."></textarea>` }
+    { title: "צילום המקום", help: "איך המקום נראה ומה עובר שם.", photo: "צלם מקום", control: `<select><option>צפוף ומתאים</option><option>סביר</option><option>דורש בדיקה</option></select>` },
+    { title: "שעות מומלצות", help: "מתי כן ומתי לא.", photo: "צילום עם סימון", control: `<textarea rows="2" placeholder="מתי כן ומתי לא?"></textarea>` },
+    { title: "הערות למקום", help: "ציוד, קהל, גישה וסיכון.", photo: "צילום נוסף אם צריך", control: `<textarea rows="3" placeholder="ציוד, צפיפות, חסימות, חניה..."></textarea>` }
   ]
 };
 
@@ -35,10 +35,10 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-07-14 14:33:36";
+const buildStampValue = "2026-07-14 15:32:49";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
-  buildStamp.textContent = `Last updated: ${buildStampValue} IL`;
+  buildStamp.textContent = `עודכן לאחרונה: ${buildStampValue} IL`;
 }
 
 function getEditorSurface() {
@@ -439,7 +439,7 @@ function attachPointLaunchers() {
       alert("צריך להזין סיסמה");
       return;
     }
-    document.getElementById("welcomeLine").textContent = `${user} ? ${merhav}`;
+    document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
     showScreen("queue");
   });
 

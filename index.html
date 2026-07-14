@@ -24,9 +24,9 @@
     <main>
       <section class="screen active" id="loginScreen">
         <div class="hero-panel">
-          <p>ברוכים הבאים</p>
+          <p>כניסה מהירה</p>
           <h1>תיעוד שטח</h1>
-          <p>מסך כניסה מהיר לצוותי שטח. בוחרים משתמש, בוחרים מרחב, ונכנסים לרשימת הנקודות.</p>
+          <p>בוחרים מרחב, משתמש וסיסמה, ונכנסים לרשימת הנקודות.</p>
         </div>
         <section class="panel">
           <div class="build-stamp" id="buildStamp"></div>
@@ -56,14 +56,14 @@
         <div class="welcome">
           <p id="welcomeLine">שלום, שירה</p>
           <h1>איזו נקודה מתעדכנת עכשיו?</h1>
-          <p>רואים פה גם נקודות שהן שלך וגם נקודות פנויות. כל כרטיס פותח נקודה אחת במסך נפרד.</p>
+          <p>כאן מופיעות נקודות לטיפול ונקודות פנויות. כל כרטיס פותח נקודה במסך נפרד.</p>
         </div>
 
         <button class="add-field-point floating-add-point" id="addFieldPoint" type="button">
           <span>+</span>
           <div>
             <strong>הוספת נקודה מהשטח</strong>
-            <small>מצאתם מקום שלא מופיע ברשימה? פותחים נקודה חדשה.</small>
+            <small>מצאתם מקום חדש? פותחים נקודה ומתחילים לתעד.</small>
           </div>
           <b>←</b>
         </button>
@@ -72,7 +72,7 @@
           <div class="section-head">
             <div>
               <h2>נקודות בטיפול</h2>
-              <p>אפשר להחזיק כמה נקודות פתוחות במקביל</p>
+              <p>נקודות שכבר נלקחו ועדיין לא הושלמו.</p>
             </div>
             <button class="ghost-btn" type="button">לפי עדיפות</button>
           </div>
@@ -165,7 +165,7 @@
             <a href="#" target="_blank" rel="noopener">Waze</a>
             <a href="#" target="_blank" rel="noopener">Google Maps</a>
           </div>
-          <div class="section-hint">קודם הגעה וניווט, אחר כך שדות, תמונות והערות.</div>
+          <div class="section-hint">הסדר קבוע: הגעה, מיקום, שדות, תמונות, הערות ושליחה.</div>
         </div>
 
         <div class="mission-progress">
@@ -178,7 +178,7 @@
             <span>1</span>
             <div>
               <h2>הגעה ואימות</h2>
-              <p>לפני שמצלמים, מאשרים שהגעת לנקודה הנכונה.</p>
+              <p>מסמנים שהגעתם לנקודה או פותחים בעיה אם צריך.</p>
             </div>
           </div>
           <div class="big-actions">
@@ -194,7 +194,7 @@
                 <option>בעיה בטיחותית</option>
               </select>
             </label>
-            <label>הסבר קצר
+            <label>תיאור קצר
               <textarea rows="2" placeholder="מה צריך לדעת?"></textarea>
             </label>
             <button class="add-photo" type="button">צילום הבעיה</button>
@@ -207,7 +207,7 @@
             <span>2</span>
             <div>
               <h2>מיקום מתוכנן מול מיקום נוכחי</h2>
-              <p>אחרי ההגעה, מאשרים את המקום או מתקנים אותו לפי ה-GPS של המכשיר.</p>
+              <p>משווים בין המיקום המתוכנן לבין ה-GPS, ומאשרים או מתקנים.</p>
             </div>
           </div>
           <div class="location-card">
@@ -218,7 +218,7 @@
             <p id="actualLocationText">עדיין לא אומת מהמכשיר</p>
             <div class="location-actions">
               <button id="confirmLocation" type="button">המיקום נכון</button>
-              <button id="useCurrentLocation" type="button">עדכנו למיקום הנוכחי</button>
+              <button id="useCurrentLocation" type="button">עדכן למיקום הנוכחי</button>
             </div>
           </div>
         </section>
@@ -230,7 +230,7 @@
             <span id="logisticsStepNumber">6</span>
             <div>
               <h2>חניה, פריקה וגישה</h2>
-              <p>רק אחרי שסיימתם את המיקום עצמו: איך נכנסים, איך פורקים, ואיפה מחנים.</p>
+              <p>איפה מחנים, איך פורקים, ואיך נכנסים למקום.</p>
             </div>
           </div>
           <button class="add-photo" type="button">📷 צילום חניה / פריקה</button>
@@ -282,7 +282,7 @@
             <span id="reviewStepNumber">8</span>
             <div>
               <h2>בדיקה לפני שליחה</h2>
-              <p>אם יש חוסרים, אפשר לחזור, לשלוח בכל זאת, או לשמור להמשך.</p>
+              <p>אם חסר משהו, אפשר לחזור, לשלוח בכל זאת או לשמור להמשך.</p>
             </div>
           </div>
           <div class="review-list">
@@ -297,7 +297,7 @@
         </section>
 
         <div class="bottom-actions">
-          <button class="save-draft" type="button">שמירה והמשך אחר כך</button>
+          <button class="save-draft" type="button">שמור והמשך אחר כך</button>
           <button class="submit-review" id="submitReview" type="button">שליחה לבדיקה</button>
         </div>
       </section>
@@ -348,7 +348,7 @@
               <textarea id="newReason" rows="3" placeholder="מה חשוב במקום הזה?"></textarea>
             </label>
           </section>
-          <button class="submit-review" type="submit">יצירת נקודה והתחלת תיעוד</button>
+          <button class="submit-review" type="submit">צור נקודה והתחל תיעוד</button>
         </form>
       </section>
     </main>
