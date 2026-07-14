@@ -417,6 +417,11 @@ function attachPointLaunchers() {
       return;
     }
 
+    if (trigger.id === "addFieldPoint") {
+      showScreen("newPoint");
+      return;
+    }
+
     if (trigger.id === "confirmLocation") {
       const status = document.getElementById("actualLocationText");
       status.textContent = "המיקום נכון";
