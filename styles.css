@@ -65,10 +65,8 @@ button{cursor:pointer}
 .location-card small{display:block;color:var(--muted);font-size:.76rem}
 .location-card strong{display:block;margin-top:2px}
 .location-card p{margin:8px 0 10px;font-size:.86rem}
-.location-actions{display:grid;grid-template-columns:1fr 1fr}
-.location-actions button{width:100%}
-.location-actions button:first-child{border:1px solid #b9d8ce;background:#f0faf7;color:var(--teal)}
-.location-actions button:last-child{border:1px solid #b5c7d9;background:#f7fbff;color:var(--blue)}
+.location-actions{display:grid;grid-template-columns:minmax(0,280px);justify-content:center}
+.location-actions button{width:100%;border:1px solid #b9d8ce;background:#f0faf7;color:var(--teal)}
 .location-ok{color:var(--teal)!important;font-weight:700}
 .location-pending{color:var(--orange)!important;font-weight:700}
 .location-error{color:var(--red)!important;font-weight:700}
