@@ -34,10 +34,10 @@ let photoEditor = null;
 let editorCaption = null;
 let editorToolMode = "arrow";
 const photoCache = new Map();
+const buildStampValue = "2026-07-14 12:27:52 PM";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
-  const updatedAt = document.lastModified || "";
-  buildStamp.textContent = updatedAt ? `Last updated: ${updatedAt}` : "Last updated: unknown";
+  buildStamp.textContent = `Last updated: ${buildStampValue}`;
 }
 
 function getEditorSurface() {
