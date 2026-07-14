@@ -363,6 +363,11 @@ function attachPointLaunchers() {
       return;
     }
 
+    if (trigger.dataset.nav) {
+      showScreen(trigger.dataset.nav);
+      return;
+    }
+
     if (trigger.id === "releaseButton") {
       showScreen("queue");
       return;
@@ -382,7 +387,8 @@ function attachPointLaunchers() {
     }
 
     if (trigger.classList.contains("add-photo")) {
-      activePhotoTarget = trigger.closest(".mission-step")?.querySelector(".photo-gallery");
+      const photoArea = trigger.closest(".blocker-box") || trigger.closest(".mission-step");
+      activePhotoTarget = photoArea?.querySelector(".photo-gallery");
       activePhotoInput = document.getElementById("photoInput");
       if (!activePhotoTarget || !activePhotoInput) return;
       activePhotoInput.value = "";
@@ -408,6 +414,11 @@ function attachPointLaunchers() {
 
     if (trigger.classList.contains("remove-photo")) {
       trigger.closest(".photo-item")?.remove();
+      return;
+    }
+
+    if (trigger.id === "addFieldPoint") {
+      showScreen("newPoint");
       return;
     }
 

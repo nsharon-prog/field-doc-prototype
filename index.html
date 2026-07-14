@@ -59,6 +59,15 @@
           <p>רואים פה גם נקודות שהן שלך וגם נקודות פנויות. כל כרטיס פותח נקודה אחת במסך נפרד.</p>
         </div>
 
+        <button class="add-field-point floating-add-point" id="addFieldPoint" type="button">
+          <span>+</span>
+          <div>
+            <strong>הוספת נקודה מהשטח</strong>
+            <small>מצאתם מקום שלא מופיע ברשימה? פותחים נקודה חדשה.</small>
+          </div>
+          <b>←</b>
+        </button>
+
         <section class="panel">
           <div class="section-head">
             <div>
@@ -132,15 +141,6 @@
             </article>
           </div>
         </section>
-
-        <button class="add-field-point" id="addFieldPoint" type="button">
-          <span>+</span>
-          <div>
-            <strong>הוספת נקודה מהשטח</strong>
-            <small>מצאתם מקום שלא מופיע ברשימה? פותחים נקודה חדשה.</small>
-          </div>
-          <b>←</b>
-        </button>
       </section>
 
       <section class="screen" id="documentScreen">
@@ -198,6 +198,7 @@
               <textarea rows="2" placeholder="מה צריך לדעת?"></textarea>
             </label>
             <button class="add-photo" type="button">צילום הבעיה</button>
+            <div class="photo-gallery"></div>
           </div>
         </section>
 
