@@ -50,6 +50,17 @@ function markLocationStepDone() {
   state.textContent = "בוצע";
 }
 
+function setEditorMark(type, x, y, text = "") {
+  const canvas = document.querySelector(".editor-canvas");
+  if (!canvas) return;
+  const mark = document.createElement("span");
+  mark.className = `editor-mark ${type}`;
+  mark.style.left = `${x}px`;
+  mark.style.top = `${y}px`;
+  if (type === "text") mark.textContent = text || "טקסט";
+  canvas.appendChild(mark);
+}
+
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
   screens[name].classList.add("active");
@@ -294,6 +305,7 @@ document.addEventListener("click", (event) => {
     editor.hidden = false;
     editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
+    editorMode = null;
     return;
   }
 
@@ -387,10 +399,30 @@ document.getElementById("saveEditor").addEventListener("click", () => {
 document.querySelectorAll(".editor-tools button").forEach((button) => {
   button.addEventListener("click", () => {
     const text = button.textContent;
-    if (text.includes("חץ")) editorMode = "arrow";
-    else if (text.includes("עיגול")) editorMode = "circle";
-    else if (text.includes("טקסט")) editorMode = "text";
-    else editorMode = "undo";
+    const editorCaption = document.getElementById("editorCaption");
+    const canvas = document.querySelector(".editor-canvas");
+    const rect = canvas.getBoundingClientRect();
+    const x = rect.width * 0.5;
+    const y = rect.height * 0.5;
+    if (text.includes("חץ")) {
+      editorMode = "arrow";
+      setEditorMark("arrow", x, y);
+      return;
+    }
+    if (text.includes("עיגול")) {
+      editorMode = "circle";
+      setEditorMark("circle", x, y);
+      return;
+    }
+    if (text.includes("טקסט")) {
+      editorMode = "text";
+      setEditorMark("text", x, y, editorCaption.value.trim());
+      return;
+    }
+    editorMode = "undo";
+    const marks = canvas.querySelectorAll(".editor-mark");
+    const last = marks[marks.length - 1];
+    if (last) last.remove();
   });
 });
 
@@ -412,6 +444,13 @@ document.querySelector(".editor-canvas").addEventListener("click", (event) => {
   mark.style.top = `${y}px`;
   mark.textContent = editorMode === "text" ? (document.getElementById("editorCaption").value.trim() || "טקסט") : "";
   canvas.appendChild(mark);
+});
+
+window.addEventListener("load", () => {
+  const status = document.getElementById("actualLocationText");
+  if (status && status.classList.contains("location-ok")) {
+    markLocationStepDone();
+  }
 });
 
 function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
