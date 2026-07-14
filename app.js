@@ -32,7 +32,23 @@ let pendingPhotoItem = null;
 let activePhotoEditorItem = null;
 let photoEditor = null;
 let editorCaption = null;
+let editorMode = null;
 const photoCache = new Map();
+
+function markLocationStepDone() {
+  const step = document.querySelector(".location-step");
+  if (!step) return;
+  step.classList.add("done");
+  let state = step.querySelector(".step-state");
+  if (!state) {
+    state = document.createElement("div");
+    state.className = "step-state done-state";
+    const anchor = step.querySelector(".step-title");
+    anchor?.insertAdjacentElement("afterend", state);
+  }
+  state.className = "step-state done-state";
+  state.textContent = "בוצע";
+}
 
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -178,6 +194,7 @@ document.getElementById("confirmLocation").addEventListener("click", () => {
   const status = document.getElementById("actualLocationText");
   status.textContent = "המיקום המתוכנן אושר בשטח";
   status.className = "location-ok";
+  markLocationStepDone();
 });
 
 document.getElementById("useCurrentLocation").addEventListener("click", () => {
@@ -204,6 +221,7 @@ document.getElementById("useCurrentLocation").addEventListener("click", () => {
       navLinks[1].href = `https://www.google.com/maps/search/?api=1&query=${query}`;
       status.textContent = `עודכן למיקום הנוכחי: ${lat}, ${lng}`;
       status.className = "location-ok";
+      markLocationStepDone();
     },
     () => {
       status.textContent = "לא הצלחנו לקרוא GPS";
@@ -272,6 +290,7 @@ document.addEventListener("click", (event) => {
     const captionInput = item.querySelector("input[type='text']");
     const preview = item.querySelector(".photo-preview");
     activePhotoEditorItem = item;
+    editorMode = null;
     editor.hidden = false;
     editorPhoto.style.background = preview ? `#394b52 url(${preview.src}) center/contain no-repeat` : "#394b52";
     document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
@@ -351,6 +370,7 @@ document.getElementById("closeEditor").addEventListener("click", () => {
   document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
+  editorMode = null;
 });
 document.getElementById("saveEditor").addEventListener("click", () => {
   if (activePhotoEditorItem) {
@@ -361,6 +381,37 @@ document.getElementById("saveEditor").addEventListener("click", () => {
   document.querySelector(".editor-photo").style.background = "#394b52";
   document.getElementById("photoEditor").hidden = true;
   activePhotoEditorItem = null;
+  editorMode = null;
+});
+
+document.querySelectorAll(".editor-tools button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const text = button.textContent;
+    if (text.includes("חץ")) editorMode = "arrow";
+    else if (text.includes("עיגול")) editorMode = "circle";
+    else if (text.includes("טקסט")) editorMode = "text";
+    else editorMode = "undo";
+  });
+});
+
+document.querySelector(".editor-canvas").addEventListener("click", (event) => {
+  if (!editorMode) return;
+  const canvas = event.currentTarget;
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  if (editorMode === "undo") {
+    const marks = canvas.querySelectorAll(".editor-mark");
+    const last = marks[marks.length - 1];
+    if (last) last.remove();
+    return;
+  }
+  const mark = document.createElement("span");
+  mark.className = `editor-mark ${editorMode}`;
+  mark.style.left = `${x}px`;
+  mark.style.top = `${y}px`;
+  mark.textContent = editorMode === "text" ? (document.getElementById("editorCaption").value.trim() || "טקסט") : "";
+  canvas.appendChild(mark);
 });
 
 function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {

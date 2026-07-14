@@ -125,8 +125,11 @@ textarea{resize:vertical}
 .editor header button:last-child{color:var(--blue);font-weight:700}
 .editor-canvas{position:relative;height:390px;background:#394b52;overflow:hidden}
 .editor-photo{position:absolute;inset:30px 12px;background:linear-gradient(150deg,#bed1d7,#657b82);border-radius:4px}
-.canvas-arrow{position:absolute;left:32%;top:42%;font-size:4rem;color:#f04438;transform:rotate(-18deg)}
-.canvas-label{position:absolute;left:50%;top:30%;padding:6px 10px;border-radius:4px;background:#f5c84c;color:#17202a;font-weight:700}
+.editor-mark{position:absolute;transform:translate(-50%,-50%);pointer-events:none}
+.editor-mark.arrow{font-size:3.5rem;color:#f04438;font-weight:700}
+.editor-mark.arrow::before{content:"➜"}
+.editor-mark.circle{width:34px;height:34px;border:4px solid #f04438;border-radius:50%}
+.editor-mark.text{padding:4px 8px;border-radius:4px;background:#f5c84c;color:#17202a;font-weight:700}
 .editor-tools{display:grid;grid-template-columns:repeat(4,1fr);padding:10px}
 .editor-tools button{border:0;background:#fff;display:grid;gap:5px;place-items:center;color:var(--muted)}
 .editor-tools b{font-size:1.5rem;color:var(--ink)}
