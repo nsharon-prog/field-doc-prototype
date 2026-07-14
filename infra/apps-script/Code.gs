@@ -2,6 +2,7 @@ const FIELD_DOC_APP = {
   properties: PropertiesService.getScriptProperties(),
   sheetNames: ["Settings", "Districts", "Merhavim", "Settlements", "Teams", "Users", "Points", "Photos", "StatusHistory", "InfraTests"]
 };
+const SOURCE_HIERARCHY_SPREADSHEET_ID = "1F4vHhLNe6OPpEyZRzSaNd9hIJn4xHr4e-NdF1ECEGtU";
 
 function doGet(event) {
   const action = (event.parameter.action || "health").toLowerCase();
@@ -178,9 +179,9 @@ function getHierarchy_() {
   const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
   return {
     ok: true,
-    districts: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Districts"))),
-    merhavim: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim"))),
-    settlements: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements"))),
+    districts: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Districts"))), "districtId", ["north-sharon-district"]),
+    merhavim: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim"))), "merhavId", ["east-sharon"]),
+    settlements: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements"))), "settlementId", ["kfar-saba"]),
     teams: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Teams"))),
     settings: sheetObjects_(spreadsheet.getSheetByName("Settings"))
   };
@@ -224,24 +225,62 @@ function seedHierarchy_(spreadsheet) {
       active: true
     });
   }
-  if (merhavim.getLastRow() < 2) {
-    appendObject_(merhavim, {
-      merhavId: "east-sharon",
-      districtId: "north-sharon-district",
-      merhavName: "מרחב מזרח השרון",
-      merhavLeadEmail: "",
-      active: true
+  syncHierarchyFromSource_(spreadsheet);
+}
+
+function syncHierarchyFromSource_(spreadsheet) {
+  try {
+    const source = SpreadsheetApp.openById(SOURCE_HIERARCHY_SPREADSHEET_ID);
+    const sheet = source.getSheets()[0];
+    const values = sheet.getDataRange().getValues();
+    if (values.length < 2) return;
+    const headers = values[0].map((value) => String(value).trim());
+    const rows = values.slice(1);
+    const townIndex = headers.indexOf("יישוב");
+    const merhavIndex = headers.indexOf("מרחב");
+    if (townIndex === -1 || merhavIndex === -1) return;
+
+    const existingMerhavIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Merhavim")).map((row) => String(row.merhavId)));
+    const existingSettlementIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Settlements")).map((row) => String(row.settlementId)));
+    const districtId = "north-sharon-district";
+    const districtName = "מחוז צפון השרון";
+
+    const merhavNameById = new Map();
+    const settlementRows = [];
+
+    rows.forEach((row) => {
+      const settlementName = String(row[townIndex] || "").trim();
+      const merhavName = String(row[merhavIndex] || "").trim();
+      if (!settlementName || !merhavName) return;
+      const merhavId = slugify_(merhavName);
+      const settlementId = slugify_(settlementName);
+      if (!existingMerhavIds.has(merhavId)) {
+        merhavNameById.set(merhavId, merhavName);
+      }
+      if (!existingSettlementIds.has(settlementId)) {
+        settlementRows.push({
+          settlementId,
+          merhavId,
+          districtId,
+          settlementName,
+          settlementLeadEmail: "",
+          active: true
+        });
+      }
     });
-  }
-  if (settlements.getLastRow() < 2) {
-    appendObject_(settlements, {
-      settlementId: "kfar-saba",
-      merhavId: "east-sharon",
-      districtId: "north-sharon-district",
-      settlementName: "כפר סבא",
-      settlementLeadEmail: "",
-      active: true
+
+    merhavNameById.forEach((merhavName, merhavId) => {
+      appendObject_(spreadsheet.getSheetByName("Merhavim"), {
+        merhavId,
+        districtId,
+        merhavName,
+        merhavLeadEmail: "",
+        active: true
+      });
     });
+    settlementRows.forEach((settlement) => appendObject_(spreadsheet.getSheetByName("Settlements"), settlement));
+  } catch (error) {
+    Logger.log(`Hierarchy sync skipped: ${error}`);
   }
 }
 
@@ -284,6 +323,32 @@ function sheetObjects_(sheet) {
 
 function activeRows_(rows) {
   return rows.filter((row) => String(row.active).toLowerCase() !== "false");
+}
+
+function cleanHierarchyRows_(rows, key, blockedIds) {
+  const blocked = new Set(blockedIds || []);
+  const cleaned = rows.filter((row) => !blocked.has(String(row[key])));
+  const deduped = [];
+  const seen = new Set();
+  cleaned.forEach((row) => {
+    const id = String(row[key] || "");
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    deduped.push(row);
+  });
+  return deduped;
+}
+
+function slugify_(text) {
+  return String(text || "")
+    .trim()
+    .replace(/["'`]/g, "")
+    .replace(/[\u0591-\u05C7]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^A-Za-z0-9\u0590-\u05FF-]+/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 }
 
 function getOrCreateChildFolder_(parent, name) {
