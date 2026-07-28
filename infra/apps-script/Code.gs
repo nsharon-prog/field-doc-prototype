@@ -245,7 +245,7 @@ function syncHierarchyFromSource_(spreadsheet) {
       return { ok: false, reason: "Hierarchy source spreadsheet ID is not configured." };
     }
     const source = SpreadsheetApp.openById(sourceSpreadsheetId);
-    const sheet = source.getSheets()[0];
+    const sheet = source.getSheetByName("מצבת פעילים והרשאות") || source.getSheets()[0];
     const values = sheet.getDataRange().getValues();
     if (values.length < 2) return { ok: false, reason: "Source sheet has no data rows." };
     const headers = values[0].map((value) => String(value).trim());
@@ -260,25 +260,50 @@ function syncHierarchyFromSource_(spreadsheet) {
       };
     }
 
-    const existingMerhavIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Merhavim")).map((row) => String(row.merhavId)));
-    const existingSettlementIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Settlements")).map((row) => String(row.settlementId)));
     const districtId = "north-sharon-district";
-    const districtName = "מחוז צפון השרון";
+    const merhavSheet = spreadsheet.getSheetByName("Merhavim");
+    const settlementSheet = spreadsheet.getSheetByName("Settlements");
+    clearDataRows_(merhavSheet);
+    clearDataRows_(settlementSheet);
 
-    const merhavNameById = new Map();
-    const settlementRows = [];
+    const merhavDisplayNames = [
+      "בנימינה / גבעת עדה + יישובי אלונה",
+      "זכרון יעקב+",
+      "קיסריה / אור עקיבה +",
+      "פרדס חנה",
+      "חדרה מנשה",
+      "עמק חפר",
+      "נתניה +"
+    ];
+    const merhavBySource = {
+      "נטע ארז": "בנימינה / גבעת עדה + יישובי אלונה",
+      "בנימינה והסביבה": "בנימינה / גבעת עדה + יישובי אלונה",
+      "רונית מנדל שקד": "זכרון יעקב+",
+      "זכרון יעקב והסביבה": "זכרון יעקב+",
+      "ניצן רון": "קיסריה / אור עקיבה +",
+      "אור עקיבא": "קיסריה / אור עקיבה +",
+      "קיסריה": "קיסריה / אור עקיבה +",
+      "אורית מרנדה": "פרדס חנה",
+      "פרדס חנה והסביבה": "פרדס חנה",
+      "תירוש לוין": "חדרה מנשה",
+      "יפתח שטיין": "חדרה מנשה",
+      "נדאל מסאלחה": "חדרה מנשה",
+      "שירלי סגל": "עמק חפר",
+      "דברה לונדון": "נתניה +"
+    };
+
+    const settlementById = new Map();
 
     rows.forEach((row) => {
-      const settlementName = String(row[townIndex] || "").trim();
-      const merhavName = String(row[merhavIndex] || "").trim();
-      if (!settlementName || !merhavName) return;
+      const rawSettlementName = String(row[townIndex] || "").trim();
+      const sourceMerhavName = String(row[merhavIndex] || "").trim();
+      const merhavName = merhavBySource[sourceMerhavName] || "";
+      if (!rawSettlementName || !merhavName || sourceMerhavName === "#N/A") return;
       const merhavId = slugify_(merhavName);
-      const settlementId = slugify_(settlementName);
-      if (!existingMerhavIds.has(merhavId)) {
-        merhavNameById.set(merhavId, merhavName);
-      }
-      if (!existingSettlementIds.has(settlementId)) {
-        settlementRows.push({
+      splitSettlementNames_(rawSettlementName).forEach((settlementName) => {
+        const settlementId = slugify_(settlementName);
+        if (!settlementId || settlementById.has(settlementId)) return;
+        settlementById.set(settlementId, {
           settlementId,
           merhavId,
           districtId,
@@ -286,32 +311,39 @@ function syncHierarchyFromSource_(spreadsheet) {
           settlementLeadEmail: "",
           active: true
         });
-      }
+      });
     });
 
-    let addedMerhavim = 0;
-    merhavNameById.forEach((merhavName, merhavId) => {
-      appendObject_(spreadsheet.getSheetByName("Merhavim"), {
-        merhavId,
+    merhavDisplayNames.forEach((merhavName) => {
+      appendObject_(merhavSheet, {
+        merhavId: slugify_(merhavName),
         districtId,
         merhavName,
         merhavLeadEmail: "",
         active: true
       });
-      addedMerhavim += 1;
     });
-    settlementRows.forEach((settlement) => appendObject_(spreadsheet.getSheetByName("Settlements"), settlement));
+    Array.from(settlementById.values())
+      .sort((a, b) => String(a.settlementName).localeCompare(String(b.settlementName), "he"))
+      .forEach((settlement) => appendObject_(settlementSheet, settlement));
     return {
       ok: true,
       sourceSheetName: sheet.getName(),
       sourceRows: rows.length,
-      addedMerhavim,
-      addedSettlements: settlementRows.length
+      merhavim: merhavDisplayNames.length,
+      settlements: settlementById.size
     };
   } catch (error) {
     Logger.log(`Hierarchy sync skipped: ${error}`);
     return { ok: false, reason: String(error) };
   }
+}
+
+function splitSettlementNames_(text) {
+  return String(text || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
 }
 
 function requireWorkspace_() {
@@ -338,6 +370,13 @@ function appendObject_(sheet, object) {
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   const row = headers.map((key) => object[key] == null ? "" : object[key]);
   sheet.appendRow(row);
+}
+
+function clearDataRows_(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();
+  }
 }
 
 function sheetObjects_(sheet) {
