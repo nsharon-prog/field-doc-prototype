@@ -4,13 +4,14 @@ const FIELD_DOC_APP = {
 };
 
 function doGet(event) {
+  const callback = event.parameter.callback || "";
   const action = (event.parameter.action || "health").toLowerCase();
-  if (action === "health") return jsonResponse(getHealth_());
-  if (action === "setup") return jsonResponse(setupWorkspace_());
-  if (action === "hierarchy") return jsonResponse(getHierarchy_());
-  if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_());
-  if (action === "testpoint") return jsonResponse(getLatestTestPoint_());
-  return jsonResponse({ ok: false, error: "Unknown action" });
+  if (action === "health") return jsonResponse(getHealth_(), callback);
+  if (action === "setup") return jsonResponse(setupWorkspace_(), callback);
+  if (action === "hierarchy") return jsonResponse(getHierarchy_(), callback);
+  if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
+  if (action === "testpoint") return jsonResponse(getLatestTestPoint_(), callback);
+  return jsonResponse({ ok: false, error: "Unknown action" }, callback);
 }
 
 function doPost(event) {
@@ -402,8 +403,14 @@ function israelTimestamp_() {
   return Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd HH:mm:ss");
 }
 
-function jsonResponse(data) {
+function jsonResponse(data, callback) {
+  const json = JSON.stringify(data);
+  if (callback && /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(callback)) {
+    return ContentService
+      .createTextOutput(`${callback}(${json});`)
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
   return ContentService
-    .createTextOutput(JSON.stringify(data))
+    .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }

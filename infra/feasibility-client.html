@@ -155,7 +155,7 @@
       const status = document.getElementById("configStatus");
       status.textContent = "טוען מחוזות, מרחבים ויישובים...";
       status.className = "small";
-      const data = await getJson(`${url}?action=hierarchy`);
+      const data = await getJsonp(url, "hierarchy");
       if (!data.ok) {
         status.textContent = "לא הצלחתי לטעון רשימות. לחצו בדיקת setup ואז טען רשימות מחדש.";
         status.className = "small warn";
@@ -342,6 +342,37 @@
       } catch (error) {
         return { ok: false, error: String(error) };
       }
+    }
+
+    function getJsonp(baseUrl, action) {
+      return new Promise((resolve) => {
+        const callbackName = `fieldDocJsonp_${Date.now()}_${Math.round(Math.random() * 100000)}`;
+        const separator = baseUrl.includes("?") ? "&" : "?";
+        const script = document.createElement("script");
+        const timeout = window.setTimeout(() => {
+          cleanup();
+          resolve({ ok: false, error: "טעינת הרשימות נתקעה. נסו לרענן את העמוד." });
+        }, 15000);
+
+        window[callbackName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          resolve({ ok: false, error: "לא הצלחתי לקרוא את הרשימות מה-backend." });
+        };
+
+        function cleanup() {
+          window.clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        script.src = `${baseUrl}${separator}action=${encodeURIComponent(action)}&callback=${encodeURIComponent(callbackName)}`;
+        document.head.appendChild(script);
+      });
     }
 
     async function postJson(url, payload) {
