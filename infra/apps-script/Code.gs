@@ -41,7 +41,7 @@ function setupWorkspace_() {
     ROOT_FOLDER_ID: rootFolder.getId(),
     SETUP_EMAIL: Session.getEffectiveUser().getEmail(),
     SETUP_AT: israelTimestamp_()
-  }, true);
+  }, false);
 
   ensureSheets_(spreadsheet);
   seedSettings_(spreadsheet, rootFolder);
