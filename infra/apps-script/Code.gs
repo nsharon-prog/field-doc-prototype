@@ -8,6 +8,7 @@ function doGet(event) {
   if (action === "health") return jsonResponse(getHealth_());
   if (action === "setup") return jsonResponse(setupWorkspace_());
   if (action === "hierarchy") return jsonResponse(getHierarchy_());
+  if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_());
   if (action === "testpoint") return jsonResponse(getLatestTestPoint_());
   return jsonResponse({ ok: false, error: "Unknown action" });
 }
@@ -44,7 +45,7 @@ function setupWorkspace_() {
 
   ensureSheets_(spreadsheet);
   seedSettings_(spreadsheet, rootFolder);
-  seedHierarchy_(spreadsheet);
+  const hierarchySync = seedHierarchy_(spreadsheet);
 
   return {
     ok: true,
@@ -52,7 +53,8 @@ function setupWorkspace_() {
     spreadsheetId: spreadsheet.getId(),
     spreadsheetUrl: spreadsheet.getUrl(),
     rootFolderId: rootFolder.getId(),
-    rootFolderUrl: rootFolder.getUrl()
+    rootFolderUrl: rootFolder.getUrl(),
+    hierarchySync
   };
 }
 
@@ -178,11 +180,21 @@ function getHierarchy_() {
   const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
   return {
     ok: true,
-    districts: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Districts"))), "districtId", ["north-sharon-district"]),
-    merhavim: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim"))), "merhavId", ["east-sharon"]),
-    settlements: cleanHierarchyRows_(activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements"))), "settlementId", ["kfar-saba"]),
+    districts: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Districts"))),
+    merhavim: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim"))),
+    settlements: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements"))),
     teams: activeRows_(sheetObjects_(spreadsheet.getSheetByName("Teams"))),
     settings: sheetObjects_(spreadsheet.getSheetByName("Settings"))
+  };
+}
+
+function syncHierarchyAction_() {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  return {
+    ok: true,
+    hierarchySync: syncHierarchyFromSource_(spreadsheet),
+    hierarchy: getHierarchy_()
   };
 }
 
@@ -214,8 +226,6 @@ function seedSettings_(spreadsheet, rootFolder) {
 
 function seedHierarchy_(spreadsheet) {
   const districts = spreadsheet.getSheetByName("Districts");
-  const merhavim = spreadsheet.getSheetByName("Merhavim");
-  const settlements = spreadsheet.getSheetByName("Settlements");
   if (districts.getLastRow() < 2) {
     appendObject_(districts, {
       districtId: "north-sharon-district",
@@ -224,25 +234,30 @@ function seedHierarchy_(spreadsheet) {
       active: true
     });
   }
-  syncHierarchyFromSource_(spreadsheet);
+  return syncHierarchyFromSource_(spreadsheet);
 }
 
 function syncHierarchyFromSource_(spreadsheet) {
   try {
     const sourceSpreadsheetId = FIELD_DOC_APP.properties.getProperty("HIERARCHY_SOURCE_SPREADSHEET_ID");
     if (!sourceSpreadsheetId) {
-      Logger.log("Hierarchy source spreadsheet ID is not configured.");
-      return;
+      return { ok: false, reason: "Hierarchy source spreadsheet ID is not configured." };
     }
     const source = SpreadsheetApp.openById(sourceSpreadsheetId);
     const sheet = source.getSheets()[0];
     const values = sheet.getDataRange().getValues();
-    if (values.length < 2) return;
+    if (values.length < 2) return { ok: false, reason: "Source sheet has no data rows." };
     const headers = values[0].map((value) => String(value).trim());
     const rows = values.slice(1);
     const townIndex = headers.indexOf("יישוב");
     const merhavIndex = headers.indexOf("מרחב");
-    if (townIndex === -1 || merhavIndex === -1) return;
+    if (townIndex === -1 || merhavIndex === -1) {
+      return {
+        ok: false,
+        reason: "Source sheet is missing יישוב or מרחב columns.",
+        headers
+      };
+    }
 
     const existingMerhavIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Merhavim")).map((row) => String(row.merhavId)));
     const existingSettlementIds = new Set(sheetObjects_(spreadsheet.getSheetByName("Settlements")).map((row) => String(row.settlementId)));
@@ -273,6 +288,7 @@ function syncHierarchyFromSource_(spreadsheet) {
       }
     });
 
+    let addedMerhavim = 0;
     merhavNameById.forEach((merhavName, merhavId) => {
       appendObject_(spreadsheet.getSheetByName("Merhavim"), {
         merhavId,
@@ -281,10 +297,19 @@ function syncHierarchyFromSource_(spreadsheet) {
         merhavLeadEmail: "",
         active: true
       });
+      addedMerhavim += 1;
     });
     settlementRows.forEach((settlement) => appendObject_(spreadsheet.getSheetByName("Settlements"), settlement));
+    return {
+      ok: true,
+      sourceSheetName: sheet.getName(),
+      sourceRows: rows.length,
+      addedMerhavim,
+      addedSettlements: settlementRows.length
+    };
   } catch (error) {
     Logger.log(`Hierarchy sync skipped: ${error}`);
+    return { ok: false, reason: String(error) };
   }
 }
 
