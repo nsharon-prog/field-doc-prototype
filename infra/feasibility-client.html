@@ -318,7 +318,16 @@
       };
       showResult({ ok: true, message: "שומר נקודה..." });
       const data = await postJson(url, payload);
-      showResult(data);
+      if (data && data.ok) {
+        showResult(data);
+        return;
+      }
+      showResult({
+        ok: false,
+        message: "שמירה רגילה נחסמה בדפדפן. פותח שמירה ישירה בחלון חדש.",
+        originalError: data && data.error
+      });
+      submitWithForm(url, payload);
     }
 
     function getBackendUrl() {
@@ -386,6 +395,23 @@
       } catch (error) {
         return { ok: false, error: String(error) };
       }
+    }
+
+    function submitWithForm(url, payload) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = url;
+      form.target = "_blank";
+      form.style.display = "none";
+
+      const payloadInput = document.createElement("textarea");
+      payloadInput.name = "payload";
+      payloadInput.value = JSON.stringify(payload);
+      form.appendChild(payloadInput);
+
+      document.body.appendChild(form);
+      form.submit();
+      window.setTimeout(() => form.remove(), 1000);
     }
 
     async function parseResponse(response) {

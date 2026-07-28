@@ -10,13 +10,16 @@ function doGet(event) {
   if (action === "setup") return jsonResponse(setupWorkspace_(), callback);
   if (action === "hierarchy") return jsonResponse(getHierarchy_(), callback);
   if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
+  if (action === "submitfeasibility") return jsonResponse(saveFeasibilitySubmission_(decodeGetPayload_(event.parameter.payload || "")), callback);
   if (action === "testpoint") return jsonResponse(getLatestTestPoint_(), callback);
   return jsonResponse({ ok: false, error: "Unknown action" }, callback);
 }
 
 function doPost(event) {
   try {
-    const payload = JSON.parse(event.postData.contents || "{}");
+    const payload = event.parameter && event.parameter.payload
+      ? JSON.parse(event.parameter.payload)
+      : JSON.parse(event.postData.contents || "{}");
     const action = (payload.action || "").toLowerCase();
     if (action === "setup") return jsonResponse(setupWorkspace_());
     if (action === "submitfeasibility") return jsonResponse(saveFeasibilitySubmission_(payload));
@@ -24,6 +27,11 @@ function doPost(event) {
   } catch (error) {
     return jsonResponse({ ok: false, error: String(error), stack: error.stack || "" });
   }
+}
+
+function decodeGetPayload_(encodedPayload) {
+  if (!encodedPayload) return {};
+  return JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(encodedPayload)).getDataAsString());
 }
 
 function setupWorkspace_() {
