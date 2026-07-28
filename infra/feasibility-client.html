@@ -131,23 +131,22 @@
       loadHierarchy();
     }
 
-    async function checkBackend() {
+    function checkBackend() {
       const url = getBackendUrl();
       if (!url) return;
-      showResult({ ok: true, message: "בודק backend..." });
-      const data = await getJson(`${url}?action=health`);
-      showResult(data);
+      const healthUrl = `${url}?action=health`;
+      document.getElementById("configStatus").textContent = "נפתח חלון בדיקת backend. חזרו לכאן אחרי שמופיע ok:true.";
+      showResult({ ok: true, message: "פותח בדיקת backend בחלון חדש.", healthUrl });
+      window.open(healthUrl, "_blank", "noopener");
     }
 
-    async function setupWorkspace() {
+    function setupWorkspace() {
       const url = getBackendUrl();
       if (!url) return;
-      showResult({ ok: true, message: "מריץ setup..." });
-      const data = await getJson(`${url}?action=setup`);
-      showResult(data);
-      if (data && data.ok) {
-        loadHierarchy();
-      }
+      const setupUrl = `${url}?action=setup`;
+      document.getElementById("configStatus").textContent = "נפתח חלון setup. אחרי שמופיע ok:true, חזרו ולחצו טען רשימות מחדש.";
+      showResult({ ok: true, message: "פותח setup בחלון חדש.", setupUrl });
+      window.open(setupUrl, "_blank", "noopener");
     }
 
     async function loadHierarchy() {
