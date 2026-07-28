@@ -245,20 +245,21 @@ function syncHierarchyFromSource_(spreadsheet) {
       return { ok: false, reason: "Hierarchy source spreadsheet ID is not configured." };
     }
     const source = SpreadsheetApp.openById(sourceSpreadsheetId);
-    const sheet = source.getSheetByName("מצבת פעילים והרשאות") || source.getSheets()[0];
+    const sheet = source.getSheetByName("מיפוי מחוז צפון השרון")
+      || source.getSheetByName("מצבת פעילים והרשאות")
+      || source.getSheets()[0];
     const values = sheet.getDataRange().getValues();
     if (values.length < 2) return { ok: false, reason: "Source sheet has no data rows." };
     const headers = values[0].map((value) => String(value).trim());
-    const rows = values.slice(1);
-    const townIndex = headers.indexOf("יישוב");
-    const merhavIndex = headers.indexOf("מרחב");
-    if (townIndex === -1 || merhavIndex === -1) {
+    const headerRowIndex = values.findIndex((row) => String(row[0]).trim() === "יישוב");
+    if (headerRowIndex === -1) {
       return {
         ok: false,
-        reason: "Source sheet is missing יישוב or מרחב columns.",
+        reason: "Source sheet is missing יישוב column.",
         headers
       };
     }
+    const rows = values.slice(headerRowIndex + 1);
 
     const districtId = "north-sharon-district";
     const merhavSheet = spreadsheet.getSheetByName("Merhavim");
@@ -275,32 +276,33 @@ function syncHierarchyFromSource_(spreadsheet) {
       "עמק חפר",
       "נתניה +"
     ];
-    const merhavBySource = {
-      "נטע ארז": "בנימינה / גבעת עדה + יישובי אלונה",
-      "בנימינה והסביבה": "בנימינה / גבעת עדה + יישובי אלונה",
-      "רונית מנדל שקד": "זכרון יעקב+",
+    const merhavBySourceGroup = {
+      "בנימינה ויישובי אלונה": "בנימינה / גבעת עדה + יישובי אלונה",
+      "סה\"כ בנימינה וצפון השרון": "",
       "זכרון יעקב והסביבה": "זכרון יעקב+",
-      "ניצן רון": "קיסריה / אור עקיבה +",
-      "אור עקיבא": "קיסריה / אור עקיבה +",
-      "קיסריה": "קיסריה / אור עקיבה +",
-      "אורית מרנדה": "פרדס חנה",
+      "חדרה מנשה": "חדרה מנשה",
+      "חריש מנשה": "חדרה מנשה",
+      "נתניה ומרכז השרון": "נתניה +",
+      "עמק חפר": "עמק חפר",
       "פרדס חנה והסביבה": "פרדס חנה",
-      "תירוש לוין": "חדרה מנשה",
-      "יפתח שטיין": "חדרה מנשה",
-      "נדאל מסאלחה": "חדרה מנשה",
-      "שירלי סגל": "עמק חפר",
-      "דברה לונדון": "נתניה +"
+      "קיסריה, שדות ים ואור עקיבא": "קיסריה / אור עקיבה +"
     };
 
     const settlementById = new Map();
+    let currentMerhavName = "";
 
     rows.forEach((row) => {
-      const rawSettlementName = String(row[townIndex] || "").trim();
-      const sourceMerhavName = String(row[merhavIndex] || "").trim();
-      const merhavName = merhavBySource[sourceMerhavName] || "";
-      if (!rawSettlementName || !merhavName || sourceMerhavName === "#N/A") return;
-      const merhavId = slugify_(merhavName);
-      splitSettlementNames_(rawSettlementName).forEach((settlementName) => {
+      const firstCell = String(row[0] || "").trim();
+      const leader = String(row[1] || "").trim();
+      if (!firstCell || firstCell.indexOf("🏆") !== -1) return;
+      if (firstCell.indexOf("סה\"כ") !== -1) return;
+      if (leader) {
+        currentMerhavName = merhavBySourceGroup[firstCell] || "";
+        return;
+      }
+      if (!currentMerhavName) return;
+      const merhavId = slugify_(currentMerhavName);
+      splitSettlementNames_(firstCell).forEach((settlementName) => {
         const settlementId = slugify_(settlementName);
         if (!settlementId || settlementById.has(settlementId)) return;
         settlementById.set(settlementId, {
