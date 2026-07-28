@@ -1,74 +1,79 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Field Docs Feasibility Test</title>
+  <title>בדיקת MVP - תיעוד שטח</title>
   <style>
     :root{--ink:#17202a;--muted:#63717c;--line:#dce2e6;--blue:#1769e0;--teal:#087f73;--bg:#f2f4f5;--warn:#b45f00}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding:16px}h1{font-size:1.45rem;margin:8px 0 4px}p{color:var(--muted);line-height:1.4}.card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:#fff}label{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:6px}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:700}.secondary{background:#eef5ff;color:var(--blue);border:1px solid #b5c7d9}.ok{color:var(--teal);font-weight:700}.warn{color:var(--warn);font-weight:700}.preview{width:100%;max-height:260px;object-fit:cover;border-radius:6px;margin-top:8px;background:#edf1f3}.result{white-space:pre-wrap;direction:ltr;text-align:left;background:#101820;color:#d7fbe8;padding:12px;border-radius:8px;overflow:auto}.small{font-size:.82rem}.status{padding:10px;border-radius:6px;background:#f6f8f9;color:var(--muted);font-size:.9rem}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}.app{max-width:620px;margin:auto;min-height:100vh;background:#fff;padding:16px}h1{font-size:1.45rem;margin:8px 0 4px}p{color:var(--muted);line-height:1.4}.card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:#fff}label{display:grid;gap:6px;margin-top:12px;font-weight:700}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;min-height:44px;padding:10px;border:1px solid var(--line);border-radius:6px}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:6px;background:var(--blue);color:#fff;font-weight:700}.secondary{background:#eef5ff;color:var(--blue);border:1px solid #b5c7d9}.ok{color:var(--teal);font-weight:700}.warn{color:var(--warn);font-weight:700}.preview{width:100%;max-height:260px;object-fit:cover;border-radius:6px;margin-top:8px;background:#edf1f3}.result{white-space:pre-wrap;direction:ltr;text-align:left;background:#101820;color:#d7fbe8;padding:12px;border-radius:8px;overflow:auto}.small{font-size:.82rem}.status{padding:10px;border-radius:6px;background:#f6f8f9;color:var(--muted);font-size:.9rem}.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.counts span{padding:8px;border-radius:6px;background:#f6f8f9;text-align:center;font-weight:700}
   </style>
 </head>
 <body>
   <main class="app">
-    <h1>Field Docs Infrastructure Test</h1>
-    <p>This page proves the free stack: phone camera, image compression, GPS, Apps Script, Google Sheet, and Drive upload.</p>
-    <p id="startupStatus" class="status">Loading test controls...</p>
+    <h1>בדיקת MVP - תיעוד שטח</h1>
+    <p>בדיקה מהטלפון: רשימות מרחבים/יישובים, GPS, צילום דחוס, שמירה לגוגל שיט ודרייב.</p>
+    <p id="startupStatus" class="status">טוען...</p>
 
     <section class="card">
-      <label>Apps Script Web App URL
+      <label>כתובת backend
         <input id="backendUrl" placeholder="https://script.google.com/macros/s/.../exec">
       </label>
-      <button id="saveConfig" class="secondary" type="button">Save URL on this phone</button>
-      <button id="setupWorkspace" class="secondary" type="button">Run one-time workspace setup</button>
-      <button id="openSetup" class="secondary" type="button">Open setup directly</button>
-      <button id="healthCheck" class="secondary" type="button">Check backend</button>
-      <button id="openHealth" class="secondary" type="button">Open backend check directly</button>
-      <p id="configStatus" class="small">No URL saved yet.</p>
+      <button id="saveConfig" class="secondary" type="button">שמור כתובת וטעון רשימות</button>
+      <button id="reloadHierarchy" class="secondary" type="button">טען רשימות מחדש</button>
+      <button id="setupWorkspace" class="secondary" type="button">בדיקת setup</button>
+      <button id="healthCheck" class="secondary" type="button">בדיקת backend</button>
+      <p id="configStatus" class="small">עדיין לא נטענו רשימות.</p>
+      <div class="counts" aria-label="ספירת רשימות">
+        <span id="districtCount">0 מחוזות</span>
+        <span id="merhavCount">0 מרחבים</span>
+        <span id="settlementCount">0 יישובים</span>
+      </div>
     </section>
 
     <section class="card">
-      <label>District / region
+      <label>מחוז
         <select id="districtSelect"></select>
       </label>
-      <label>Merhav
+      <label>מרחב
         <select id="merhavSelect"></select>
       </label>
-      <label>Settlement / point area
+      <label>יישוב
         <select id="settlementSelect"></select>
       </label>
-      <label>Point type
+      <label>סוג נקודה
         <select id="pointType">
-          <option value="signage">Signage</option>
-          <option value="booth">Booth</option>
-          <option value="cluster">Polling place / cluster</option>
+          <option value="signage">שילוט</option>
+          <option value="booth">דוכן</option>
+          <option value="cluster">אשכול / קלפי</option>
         </select>
       </label>
-      <label>Point number / title <input id="pointNumber" value="אשכול זהב 014"></label>
-      <label>Approx address / landmark <input id="plannedAddress" value="Kfar Saba, Weizmann Junction"></label>
-      <label>Documented by <input id="documentedBy" placeholder="Name / phone"></label>
-      <label>Notes <textarea id="notes" rows="3" placeholder="Short field note"></textarea></label>
-      <button id="captureLocation" type="button" class="secondary">Capture current GPS</button>
-      <p id="locationStatus" class="small">No corrected location captured yet.</p>
+      <label>מספר / כותרת נקודה <input id="pointNumber" value="אשכול זהב 014"></label>
+      <label>כתובת / נקודת ציון <input id="plannedAddress" value="כפר סבא, צומת ויצמן"></label>
+      <label>מי ממלא <input id="documentedBy" placeholder="שם / טלפון"></label>
+      <label>הערות <textarea id="notes" rows="3" placeholder="הערה קצרה מהשטח"></textarea></label>
+      <button id="captureLocation" type="button" class="secondary">קח מיקום GPS נוכחי</button>
+      <p id="locationStatus" class="small">עדיין לא נשמר מיקום GPS.</p>
     </section>
 
     <section class="card">
-      <label>Photo
+      <label>צילום
         <input id="photoInput" type="file" accept="image/*" capture="environment">
       </label>
       <img id="preview" class="preview" alt="" hidden>
-      <p id="photoStatus" class="small">Photos will be resized to max 1600px and JPEG quality 0.76 before upload.</p>
-      <label>Photo caption <input id="caption" placeholder="What does this photo show?"></label>
+      <p id="photoStatus" class="small">התמונה תידחס לפני העלאה לדרייב.</p>
+      <label>תיאור צילום <input id="caption" placeholder="מה רואים בתמונה?"></label>
     </section>
 
     <section class="card">
-      <button id="submitTest" type="button">Save point</button>
-      <p class="small">Expected result: one row in Sheets and one compressed photo in Drive, sorted by district and merhav.</p>
+      <button id="submitTest" type="button">שמור נקודת בדיקה</button>
+      <p class="small">אמור להיווצר שורה בגוגל שיט ותמונה דחוסה בדרייב.</p>
       <div id="result" class="result" hidden></div>
     </section>
   </main>
 
   <script>
+    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
     const state = { photo: null, location: null, hierarchy: null };
     let backendInput;
 
@@ -78,12 +83,11 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       backendInput = document.getElementById("backendUrl");
-      backendInput.value = localStorage.getItem("fieldDocBackendUrl") || "";
+      backendInput.value = localStorage.getItem("fieldDocBackendUrl") || DEFAULT_BACKEND_URL;
       bind("saveConfig", saveConfig);
       bind("healthCheck", checkBackend);
       bind("setupWorkspace", setupWorkspace);
-      bind("openSetup", openSetupDirectly);
-      bind("openHealth", openHealthDirectly);
+      bind("reloadHierarchy", loadHierarchy);
       bind("captureLocation", captureLocation);
       bind("submitTest", submitTest);
       bindPhotoInput();
@@ -92,7 +96,7 @@
       if (backendInput.value.trim()) {
         loadHierarchy();
       }
-      setStartup("Controls ready. Paste the Apps Script Web App URL, then press Save URL.", true);
+      setStartup("הטופס מוכן. הרשימות ייטענו אוטומטית.", true);
     });
 
     function bind(id, handler) {
@@ -111,43 +115,34 @@
       const url = backendInput.value.trim();
       const status = document.getElementById("configStatus");
       if (!url) {
-        status.textContent = "Paste the Apps Script Web App URL first.";
+        status.textContent = "הדביקו קודם כתובת backend.";
         status.className = "small warn";
-        showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+        showResult({ ok: false, error: "חסרה כתובת backend." });
         return;
       }
       try {
         localStorage.setItem("fieldDocBackendUrl", url);
-        status.textContent = "URL saved. Now press Run one-time workspace setup.";
+        status.textContent = "הכתובת נשמרה. טוען רשימות...";
       } catch (error) {
-        status.textContent = "URL accepted for this session. Phone storage did not allow permanent save.";
+        status.textContent = "הכתובת התקבלה להפעלה הנוכחית.";
       }
       status.className = "small ok";
-      showResult({ ok: true, message: "Saved backend URL locally on this phone.", savedUrlStart: url.slice(0, 45) });
+      showResult({ ok: true, message: "כתובת backend נשמרה. טוען רשימות...", savedUrlStart: url.slice(0, 45) });
       loadHierarchy();
     }
 
     async function checkBackend() {
       const url = getBackendUrl();
       if (!url) return;
-      showResult({ ok: true, message: "Checking backend..." });
+      showResult({ ok: true, message: "בודק backend..." });
       const data = await getJson(`${url}?action=health`);
       showResult(data);
-    }
-
-    function openHealthDirectly() {
-      const url = getBackendUrl();
-      if (!url) return;
-      const healthUrl = `${url}?action=health`;
-      document.getElementById("configStatus").textContent = "Opening backend check directly.";
-      showResult({ ok: true, message: "Opening direct backend check URL. It should show configured:true.", healthUrl });
-      window.open(healthUrl, "_blank", "noopener");
     }
 
     async function setupWorkspace() {
       const url = getBackendUrl();
       if (!url) return;
-      showResult({ ok: true, message: "Running one-time setup..." });
+      showResult({ ok: true, message: "מריץ setup..." });
       const data = await getJson(`${url}?action=setup`);
       showResult(data);
       if (data && data.ok) {
@@ -155,24 +150,15 @@
       }
     }
 
-    function openSetupDirectly() {
-      const url = getBackendUrl();
-      if (!url) return;
-      const setupUrl = `${url}?action=setup`;
-      document.getElementById("configStatus").textContent = "Opening setup directly. Come back here after it shows ok:true.";
-      showResult({ ok: true, message: "Opening direct setup URL. If a new tab opens with ok:true, setup worked.", setupUrl });
-      window.open(setupUrl, "_blank", "noopener");
-    }
-
     async function loadHierarchy() {
       const url = getBackendUrl();
       if (!url) return;
       const status = document.getElementById("configStatus");
-      status.textContent = "Loading districts, merhavs, and settlements...";
+      status.textContent = "טוען מחוזות, מרחבים ויישובים...";
       status.className = "small";
       const data = await getJson(`${url}?action=hierarchy`);
       if (!data.ok) {
-        status.textContent = "Could not load hierarchy yet. Run workspace setup first.";
+        status.textContent = "לא הצלחתי לטעון רשימות. לחצו בדיקת setup ואז טען רשימות מחדש.";
         status.className = "small warn";
         showResult(data);
         return;
@@ -182,8 +168,14 @@
       const districtCount = (data.districts || []).length;
       const merhavCount = (data.merhavim || []).length;
       const settlementCount = (data.settlements || []).length;
-      status.textContent = `Loaded ${districtCount} district(s), ${merhavCount} merhav(s), ${settlementCount} settlement(s).`;
-      status.className = "small ok";
+      document.getElementById("districtCount").textContent = `${districtCount} מחוזות`;
+      document.getElementById("merhavCount").textContent = `${merhavCount} מרחבים`;
+      document.getElementById("settlementCount").textContent = `${settlementCount} יישובים`;
+      status.textContent = `נטענו ${districtCount} מחוזות, ${merhavCount} מרחבים, ${settlementCount} יישובים.`;
+      status.className = merhavCount && settlementCount ? "small ok" : "small warn";
+      if (!merhavCount || !settlementCount) {
+        showResult({ ok: false, error: "הרשימות נטענו אבל הן ריקות. בדקו setup/synchierarchy.", data });
+      }
     }
 
     function renderHierarchy() {
@@ -201,7 +193,7 @@
       fillSelect(districtSelect, districts.map((item) => ({
         value: item.districtId,
         label: item.districtName
-      })), "No districts loaded");
+      })), "לא נטענו מחוזות");
 
       if (currentDistrict && districts.some((item) => item.districtId === currentDistrict)) {
         districtSelect.value = currentDistrict;
@@ -212,7 +204,7 @@
       fillSelect(merhavSelect, filteredMerhavim.map((item) => ({
         value: item.merhavId,
         label: item.merhavName
-      })), "No merhavs loaded");
+      })), "לא נטענו מרחבים");
       if (currentMerhav && filteredMerhavim.some((item) => item.merhavId === currentMerhav)) {
         merhavSelect.value = currentMerhav;
       }
@@ -222,7 +214,7 @@
       fillSelect(settlementSelect, filteredSettlements.map((item) => ({
         value: item.settlementId,
         label: item.settlementName
-      })), "No settlements loaded");
+      })), "לא נטענו יישובים");
       if (currentSettlement && filteredSettlements.some((item) => item.settlementId === currentSettlement)) {
         settlementSelect.value = currentSettlement;
       }
@@ -251,21 +243,21 @@
     function captureLocation() {
       const status = document.getElementById("locationStatus");
       if (!navigator.geolocation) {
-        status.textContent = "GPS is not available in this browser.";
+        status.textContent = "GPS לא זמין בדפדפן הזה.";
         status.className = "small warn";
         return;
       }
-      status.textContent = "Capturing GPS...";
+      status.textContent = "לוקח מיקום GPS...";
       navigator.geolocation.getCurrentPosition((position) => {
         state.location = {
           lat: Number(position.coords.latitude.toFixed(6)),
           lng: Number(position.coords.longitude.toFixed(6)),
           accuracy: Math.round(position.coords.accuracy)
         };
-        status.textContent = `Captured: ${state.location.lat}, ${state.location.lng} (${state.location.accuracy}m)`;
+        status.textContent = `נשמר: ${state.location.lat}, ${state.location.lng} (דיוק ${state.location.accuracy} מ')`;
         status.className = "small ok";
       }, (error) => {
-        status.textContent = `Could not capture GPS: ${error.message || "permission/location error"}`;
+        status.textContent = `לא הצליח לקחת GPS: ${error.message || "בעיית הרשאה/מיקום"}`;
         status.className = "small warn";
       }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
@@ -275,15 +267,15 @@
         const file = event.target.files && event.target.files[0];
         if (!file) return;
         try {
-          document.getElementById("photoStatus").textContent = "Compressing photo...";
+          document.getElementById("photoStatus").textContent = "דוחס תמונה...";
           state.photo = await compressImage(file, 1600, 0.76);
           const preview = document.getElementById("preview");
           preview.src = state.photo.dataUrl;
           preview.hidden = false;
           document.getElementById("photoStatus").textContent =
-            `Compressed to ${Math.round(state.photo.bytes / 1024)} KB, ${state.photo.width}x${state.photo.height}.`;
+            `נדחס ל-${Math.round(state.photo.bytes / 1024)} KB, ${state.photo.width}x${state.photo.height}.`;
         } catch (error) {
-          document.getElementById("photoStatus").textContent = `Photo failed: ${error.message || error}`;
+          document.getElementById("photoStatus").textContent = `צילום נכשל: ${error.message || error}`;
           document.getElementById("photoStatus").className = "small warn";
         }
       });
@@ -309,7 +301,7 @@
         settlementId: settlement.settlementId || "",
         settlementName: settlement.settlementName || "",
         type: document.getElementById("pointType").value,
-        number: document.getElementById("pointNumber").value || "TEST 001",
+        number: document.getElementById("pointNumber").value || "בדיקה 001",
         town: settlement.settlementName || "",
         plannedAddress: document.getElementById("plannedAddress").value,
         correctedLocation: state.location,
@@ -325,7 +317,7 @@
           height: state.photo.height
         }] : []
       };
-      showResult({ ok: true, message: "Saving point..." });
+      showResult({ ok: true, message: "שומר נקודה..." });
       const data = await postJson(url, payload);
       showResult(data);
     }
@@ -333,7 +325,7 @@
     function getBackendUrl() {
       const url = backendInput.value.trim();
       if (!url) {
-        showResult({ ok: false, error: "Missing Apps Script Web App URL." });
+        showResult({ ok: false, error: "חסרה כתובת backend." });
         return "";
       }
       try {
