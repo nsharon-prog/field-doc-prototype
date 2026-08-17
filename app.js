@@ -7,7 +7,7 @@ const screens = {
 };
 
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
-const PILOT_PIN = "1234";
+const PILOT_PIN = "7654";
 const MAX_PHOTOS_PER_STAGE = 3;
 const PHOTO_MAX_WIDTH = 960;
 const PHOTO_JPEG_QUALITY = 0.62;
@@ -22,6 +22,10 @@ const fallbackMerhavim = [
 ];
 const fallbackGoldPoints = [
   ["TEST-PLAYGROUND-001", "חדרה-מנשה", "חדרה מנשה", "חדרה", "נקודת בדיקה - לא אמיתי", "אחד העם 1, חדרה", "נקודת בדיקה 001", "signage", "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים."],
+  ["TEST-PLAYGROUND-002", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "נקודת בדיקה - אשכול", "דרך הבנים 50, פרדס חנה-כרכור", "נקודת בדיקה 002", "cluster", "נקודת בדיקה בלבד - תרחיש אשכול."],
+  ["TEST-PLAYGROUND-003", "נתניה", "נתניה +", "נתניה", "נקודת בדיקה - דוכן", "הרצל 5, נתניה", "נקודת בדיקה 003", "booth", "נקודת בדיקה בלבד - תרחיש דוכן."],
+  ["TEST-PLAYGROUND-004", "עמק-חפר", "עמק חפר", "בת חפר", "נקודת בדיקה - שילוט", "החלוץ 1, בת חפר", "נקודת בדיקה 004", "signage", "נקודת בדיקה בלבד - שילוט במרחב אחר."],
+  ["TEST-PLAYGROUND-005", "זכרון-יעקב", "זכרון יעקב+", "זכרון יעקב", "נקודת בדיקה - הוספה ובדיקה", "המייסדים 1, זכרון יעקב", "נקודת בדיקה 005", "cluster", "נקודת בדיקה בלבד - לבדיקה חופשית."],
   ["GOLD-001", "בנימינה-גבעת-עדה-יישובי-אלונה", "בנימינה / גבעת עדה + יישובי אלונה", "בנימינה-גבעת עדה", "בי\"ס אשכולות", "המורה, בנימינה-גבעת עדה"],
   ["GOLD-002", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "ביה\"ס ממלכתי מעיינות", "צליל,7, פרדס חנה-כרכור"],
   ["GOLD-003", "נתניה", "נתניה +", "אבן יהודה", "בית חינוך בית אב\"י", "העצמאות,140, אבן יהודה"],
@@ -108,7 +112,7 @@ let editorToolMode = "arrow";
 let activePhotoSource = "";
 let cameraStream = null;
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 17:25:08";
+const buildStampValue = "2026-08-17 17:32:54";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;

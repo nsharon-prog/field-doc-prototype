@@ -314,48 +314,107 @@ function seedTestPoint_() {
   const workspace = requireWorkspace_();
   const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
   ensureSheets_(spreadsheet);
-  const pointId = "TEST-PLAYGROUND-001";
-  const existing = findObjectByKey_(spreadsheet.getSheetByName("Points"), "pointId", pointId);
-  const point = createPointObject_({
-    pointId,
-    districtId: "north-sharon-district",
-    districtName: "מחוז צפון השרון",
-    merhavId: "חדרה-מנשה",
-    merhavName: "חדרה מנשה",
-    settlementId: "חדרה",
-    settlementName: "חדרה",
-    type: "signage",
-    number: "נקודת בדיקה 001",
-    pointName: "נקודת בדיקה - לא אמיתי",
-    priority: "",
-    importanceReason: "נקודת בדיקה להפעלת זרימת נתונים",
-    status: existing.object && existing.object.status ? existing.object.status : "Open for documentation",
-    plannedAddress: "אחד העם 1, חדרה",
-    createdBy: "seed-test-point",
-    notes: "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים."
-  });
-  point.createdAt = existing.object && existing.object.createdAt ? existing.object.createdAt : point.createdAt;
-  point.updatedAt = israelTimestamp_();
-  upsertObject_(spreadsheet.getSheetByName("Points"), "pointId", point);
-  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
-    pointId,
-    timestamp: point.updatedAt,
-    fromStatus: existing.object ? existing.object.status || "" : "",
-    toStatus: point.status,
-    changedBy: "seed-test-point",
-    note: existing.object ? "Test point updated" : "Test point seeded"
+  const pointsSheet = spreadsheet.getSheetByName("Points");
+  let created = 0;
+  let updated = 0;
+  const points = testPointSeedRows_().map((seed) => {
+    const existing = findObjectByKey_(pointsSheet, "pointId", seed.pointId);
+    const point = createPointObject_({
+      ...seed,
+      districtId: "north-sharon-district",
+      districtName: "מחוז צפון השרון",
+      settlementId: seed.settlementName,
+      priority: "",
+      importanceReason: "נקודת בדיקה להפעלת זרימת נתונים",
+      status: existing.object && existing.object.status ? existing.object.status : "Open for documentation",
+      createdBy: "seed-test-point"
+    });
+    point.createdAt = existing.object && existing.object.createdAt ? existing.object.createdAt : point.createdAt;
+    point.updatedAt = israelTimestamp_();
+    upsertObject_(pointsSheet, "pointId", point);
+    appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+      pointId: point.pointId,
+      timestamp: point.updatedAt,
+      fromStatus: existing.object ? existing.object.status || "" : "",
+      toStatus: point.status,
+      changedBy: "seed-test-point",
+      note: existing.object ? "Test point updated" : "Test point seeded"
+    });
+    if (existing.object) updated += 1;
+    else created += 1;
+    return point;
   });
   return {
     ok: true,
-    created: !existing.object,
-    updated: Boolean(existing.object),
-    point,
-    output: buildOutputUrls_(point)
+    created,
+    updated,
+    points,
+    output: points.map((point) => ({ pointId: point.pointId, ...buildOutputUrls_(point) }))
   };
 }
 
 function seedTestPoint() {
   return seedTestPoint_();
+}
+
+function testPointSeedRows_() {
+  return [
+    {
+      pointId: "TEST-PLAYGROUND-001",
+      merhavId: "חדרה-מנשה",
+      merhavName: "חדרה מנשה",
+      settlementName: "חדרה",
+      type: "signage",
+      number: "נקודת בדיקה 001",
+      pointName: "נקודת בדיקה - לא אמיתי",
+      plannedAddress: "אחד העם 1, חדרה",
+      notes: "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים."
+    },
+    {
+      pointId: "TEST-PLAYGROUND-002",
+      merhavId: "פרדס-חנה",
+      merhavName: "פרדס חנה",
+      settlementName: "פרדס חנה-כרכור",
+      type: "cluster",
+      number: "נקודת בדיקה 002",
+      pointName: "נקודת בדיקה - אשכול",
+      plannedAddress: "דרך הבנים 50, פרדס חנה-כרכור",
+      notes: "נקודת בדיקה בלבד - תרחיש אשכול."
+    },
+    {
+      pointId: "TEST-PLAYGROUND-003",
+      merhavId: "נתניה",
+      merhavName: "נתניה +",
+      settlementName: "נתניה",
+      type: "booth",
+      number: "נקודת בדיקה 003",
+      pointName: "נקודת בדיקה - דוכן",
+      plannedAddress: "הרצל 5, נתניה",
+      notes: "נקודת בדיקה בלבד - תרחיש דוכן."
+    },
+    {
+      pointId: "TEST-PLAYGROUND-004",
+      merhavId: "עמק-חפר",
+      merhavName: "עמק חפר",
+      settlementName: "בת חפר",
+      type: "signage",
+      number: "נקודת בדיקה 004",
+      pointName: "נקודת בדיקה - שילוט",
+      plannedAddress: "החלוץ 1, בת חפר",
+      notes: "נקודת בדיקה בלבד - שילוט במרחב אחר."
+    },
+    {
+      pointId: "TEST-PLAYGROUND-005",
+      merhavId: "זכרון-יעקב",
+      merhavName: "זכרון יעקב+",
+      settlementName: "זכרון יעקב",
+      type: "cluster",
+      number: "נקודת בדיקה 005",
+      pointName: "נקודת בדיקה - הוספה ובדיקה",
+      plannedAddress: "המייסדים 1, זכרון יעקב",
+      notes: "נקודת בדיקה בלבד - לבדיקה חופשית."
+    }
+  ];
 }
 
 function clearTestPointData_() {
