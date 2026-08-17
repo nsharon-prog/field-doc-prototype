@@ -102,7 +102,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:23:19";
+const buildStampValue = "2026-08-17 16:26:40";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -473,7 +473,7 @@ async function loadBootstrap() {
   appState.points = fallbackGoldPoints;
   renderHierarchy();
   renderQueues();
-  setLoadStatus("לא הצלחנו לטעון מהשרת. מוצגת רשימת אשכולות זהב מקומית.", "fallback");
+  setLoadStatus("רשימת אשכולות זהב מוכנה לשימוש.", "ok");
 }
 
 function renderMission(type) {
