@@ -21,6 +21,8 @@ button{cursor:pointer}
 .hero-panel h1,.welcome h1,.assignment-summary h1,.new-point-intro h1{margin:0}
 .panel{padding:14px;margin-bottom:12px}
 .build-stamp{margin-bottom:12px;padding:9px 11px;border-radius:6px;background:#f2f6fa;border:1px solid #d7e0e8;color:#4f5d68;font-size:.78rem;line-height:1.35}
+.build-stamp[data-mode="ok"]{background:#f0faf7;border-color:#b9d8ce;color:var(--teal);font-weight:700}
+.build-stamp[data-mode="fallback"]{background:#fff7ed;border-color:#f1d5b4;color:#9a520b;font-weight:700}
 .welcome{margin-bottom:14px}
 .welcome p{margin:0 0 6px}
 .section-head,.card-top,.my-point,.point-card,.my-point-top,.meta-row,.my-point-bottom,.subheader,.nav-actions,.location-actions,.big-actions,.bottom-actions,.decision-actions,.summary-pill-row{display:flex;gap:10px}

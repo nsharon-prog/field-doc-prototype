@@ -8,6 +8,61 @@ const screens = {
 
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
 const PILOT_PIN = "1234";
+const fallbackMerhavim = [
+  { merhavId: "בנימינה-גבעת-עדה-יישובי-אלונה", merhavName: "בנימינה / גבעת עדה + יישובי אלונה" },
+  { merhavId: "זכרון-יעקב", merhavName: "זכרון יעקב+" },
+  { merhavId: "קיסריה-אור-עקיבה", merhavName: "קיסריה / אור עקיבה +" },
+  { merhavId: "פרדס-חנה", merhavName: "פרדס חנה" },
+  { merhavId: "חדרה-מנשה", merhavName: "חדרה מנשה" },
+  { merhavId: "עמק-חפר", merhavName: "עמק חפר" },
+  { merhavId: "נתניה", merhavName: "נתניה +" }
+];
+const fallbackGoldPoints = [
+  ["GOLD-001", "בנימינה-גבעת-עדה-יישובי-אלונה", "בנימינה / גבעת עדה + יישובי אלונה", "בנימינה-גבעת עדה", "בי\"ס אשכולות", "המורה, בנימינה-גבעת עדה"],
+  ["GOLD-002", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "ביה\"ס ממלכתי מעיינות", "צליל,7, פרדס חנה-כרכור"],
+  ["GOLD-003", "נתניה", "נתניה +", "אבן יהודה", "בית חינוך בית אב\"י", "העצמאות,140, אבן יהודה"],
+  ["GOLD-004", "נתניה", "נתניה +", "קדימה-צורן", "מתנ\"ס צורן+ביה\"ס לב-רן", "דרך לב השרון צורן,1 +דרך לב השרון צורן,2, קדימה-צורן"],
+  ["GOLD-005", "קיסריה-אור-עקיבה", "קיסריה / אור עקיבה +", "קיסריה", "בית ספר קיסריה-מבנה דרומי+בית ספר קיסריה-מבנה צפוני", "שד רוטשילד,30 +שד רוטשילד,30, קיסריה"],
+  ["GOLD-006", "זכרון-יעקב", "זכרון יעקב+", "זכרון יעקב", "בית ספר החיטה", "דרך אהרן,4, זכרון יעקב"],
+  ["GOLD-007", "זכרון-יעקב", "זכרון יעקב+", "זכרון יעקב", "בי\"ס ממלכתי נילי", "שד ניל\"י, זכרון יעקב"],
+  ["GOLD-008", "נתניה", "נתניה +", "נתניה", "בי\"ס רימלט", "מעפילי אגוז,5, נתניה"],
+  ["GOLD-009", "עמק-חפר", "עמק חפר", "בת חפר", "בי\"ס שדות-בת חפר", "חלבלוב, בת חפר"],
+  ["GOLD-010", "נתניה", "נתניה +", "נתניה", "ביה\"ס חיים חפר", "ברמן בני,4, נתניה"],
+  ["GOLD-011", "נתניה", "נתניה +", "תל מונד", "ביה\"ס נוף ילדות", "החצב,1, תל מונד"],
+  ["GOLD-012", "נתניה", "נתניה +", "נתניה", "בי\"ס ע\"ש אהרון דוידי", "שמורת נחל שניר,3, נתניה"],
+  ["GOLD-013", "נתניה", "נתניה +", "נתניה", "בי\"ס ממלכתי ע\"ש מנחם בגין", "גור מרדכי,4, נתניה"],
+  ["GOLD-014", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "בי\"ס שדות", "נחלה,34, פרדס חנה-כרכור"],
+  ["GOLD-015", "נתניה", "נתניה +", "תל מונד", "בי\"ס שלנו", "הדקל,64, תל מונד"],
+  ["GOLD-016", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "בי\"ס חורב-אגודה", "מצדה,314, פרדס חנה-כרכור"],
+  ["GOLD-017", "נתניה", "נתניה +", "תל מונד", "מתנ\"ס תל מונד", "הדקל,31, תל מונד"],
+  ["GOLD-018", "חדרה-מנשה", "חדרה מנשה", "חדרה", "ביה\"ס עש אילן רמון כניסה ראשית+ביה\"ס עש אילן רמון שער אחורי", "רבין יצחק,56 +רבין יצחק,56, חדרה"],
+  ["GOLD-019", "נתניה", "נתניה +", "נתניה", "מרכז קהילתי אופק+העמותה לחינוך הבלתי פורמלי", "אחימאיר,9 +אחימאיר,9, נתניה"],
+  ["GOLD-020", "בנימינה-גבעת-עדה-יישובי-אלונה", "בנימינה / גבעת עדה + יישובי אלונה", "בנימינה-גבעת עדה", "בית ספר גבע", "הניצנים,17, בנימינה-גבעת עדה"],
+  ["GOLD-021", "זכרון-יעקב", "זכרון יעקב+", "זכרון יעקב", "בי\"ס החורש", "דרך פינלס, זכרון יעקב"],
+  ["GOLD-022", "זכרון-יעקב", "זכרון יעקב+", "מעגן מיכאל", "מועדון האסם", "מעגן מיכאל"],
+  ["GOLD-023", "חדרה-מנשה", "חדרה מנשה", "חדרה", "בי\"ס אחד העם כניסה משער צפוני+בי\"ס אחד העם כניסה משער ראשי", "אחד העם,19 +אחד העם,19, חדרה"],
+  ["GOLD-024", "נתניה", "נתניה +", "כפר יונה", "בית הספר רימון", "יקינטון,4, כפר יונה"],
+  ["GOLD-025", "חדרה-מנשה", "חדרה מנשה", "חדרה", "בי\"ס צפרירים כ. ראשית רח' אלון", "האלון,30, חדרה"],
+  ["GOLD-026", "עמק-חפר", "עמק חפר", "בית יצחק-שער חפר", "בית העם", "בית יצחק-שער חפר"],
+  ["GOLD-027", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "בי\"ס ממלכתי כרכור", "המייסדים,73, פרדס חנה-כרכור"],
+  ["GOLD-028", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "בי\"ס ממלכתי אלונים", "הנדיב,1, פרדס חנה-כרכור"],
+  ["GOLD-029", "נתניה", "נתניה +", "פרדסיה", "בי\"ס תפוז+אולם ספורט-מול בי\"ס", "רמב\"ם,35 +רמב\"ם,36, פרדסיה"],
+  ["GOLD-030", "חדרה-מנשה", "חדרה מנשה", "חדרה", "בי\"ס מדעים ויהדות", "משמר הגבול,1, חדרה"],
+  ["GOLD-031", "חדרה-מנשה", "חדרה מנשה", "חדרה", "בי\"ס תחכמוני חדש", "שדרות כושי עפגין,7, חדרה"],
+  ["GOLD-032", "נתניה", "נתניה +", "נתניה", "בי\"ס שלהבות (הרי\"ף)", "החפץ חיים,801, נתניה"]
+].map((row, index) => ({
+  pointId: row[0],
+  type: "cluster",
+  number: `אשכול זהב ${String(index + 1).padStart(3, "0")}`,
+  merhavId: row[1],
+  merhavName: row[2],
+  settlementName: row[3],
+  pointName: row[4],
+  plannedAddress: row[5],
+  status: "Open for documentation",
+  priority: "1",
+  notes: "נטען מרשימת אשכולות זהב מקומית"
+}));
 const appState = {
   hierarchy: { districts: [], merhavim: [], settlements: [] },
   points: [],
@@ -47,10 +102,17 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 15:54:32";
+const buildStampValue = "2026-08-17 16:20:00";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
+}
+
+function setLoadStatus(message, mode = "") {
+  const status = document.getElementById("loadStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.mode = mode;
 }
 
 function encodePayload(payload) {
@@ -329,7 +391,9 @@ function statusLabel(status) {
 function renderHierarchy() {
   const merhavSelect = document.getElementById("loginMerhav");
   if (!merhavSelect) return;
-  const merhavim = appState.hierarchy.merhavim || [];
+  const merhavim = (appState.hierarchy.merhavim && appState.hierarchy.merhavim.length)
+    ? appState.hierarchy.merhavim
+    : fallbackMerhavim;
   merhavSelect.innerHTML = [
     `<option value="">כל המחוז</option>`,
     ...merhavim.map((merhav) => `<option value="${merhav.merhavId}">${merhav.merhavName}</option>`)
@@ -393,20 +457,27 @@ function renderQueues() {
 }
 
 async function loadBootstrap() {
+  setLoadStatus("טוען רשימות מהשרת...");
   try {
     const data = await jsonp("bootstrap");
     if (data && data.ok) {
       appState.hierarchy = data.hierarchy || data.hierarchy?.hierarchy || data.hierarchy || {};
       if (data.hierarchy && data.hierarchy.ok) appState.hierarchy = data.hierarchy;
       appState.points = data.points || [];
+      if (!appState.points.length) appState.points = fallbackGoldPoints;
       renderHierarchy();
       renderQueues();
+      setLoadStatus(`נטענו ${appState.points.length} נקודות`, "ok");
       return;
     }
   } catch (error) {
     console.warn(error);
   }
+  appState.hierarchy = { merhavim: fallbackMerhavim };
+  appState.points = fallbackGoldPoints;
+  renderHierarchy();
   renderQueues();
+  setLoadStatus("לא הצלחנו לטעון מהשרת. מוצגת רשימת אשכולות זהב מקומית.", "fallback");
 }
 
 function renderMission(type) {
