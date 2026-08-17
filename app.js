@@ -107,7 +107,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:53:01";
+const buildStampValue = "2026-08-17 16:59:47";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -160,11 +160,20 @@ function jsonp(action, params = {}) {
   });
 }
 
-function postInNewTab(payload) {
+function postInHiddenFrame(payload) {
+  const frameName = "fieldDocSubmitFrame";
+  let frame = document.querySelector(`iframe[name="${frameName}"]`);
+  if (!frame) {
+    frame = document.createElement("iframe");
+    frame.name = frameName;
+    frame.hidden = true;
+    frame.style.display = "none";
+    document.body.appendChild(frame);
+  }
   const form = document.createElement("form");
   form.method = "post";
   form.action = BACKEND_URL;
-  form.target = "_blank";
+  form.target = frameName;
   form.style.display = "none";
   const input = document.createElement("input");
   input.name = "payload";
@@ -710,13 +719,24 @@ async function currentPointPayload(status) {
 }
 
 async function submitCurrentPoint(status = "Waiting for review") {
+  const submitButton = document.getElementById("submitReview");
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "שולח...";
+  }
   const payload = await currentPointPayload(status);
-  postInNewTab(payload);
+  postInHiddenFrame(payload);
   const existingIndex = appState.points.findIndex((point) => point.pointId === payload.pointId);
   if (existingIndex !== -1) {
     appState.points[existingIndex] = { ...appState.points[existingIndex], ...payload };
   }
   renderQueues();
+  window.setTimeout(() => {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "שליחה לבדיקה";
+    }
+  }, 2500);
 }
 
 function openPhotoEditor(item) {
