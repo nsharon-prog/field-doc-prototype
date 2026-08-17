@@ -9,8 +9,8 @@ const screens = {
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
 const PILOT_PIN = "1234";
 const MAX_PHOTOS_PER_STAGE = 3;
-const PHOTO_MAX_WIDTH = 1152;
-const PHOTO_JPEG_QUALITY = 0.68;
+const PHOTO_MAX_WIDTH = 960;
+const PHOTO_JPEG_QUALITY = 0.62;
 const fallbackMerhavim = [
   { merhavId: "בנימינה-גבעת-עדה-יישובי-אלונה", merhavName: "בנימינה / גבעת עדה + יישובי אלונה" },
   { merhavId: "זכרון-יעקב", merhavName: "זכרון יעקב+" },
@@ -107,7 +107,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:46:46";
+const buildStampValue = "2026-08-17 16:53:01";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -657,12 +657,17 @@ function collectAnswers() {
   return answers;
 }
 
-function collectPhotos() {
-  return [...document.querySelectorAll("#documentScreen .photo-item")].map((item, index) => {
-    const source = item.dataset.annotatedSrc || item.dataset.sourceSrc || "";
-    const base64 = source.includes(",") ? source.split(",")[1] : item.dataset.base64 || "";
+async function collectPhotos() {
+  const items = [...document.querySelectorAll("#documentScreen .photo-item")];
+  const photos = [];
+  for (const [index, item] of items.entries()) {
+    const cached = photoCache.get(item) || {};
+    const blob = cached.blob;
+    if (!blob) continue;
+    const dataUrl = await blobToDataUrl(blob);
+    const base64 = dataUrl.split(",")[1] || "";
     const section = item.closest(".mission-step")?.querySelector("h2")?.textContent || "photo";
-    return {
+    photos.push({
       itemKey: section,
       caption: item.querySelector("input[type='text']")?.value || "",
       fileName: item.dataset.fileName || `photo-${index + 1}.jpg`,
@@ -670,11 +675,12 @@ function collectPhotos() {
       base64,
       width: item.dataset.width || "",
       height: item.dataset.height || ""
-    };
-  }).filter((photo) => photo.base64);
+    });
+  }
+  return photos;
 }
 
-function currentPointPayload(status) {
+async function currentPointPayload(status) {
   const point = appState.currentPoint || {};
   const [lat, lng] = appState.correctedLocation
     ? [appState.correctedLocation.lat, appState.correctedLocation.lng]
@@ -699,12 +705,12 @@ function currentPointPayload(status) {
     assignedTo: appState.currentUser,
     notes: document.querySelector(".review-step textarea")?.value || "",
     answers: collectAnswers(),
-    photos: collectPhotos()
+    photos: await collectPhotos()
   };
 }
 
-function submitCurrentPoint(status = "Waiting for review") {
-  const payload = currentPointPayload(status);
+async function submitCurrentPoint(status = "Waiting for review") {
+  const payload = await currentPointPayload(status);
   postInNewTab(payload);
   const existingIndex = appState.points.findIndex((point) => point.pointId === payload.pointId);
   if (existingIndex !== -1) {
@@ -720,7 +726,7 @@ function openPhotoEditor(item) {
   const preview = item.querySelector(".photo-preview");
   activePhotoEditorItem = item;
   resetEditorOverlay();
-  activePhotoSource = item.dataset.annotatedSrc || preview?.src || item.dataset.sourceSrc || "";
+  activePhotoSource = preview?.src || item.dataset.previewUrl || "";
   editor.hidden = false;
   editorPhoto.style.background = activePhotoSource
     ? `#394b52 url(${activePhotoSource}) center/contain no-repeat`
@@ -832,7 +838,10 @@ function attachPointLaunchers() {
     }
 
     if (trigger.classList.contains("remove-photo")) {
-      trigger.closest(".photo-item")?.remove();
+      const item = trigger.closest(".photo-item");
+      if (item?.dataset.previewUrl) URL.revokeObjectURL(item.dataset.previewUrl);
+      if (item) photoCache.delete(item);
+      item?.remove();
       return;
     }
 
@@ -892,20 +901,18 @@ function attachPointLaunchers() {
     try {
       const compressed = await compressPhotoFile(file);
       item.dataset.fileName = compressed.fileName;
-      item.dataset.base64 = compressed.base64;
       item.dataset.width = String(compressed.width);
       item.dataset.height = String(compressed.height);
       item.dataset.bytes = String(compressed.bytes);
-      item.dataset.sourceSrc = compressed.dataUrl;
-      item.dataset.annotatedSrc = "";
+      if (item.dataset.previewUrl) URL.revokeObjectURL(item.dataset.previewUrl);
+      item.dataset.previewUrl = URL.createObjectURL(compressed.blob);
       const preview = item.querySelector(".photo-preview");
-      if (preview) preview.src = compressed.dataUrl;
+      if (preview) preview.src = item.dataset.previewUrl;
       const meta = item.querySelector(".photo-meta");
       if (meta) meta.textContent = `נשמר מוקטן: ${compressed.width}×${compressed.height}, ${formatBytes(compressed.bytes)}`;
       photoCache.set(item, compressed);
     } catch (error) {
       item.dataset.fileName = file.name;
-      item.dataset.base64 = "";
       item.dataset.bytes = "0";
       const meta = item.querySelector(".photo-meta");
       if (meta) meta.textContent = "לא הצלחנו לכווץ את התמונה. כדאי לנסות צילום נוסף.";
@@ -977,17 +984,18 @@ function attachPointLaunchers() {
       if (captionInput) captionInput.value = editorCaption.value.trim();
       const annotated = await flattenEditorPhoto();
       if (annotated) {
+        const annotatedBlob = dataUrlToBlob(annotated);
         const preview = activePhotoEditorItem.querySelector(".photo-preview");
-        if (preview) preview.src = annotated;
-        activePhotoEditorItem.dataset.annotatedSrc = annotated;
-        activePhotoEditorItem.dataset.sourceSrc = annotated;
-        activePhotoEditorItem.dataset.base64 = annotated.split(",")[1] || "";
-        activePhotoEditorItem.dataset.bytes = String(Math.round((activePhotoEditorItem.dataset.base64.length || 0) * 0.75));
+        if (activePhotoEditorItem.dataset.previewUrl) URL.revokeObjectURL(activePhotoEditorItem.dataset.previewUrl);
+        activePhotoEditorItem.dataset.previewUrl = URL.createObjectURL(annotatedBlob);
+        if (preview) preview.src = activePhotoEditorItem.dataset.previewUrl;
+        activePhotoEditorItem.dataset.bytes = String(annotatedBlob.size);
         const meta = activePhotoEditorItem.querySelector(".photo-meta");
         if (meta) meta.textContent = `נשמר עם סימונים: ${formatBytes(activePhotoEditorItem.dataset.bytes)}`;
         photoCache.set(activePhotoEditorItem, {
           ...(photoCache.get(activePhotoEditorItem) || {}),
-          annotated
+          blob: annotatedBlob,
+          bytes: annotatedBlob.size
         });
       }
     }
@@ -1076,6 +1084,17 @@ function blobToDataUrl(blob) {
   });
 }
 
+function dataUrlToBlob(dataUrl) {
+  const [header, base64] = String(dataUrl || "").split(",");
+  const mime = (header.match(/data:([^;]+)/) || [])[1] || "image/jpeg";
+  const binary = atob(base64 || "");
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return new Blob([bytes], { type: mime });
+}
+
 function formatBytes(bytes) {
   const value = Number(bytes || 0);
   if (value < 1024) return `${value}B`;
@@ -1103,10 +1122,8 @@ function compressPhotoFile(file, maxWidth = PHOTO_MAX_WIDTH, quality = PHOTO_JPE
           reject(new Error("Photo compression failed"));
           return;
         }
-        const dataUrl = await blobToDataUrl(blob);
         resolve({
-          dataUrl,
-          base64: dataUrl.split(",")[1],
+          blob,
           bytes: blob.size,
           width,
           height,
