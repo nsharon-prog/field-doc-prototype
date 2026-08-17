@@ -1,4 +1,4 @@
-const CACHE_NAME = "field-doc-prototype-v16";
+const CACHE_NAME = "field-doc-prototype-v17";
 const ASSETS = [
   "./",
   "./index.html",

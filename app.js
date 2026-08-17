@@ -102,7 +102,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:20:00";
+const buildStampValue = "2026-08-17 16:23:19";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -445,11 +445,7 @@ function renderQueues() {
   const user = appState.currentUser;
   const selectedMerhav = appState.currentMerhavId;
   const points = appState.points.map(normalizePoint)
-    .filter((point) => !selectedMerhav || point.merhavId === selectedMerhav || point.merhavName === appState.currentMerhavName)
-    .sort((a, b) => {
-      const statusOrder = { "Needs completion": 0, "Open for documentation": 1, "In progress": 2, "Waiting for review": 3, "Ready for pre-election check": 4, "Ready for election day": 5 };
-      return (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9) || Number(a.priority || 9) - Number(b.priority || 9);
-    });
+    .filter((point) => !selectedMerhav || point.merhavId === selectedMerhav || point.merhavName === appState.currentMerhavName);
   const mine = points.filter((point) => point.assignedTo === user && point.status === "In progress");
   const open = points.filter((point) => ["Open for documentation", "Needs completion"].includes(point.status) || (!point.assignedTo && point.status !== "Waiting for review"));
   lists[0].innerHTML = mine.length ? mine.map((point) => renderPointCard(point, "mine")).join("") : `<div class="empty-state">אין לך נקודות בטיפול כרגע.</div>`;
