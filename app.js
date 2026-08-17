@@ -8,6 +8,9 @@ const screens = {
 
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
 const PILOT_PIN = "1234";
+const MAX_PHOTOS_PER_STAGE = 3;
+const PHOTO_MAX_WIDTH = 1152;
+const PHOTO_JPEG_QUALITY = 0.68;
 const fallbackMerhavim = [
   { merhavId: "בנימינה-גבעת-עדה-יישובי-אלונה", merhavName: "בנימינה / גבעת עדה + יישובי אלונה" },
   { merhavId: "זכרון-יעקב", merhavName: "זכרון יעקב+" },
@@ -104,7 +107,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:34:24";
+const buildStampValue = "2026-08-17 16:46:46";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -351,7 +354,7 @@ async function flattenEditorPhoto() {
     }
     ctx.restore();
   });
-  return canvas.toDataURL("image/jpeg", 0.84);
+  return canvas.toDataURL("image/jpeg", PHOTO_JPEG_QUALITY);
 }
 
 function markLocationStepDone() {
@@ -542,7 +545,7 @@ function renderMission(type) {
       </div>
       <div class="photo-line">
         <button class="add-photo" type="button">📷 ${step.photo}</button>
-        <small>אפשר להוסיף יותר מתמונה אחת</small>
+        <small>אפשר להוסיף עד 3 תמונות לשלב</small>
       </div>
       <div class="photo-gallery"></div>
       <label>פרטי השלב
@@ -802,6 +805,10 @@ function attachPointLaunchers() {
       activePhotoTarget = photoArea?.querySelector(".photo-gallery");
       activePhotoInput = document.getElementById("photoInput");
       if (!activePhotoTarget || !activePhotoInput) return;
+      if (activePhotoTarget.querySelectorAll(".photo-item").length >= MAX_PHOTOS_PER_STAGE) {
+        alert(`אפשר להוסיף עד ${MAX_PHOTOS_PER_STAGE} תמונות בשלב הזה`);
+        return;
+      }
       activePhotoInput.value = "";
       pendingPhotoItem = document.createElement("div");
       pendingPhotoItem.className = "photo-item pending-photo";
@@ -809,6 +816,7 @@ function attachPointLaunchers() {
         <div class="photo-thumb photo-placeholder"></div>
         <div>
           <strong>ממתין לתמונה...</strong>
+          <small>התמונה תישמר בגודל מוקטן כדי לחסוך זיכרון ואחסון</small>
           <div class="photo-actions">
             <button class="remove-photo" type="button">מחיקה</button>
           </div>
@@ -874,6 +882,7 @@ function attachPointLaunchers() {
       <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
       <div>
         <input type="text" placeholder="מה רואים בתמונה?" value="">
+        <small class="photo-meta">מכווץ תמונה...</small>
         <div class="photo-actions">
           <button class="annotate-button" type="button">עריכת תמונה</button>
           <button class="remove-photo" type="button">מחיקה</button>
@@ -891,11 +900,15 @@ function attachPointLaunchers() {
       item.dataset.annotatedSrc = "";
       const preview = item.querySelector(".photo-preview");
       if (preview) preview.src = compressed.dataUrl;
+      const meta = item.querySelector(".photo-meta");
+      if (meta) meta.textContent = `נשמר מוקטן: ${compressed.width}×${compressed.height}, ${formatBytes(compressed.bytes)}`;
       photoCache.set(item, compressed);
     } catch (error) {
       item.dataset.fileName = file.name;
       item.dataset.base64 = "";
       item.dataset.bytes = "0";
+      const meta = item.querySelector(".photo-meta");
+      if (meta) meta.textContent = "לא הצלחנו לכווץ את התמונה. כדאי לנסות צילום נוסף.";
       photoCache.set(item, { error: String(error) });
     } finally {
       URL.revokeObjectURL(previewUrl);
@@ -968,6 +981,10 @@ function attachPointLaunchers() {
         if (preview) preview.src = annotated;
         activePhotoEditorItem.dataset.annotatedSrc = annotated;
         activePhotoEditorItem.dataset.sourceSrc = annotated;
+        activePhotoEditorItem.dataset.base64 = annotated.split(",")[1] || "";
+        activePhotoEditorItem.dataset.bytes = String(Math.round((activePhotoEditorItem.dataset.base64.length || 0) * 0.75));
+        const meta = activePhotoEditorItem.querySelector(".photo-meta");
+        if (meta) meta.textContent = `נשמר עם סימונים: ${formatBytes(activePhotoEditorItem.dataset.bytes)}`;
         photoCache.set(activePhotoEditorItem, {
           ...(photoCache.get(activePhotoEditorItem) || {}),
           annotated
@@ -1050,17 +1067,37 @@ function attachPointLaunchers() {
   });
 }
 
-function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function formatBytes(bytes) {
+  const value = Number(bytes || 0);
+  if (value < 1024) return `${value}B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)}KB`;
+  return `${(value / 1024 / 1024).toFixed(1)}MB`;
+}
+
+function compressPhotoFile(file, maxWidth = PHOTO_MAX_WIDTH, quality = PHOTO_JPEG_QUALITY) {
   return new Promise(async (resolve, reject) => {
+    let bitmap = null;
     try {
-      const bitmap = await createImageBitmap(file);
+      bitmap = await createImageBitmap(file);
       const scale = Math.min(1, maxWidth / bitmap.width);
       const width = Math.round(bitmap.width * scale);
       const height = Math.round(bitmap.height * scale);
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(bitmap, 0, 0, width, height);
       canvas.toBlob(async (blob) => {
         if (!blob) {
           reject(new Error("Photo compression failed"));
@@ -1079,6 +1116,8 @@ function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
       }, "image/jpeg", quality);
     } catch (error) {
       reject(error);
+    } finally {
+      if (bitmap && typeof bitmap.close === "function") bitmap.close();
     }
   });
 }

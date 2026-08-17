@@ -114,6 +114,7 @@ button{cursor:pointer}
 .pending-photo{outline:2px dashed #96b6df;outline-offset:2px}
 .demo-arrow{position:absolute;left:17px;top:23px;color:#f04438;font-size:2rem;transform:rotate(-20deg)}
 .photo-actions{display:flex;gap:12px;margin-top:6px}
+.photo-meta{display:block;margin-top:5px;color:var(--muted);font-size:.74rem;line-height:1.3}
 .photo-actions button{border:0;background:transparent;color:var(--muted);padding:2px 0;font-size:.78rem}
 .photo-actions .annotate-button{color:var(--blue);font-weight:700}
 label{display:grid;gap:7px;margin-top:13px;font-weight:700;font-size:.9rem}
