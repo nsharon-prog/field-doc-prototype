@@ -106,8 +106,9 @@ let photoEditor = null;
 let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
+let cameraStream = null;
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:59:47";
+const buildStampValue = "2026-08-17 17:08:40";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -754,6 +755,105 @@ function openPhotoEditor(item) {
   document.getElementById("editorCaption").value = captionInput ? captionInput.value : "";
 }
 
+function canUseLiveCamera() {
+  return Boolean(window.isSecureContext && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+
+async function openLiveCamera() {
+  const overlay = document.getElementById("cameraOverlay");
+  const video = document.getElementById("cameraPreview");
+  if (!overlay || !video) return false;
+  cameraStream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: { ideal: "environment" },
+      width: { ideal: 1280 },
+      height: { ideal: 720 }
+    },
+    audio: false
+  });
+  video.srcObject = cameraStream;
+  overlay.hidden = false;
+  await video.play();
+  return true;
+}
+
+function stopLiveCamera() {
+  const overlay = document.getElementById("cameraOverlay");
+  const video = document.getElementById("cameraPreview");
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
+  if (video) video.srcObject = null;
+  if (overlay) overlay.hidden = true;
+}
+
+function canvasToBlob(canvas, quality = PHOTO_JPEG_QUALITY) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Photo capture failed")), "image/jpeg", quality);
+  });
+}
+
+async function captureLiveCameraPhoto() {
+  const video = document.getElementById("cameraPreview");
+  if (!video || !activePhotoTarget) return;
+  const sourceWidth = video.videoWidth || 1280;
+  const sourceHeight = video.videoHeight || 720;
+  const scale = Math.min(1, PHOTO_MAX_WIDTH / sourceWidth);
+  const width = Math.max(1, Math.round(sourceWidth * scale));
+  const height = Math.max(1, Math.round(sourceHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(video, 0, 0, width, height);
+  const blob = await canvasToBlob(canvas);
+  addCompressedPhotoToTarget(blob, {
+    fileName: `field-photo-${Date.now()}.jpg`,
+    width,
+    height,
+    note: "נשמר מצילום ישיר"
+  });
+  stopLiveCamera();
+  activePhotoTarget = null;
+  pendingPhotoItem = null;
+}
+
+function addCompressedPhotoToTarget(blob, details) {
+  const target = activePhotoTarget || (pendingPhotoItem && pendingPhotoItem.parentElement);
+  if (!target || !blob) return null;
+  const item = pendingPhotoItem || document.createElement("div");
+  item.className = "photo-item";
+  item.dataset.fileName = details.fileName || `photo-${Date.now()}.jpg`;
+  item.dataset.width = String(details.width || "");
+  item.dataset.height = String(details.height || "");
+  item.dataset.bytes = String(blob.size);
+  if (item.dataset.previewUrl) URL.revokeObjectURL(item.dataset.previewUrl);
+  item.dataset.previewUrl = URL.createObjectURL(blob);
+  item.innerHTML = `
+    <div class="photo-thumb"><img alt="" class="photo-preview" src="${item.dataset.previewUrl}"></div>
+    <div>
+      <input type="text" placeholder="מה רואים בתמונה?" value="">
+      <small class="photo-meta">${details.note || "נשמר מוקטן"}: ${details.width || ""}×${details.height || ""}, ${formatBytes(blob.size)}</small>
+      <div class="photo-actions">
+        <button class="annotate-button" type="button">עריכת תמונה</button>
+        <button class="remove-photo" type="button">מחיקה</button>
+      </div>
+    </div>`;
+  if (!item.parentElement) target.appendChild(item);
+  photoCache.set(item, {
+    blob,
+    bytes: blob.size,
+    width: details.width || "",
+    height: details.height || "",
+    fileName: item.dataset.fileName,
+    mimeType: "image/jpeg"
+  });
+  return item;
+}
+
 function setCardAsActive(card) {
   if (!card) return;
   setActivePoint(card);
@@ -848,7 +948,14 @@ function attachPointLaunchers() {
           </div>
         </div>`;
       activePhotoTarget.appendChild(pendingPhotoItem);
-      activePhotoInput.click();
+      if (canUseLiveCamera()) {
+        openLiveCamera().catch((error) => {
+          console.warn(error);
+          activePhotoInput.click();
+        });
+      } else {
+        activePhotoInput.click();
+      }
       return;
     }
 
@@ -900,45 +1007,34 @@ function attachPointLaunchers() {
     renderQueues();
   });
 
+  document.getElementById("closeCamera")?.addEventListener("click", () => {
+    if (pendingPhotoItem) pendingPhotoItem.remove();
+    pendingPhotoItem = null;
+    activePhotoTarget = null;
+    stopLiveCamera();
+  });
+
+  document.getElementById("captureCamera")?.addEventListener("click", () => {
+    captureLiveCameraPhoto().catch((error) => {
+      console.warn(error);
+      alert("לא הצלחנו לצלם. כדאי לנסות שוב או לבחור תמונה מהטלפון.");
+      stopLiveCamera();
+    });
+  });
+
   document.getElementById("photoInput").addEventListener("change", async (event) => {
     const file = event.target.files && event.target.files[0];
     const target = activePhotoTarget || (pendingPhotoItem && pendingPhotoItem.parentElement);
     if (!file || !target) return;
-    const previewUrl = URL.createObjectURL(file);
-    const item = pendingPhotoItem || document.createElement("div");
-    item.className = "photo-item";
-    item.innerHTML = `
-      <div class="photo-thumb"><img alt="" class="photo-preview" src="${previewUrl}"></div>
-      <div>
-        <input type="text" placeholder="מה רואים בתמונה?" value="">
-        <small class="photo-meta">מכווץ תמונה...</small>
-        <div class="photo-actions">
-          <button class="annotate-button" type="button">עריכת תמונה</button>
-          <button class="remove-photo" type="button">מחיקה</button>
-        </div>
-      </div>`;
-    if (!item.parentElement) target.appendChild(item);
     try {
       const compressed = await compressPhotoFile(file);
-      item.dataset.fileName = compressed.fileName;
-      item.dataset.width = String(compressed.width);
-      item.dataset.height = String(compressed.height);
-      item.dataset.bytes = String(compressed.bytes);
-      if (item.dataset.previewUrl) URL.revokeObjectURL(item.dataset.previewUrl);
-      item.dataset.previewUrl = URL.createObjectURL(compressed.blob);
-      const preview = item.querySelector(".photo-preview");
-      if (preview) preview.src = item.dataset.previewUrl;
-      const meta = item.querySelector(".photo-meta");
-      if (meta) meta.textContent = `נשמר מוקטן: ${compressed.width}×${compressed.height}, ${formatBytes(compressed.bytes)}`;
-      photoCache.set(item, compressed);
+      addCompressedPhotoToTarget(compressed.blob, compressed);
     } catch (error) {
-      item.dataset.fileName = file.name;
-      item.dataset.bytes = "0";
-      const meta = item.querySelector(".photo-meta");
-      if (meta) meta.textContent = "לא הצלחנו לכווץ את התמונה. כדאי לנסות צילום נוסף.";
-      photoCache.set(item, { error: String(error) });
-    } finally {
-      URL.revokeObjectURL(previewUrl);
+      if (pendingPhotoItem) {
+        pendingPhotoItem.remove();
+      }
+      alert("לא הצלחנו לשמור את התמונה. כדאי לנסות צילום נוסף.");
+      console.warn(error);
     }
     activePhotoTarget = null;
     pendingPhotoItem = null;

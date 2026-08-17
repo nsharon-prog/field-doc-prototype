@@ -364,6 +364,18 @@
 
   <input id="photoInput" type="file" accept="image/*" capture="environment" hidden>
 
+  <div class="camera-overlay" id="cameraOverlay" hidden>
+    <div class="camera-sheet">
+      <header>
+        <button id="closeCamera" type="button">ביטול</button>
+        <strong>צילום תמונה</strong>
+        <button id="captureCamera" type="button">צילום</button>
+      </header>
+      <video id="cameraPreview" autoplay playsinline muted></video>
+      <p>הצילום נשמר מוקטן כדי לא להעמיס על הטלפון.</p>
+    </div>
+  </div>
+
   <div class="editor-overlay" id="photoEditor" hidden>
     <div class="editor">
       <header>

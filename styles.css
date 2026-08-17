@@ -135,9 +135,15 @@ textarea{resize:vertical}
 .success-info{display:grid;gap:9px;margin:25px 0;padding:15px;color:var(--muted)}
 #submittedScreen{text-align:center;padding-top:70px}
 #submittedScreen .primary-btn{width:100%}
-.editor-overlay,.review-overlay{position:fixed;inset:0;z-index:50;background:rgba(10,18,26,.72);display:grid;align-items:end}
-.editor-overlay[hidden],.review-overlay[hidden]{display:none}
+.editor-overlay,.review-overlay,.camera-overlay{position:fixed;inset:0;z-index:50;background:rgba(10,18,26,.72);display:grid;align-items:end}
+.editor-overlay[hidden],.review-overlay[hidden],.camera-overlay[hidden]{display:none}
 .editor,.review-dialog{max-width:620px;width:100%;margin:auto;background:#fff}
+.camera-sheet{max-width:620px;width:100%;margin:auto;background:#111b22;color:#fff}
+.camera-sheet header{height:58px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #32424d}
+.camera-sheet header button{border:0;background:transparent;color:#fff;font-weight:700}
+.camera-sheet header button:last-child{min-width:84px;min-height:38px;border-radius:6px;background:var(--blue)}
+.camera-sheet video{display:block;width:100%;height:min(72vh,620px);object-fit:cover;background:#000}
+.camera-sheet p{margin:0;padding:10px 14px 16px;color:#cbd5dd;text-align:center;font-size:.82rem}
 .editor header{height:58px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
 .editor header button{border:0;background:transparent;font-size:1.1rem}
 .editor header button:last-child{color:var(--blue);font-weight:700}
