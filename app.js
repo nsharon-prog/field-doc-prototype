@@ -6,6 +6,18 @@ const screens = {
   newPoint: document.getElementById("newPointScreen")
 };
 
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyKGdThaFdAWX-yW-Vy_Lt1jy6nDbLPrIGfqIZ7A2BDg45tmS8PaoTeyf9IIEa6HZh6Nw/exec";
+const PILOT_PIN = "1234";
+const appState = {
+  hierarchy: { districts: [], merhavim: [], settlements: [] },
+  points: [],
+  currentUser: "",
+  currentMerhavId: "",
+  currentMerhavName: "",
+  currentPoint: null,
+  correctedLocation: null
+};
+
 const missionPlans = {
   cluster: [
     { title: "צילום הכניסה", help: "צילום ברור של המקום והכניסה.", photo: "צלם כניסה", control: `<select><option>כן, ברור</option><option>צריך צילום נוסף</option><option>עדיין לא ברור</option></select>` },
@@ -35,10 +47,65 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-07-14 15:32:49";
+const buildStampValue = "2026-08-17 15:54:32";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
-  buildStamp.textContent = `עודכן לאחרונה: ${buildStampValue} IL`;
+  buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
+}
+
+function encodePayload(payload) {
+  const json = JSON.stringify(payload);
+  const bytes = new TextEncoder().encode(json);
+  let binary = "";
+  bytes.forEach((byte) => binary += String.fromCharCode(byte));
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function jsonp(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const callback = `fieldDocCallback_${Date.now()}_${Math.round(Math.random() * 100000)}`;
+    const url = new URL(BACKEND_URL);
+    url.searchParams.set("action", action);
+    url.searchParams.set("callback", callback);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, value);
+    });
+    const script = document.createElement("script");
+    const timer = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("לא התקבלה תשובה מהשרת"));
+    }, 18000);
+    function cleanup() {
+      window.clearTimeout(timer);
+      script.remove();
+      delete window[callback];
+    }
+    window[callback] = (data) => {
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("החיבור לשרת נכשל"));
+    };
+    script.src = url.toString();
+    document.body.appendChild(script);
+  });
+}
+
+function postInNewTab(payload) {
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = BACKEND_URL;
+  form.target = "_blank";
+  form.style.display = "none";
+  const input = document.createElement("input");
+  input.name = "payload";
+  input.value = JSON.stringify(payload);
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
 }
 
 function getEditorSurface() {
@@ -235,6 +302,113 @@ function showScreen(name) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function pointTypeLabel(type) {
+  if (type === "cluster") return "אשכול";
+  if (type === "booth") return "דוכן";
+  return "שילוט";
+}
+
+function pointTypeClass(type) {
+  if (type === "cluster") return "cluster";
+  if (type === "booth") return "booth";
+  return "signage";
+}
+
+function statusLabel(status) {
+  const labels = {
+    "Open for documentation": "פתוח לתיעוד",
+    "In progress": "בביצוע",
+    "Waiting for review": "ממתין לבדיקה",
+    "Needs completion": "צריך השלמה",
+    "Ready for pre-election check": "מוכן לבדיקה לפני בחירות",
+    "Ready for election day": "מוכן ליום הבחירות"
+  };
+  return labels[status] || status || "פתוח לתיעוד";
+}
+
+function renderHierarchy() {
+  const merhavSelect = document.getElementById("loginMerhav");
+  if (!merhavSelect) return;
+  const merhavim = appState.hierarchy.merhavim || [];
+  merhavSelect.innerHTML = [
+    `<option value="">כל המחוז</option>`,
+    ...merhavim.map((merhav) => `<option value="${merhav.merhavId}">${merhav.merhavName}</option>`)
+  ].join("");
+}
+
+function normalizePoint(point) {
+  return {
+    pointId: point.pointId || `LOCAL-${Date.now()}`,
+    type: point.type || "signage",
+    number: point.number || `${pointTypeLabel(point.type)} חדש`,
+    name: point.name || point.pointName || point.plannedAddress || point.settlementName || "נקודה ללא שם",
+    settlementName: point.settlementName || point.town || "",
+    settlementId: point.settlementId || "",
+    merhavId: point.merhavId || "",
+    merhavName: point.merhavName || "",
+    plannedAddress: point.plannedAddress || point.address || "",
+    status: point.status || "Open for documentation",
+    priority: point.priority || "",
+    assignedTo: point.assignedTo || "",
+    documentedBy: point.documentedBy || "",
+    correctedLat: point.correctedLat || "",
+    correctedLng: point.correctedLng || "",
+    notes: point.notes || ""
+  };
+}
+
+function renderPointCard(point, mode) {
+  const p = normalizePoint(point);
+  const typeClass = pointTypeClass(p.type);
+  const buttonText = mode === "mine" ? "המשך" : "אני לוקח/ת";
+  return `
+    <article class="${mode === "mine" ? "my-point" : "point-card"}" data-point-id="${p.pointId}" data-type="${p.type}" data-number="${p.number}" data-name="${p.name}" data-address="${p.plannedAddress || p.settlementName}" data-badge="${pointTypeLabel(p.type)}" data-priority="${p.priority || ""}">
+      <div class="card-top">
+        <span class="point-kind ${typeClass}">${p.number}</span>
+        <span class="status">${statusLabel(p.status)}${p.priority ? ` · עדיפות ${p.priority}` : ""}</span>
+      </div>
+      <h2>${p.name}</h2>
+      <p>${p.settlementName}${p.plannedAddress ? ` · ${p.plannedAddress}` : ""}</p>
+      ${p.notes ? `<div class="review-note">${p.notes}</div>` : ""}
+      <button class="${mode === "mine" ? "point-open" : "take-button"}" type="button">${buttonText}</button>
+    </article>
+  `;
+}
+
+function renderQueues() {
+  const lists = document.querySelectorAll("#queueScreen .point-list");
+  if (lists.length < 2) return;
+  const user = appState.currentUser;
+  const selectedMerhav = appState.currentMerhavId;
+  const points = appState.points.map(normalizePoint)
+    .filter((point) => !selectedMerhav || point.merhavId === selectedMerhav || point.merhavName === appState.currentMerhavName)
+    .sort((a, b) => {
+      const statusOrder = { "Needs completion": 0, "Open for documentation": 1, "In progress": 2, "Waiting for review": 3, "Ready for pre-election check": 4, "Ready for election day": 5 };
+      return (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9) || Number(a.priority || 9) - Number(b.priority || 9);
+    });
+  const mine = points.filter((point) => point.assignedTo === user && point.status === "In progress");
+  const open = points.filter((point) => ["Open for documentation", "Needs completion"].includes(point.status) || (!point.assignedTo && point.status !== "Waiting for review"));
+  lists[0].innerHTML = mine.length ? mine.map((point) => renderPointCard(point, "mine")).join("") : `<div class="empty-state">אין לך נקודות בטיפול כרגע.</div>`;
+  lists[1].innerHTML = open.length ? open.map((point) => renderPointCard(point, "open")).join("") : `<div class="empty-state">אין כרגע נקודות פתוחות במרחב הזה.</div>`;
+}
+
+async function loadBootstrap() {
+  try {
+    const data = await jsonp("bootstrap");
+    if (data && data.ok) {
+      appState.hierarchy = data.hierarchy || data.hierarchy?.hierarchy || data.hierarchy || {};
+      if (data.hierarchy && data.hierarchy.ok) appState.hierarchy = data.hierarchy;
+      appState.points = data.points || [];
+      renderHierarchy();
+      renderQueues();
+      return;
+    }
+  } catch (error) {
+    console.warn(error);
+  }
+  renderQueues();
+}
+
 function renderMission(type) {
   currentType = type;
   const steps = missionPlans[type] || missionPlans.cluster;
@@ -274,21 +448,36 @@ function updateProgress() {
 }
 
 function setActivePoint(card) {
-  const type = card.dataset.type || "cluster";
+  const existing = appState.points.map(normalizePoint).find((point) => point.pointId === card.dataset.pointId);
+  appState.currentPoint = existing || {
+    pointId: card.dataset.pointId || `LOCAL-${Date.now()}`,
+    type: card.dataset.type || "cluster",
+    number: card.dataset.number || "",
+    name: card.dataset.name || "",
+    plannedAddress: card.dataset.address || "",
+    settlementName: card.dataset.town || "",
+    status: "In progress"
+  };
+  appState.correctedLocation = appState.currentPoint.correctedLat && appState.currentPoint.correctedLng
+    ? { lat: appState.currentPoint.correctedLat, lng: appState.currentPoint.correctedLng }
+    : null;
+  const type = appState.currentPoint.type || "cluster";
   const typeBadge = document.getElementById("documentPointType");
   typeBadge.className = `point-kind ${type}`;
-  typeBadge.textContent = card.dataset.badge || type;
-  document.getElementById("documentPointNumber").textContent = card.dataset.number || "";
-  document.getElementById("documentPointName").textContent = card.dataset.name || "";
-  document.getElementById("documentPointAddress").textContent = card.dataset.address || "";
-  document.getElementById("submittedPointName").textContent = `${card.dataset.number || ""} · ${card.dataset.name || ""}`;
-  document.getElementById("plannedLocationText").textContent = card.dataset.address || "לפי מוביל הצוות";
+  typeBadge.textContent = pointTypeLabel(type);
+  document.getElementById("documentPointNumber").textContent = appState.currentPoint.number || "";
+  document.getElementById("documentPointName").textContent = appState.currentPoint.name || appState.currentPoint.plannedAddress || "";
+  document.getElementById("documentPointAddress").textContent = appState.currentPoint.plannedAddress || appState.currentPoint.settlementName || "";
+  document.getElementById("submittedPointName").textContent = `${appState.currentPoint.number || ""} · ${appState.currentPoint.name || ""}`;
+  document.getElementById("plannedLocationText").textContent = appState.currentPoint.plannedAddress || "לפי מוביל הצוות";
   const actual = document.getElementById("actualLocationText");
-  actual.textContent = "עדיין לא אומת מהמכשיר";
-  actual.className = "";
+  actual.textContent = appState.correctedLocation
+    ? `המקום נוקב לפי GPS: ${appState.correctedLocation.lat}, ${appState.correctedLocation.lng}`
+    : "עדיין לא דקרנו את המקום";
+  actual.className = appState.correctedLocation ? "location-ok" : "";
 
   const query = encodeURIComponent(
-    (card.dataset.location || card.dataset.address || card.dataset.name || "")
+    (appState.currentPoint.plannedAddress || appState.currentPoint.name || appState.currentPoint.settlementName || "")
       .replace(/\s+/g, " ")
       .trim()
   );
@@ -329,6 +518,80 @@ function openSubmitDecision() {
   document.getElementById("submitDecision").hidden = false;
 }
 
+function collectAnswers() {
+  const answers = [];
+  document.querySelectorAll("#documentScreen .mission-step").forEach((step, sectionIndex) => {
+    const title = step.querySelector("h2")?.textContent || `שלב ${sectionIndex + 1}`;
+    step.querySelectorAll("input, select, textarea").forEach((field, fieldIndex) => {
+      if (field.type === "file" || field.id === "photoInput") return;
+      const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || `שדה ${fieldIndex + 1}`;
+      answers.push({
+        sectionKey: title,
+        fieldKey: field.id || field.name || `${sectionIndex + 1}-${fieldIndex + 1}`,
+        label,
+        value: field.value || ""
+      });
+    });
+  });
+  return answers;
+}
+
+function collectPhotos() {
+  return [...document.querySelectorAll("#documentScreen .photo-item")].map((item, index) => {
+    const source = item.dataset.annotatedSrc || item.dataset.sourceSrc || "";
+    const base64 = source.includes(",") ? source.split(",")[1] : item.dataset.base64 || "";
+    const section = item.closest(".mission-step")?.querySelector("h2")?.textContent || "photo";
+    return {
+      itemKey: section,
+      caption: item.querySelector("input[type='text']")?.value || "",
+      fileName: item.dataset.fileName || `photo-${index + 1}.jpg`,
+      mimeType: "image/jpeg",
+      base64,
+      width: item.dataset.width || "",
+      height: item.dataset.height || ""
+    };
+  }).filter((photo) => photo.base64);
+}
+
+function currentPointPayload(status) {
+  const point = appState.currentPoint || {};
+  const [lat, lng] = appState.correctedLocation
+    ? [appState.correctedLocation.lat, appState.correctedLocation.lng]
+    : [point.correctedLat || "", point.correctedLng || ""];
+  return {
+    action: "submitpoint",
+    pointId: point.pointId,
+    districtId: point.districtId || "north-sharon-district",
+    districtName: point.districtName || "מחוז צפון השרון",
+    merhavId: point.merhavId || appState.currentMerhavId,
+    merhavName: point.merhavName || appState.currentMerhavName,
+    settlementId: point.settlementId || "",
+    settlementName: point.settlementName || "",
+    type: point.type || currentType,
+    number: point.number || "",
+    pointName: point.name || point.pointName || document.getElementById("documentPointName").textContent || "",
+    priority: point.priority || "",
+    status,
+    plannedAddress: point.plannedAddress || document.getElementById("documentPointAddress").textContent || "",
+    correctedLocation: lat && lng ? { lat, lng } : null,
+    documentedBy: appState.currentUser,
+    assignedTo: appState.currentUser,
+    notes: document.querySelector(".review-step textarea")?.value || "",
+    answers: collectAnswers(),
+    photos: collectPhotos()
+  };
+}
+
+function submitCurrentPoint(status = "Waiting for review") {
+  const payload = currentPointPayload(status);
+  postInNewTab(payload);
+  const existingIndex = appState.points.findIndex((point) => point.pointId === payload.pointId);
+  if (existingIndex !== -1) {
+    appState.points[existingIndex] = { ...appState.points[existingIndex], ...payload };
+  }
+  renderQueues();
+}
+
 function openPhotoEditor(item) {
   const editor = document.getElementById("photoEditor");
   const editorPhoto = document.querySelector(".editor-photo");
@@ -357,7 +620,22 @@ function attachPointLaunchers() {
 
     const card = trigger.closest(".my-point, .point-card") || trigger;
 
-    if (trigger.classList.contains("point-open") || trigger.classList.contains("take-button") || trigger.classList.contains("my-point") || trigger.classList.contains("point-card")) {
+    if (trigger.classList.contains("point-open") || trigger.classList.contains("my-point")) {
+      setCardAsActive(card);
+      return;
+    }
+
+    if (trigger.classList.contains("take-button") || trigger.classList.contains("point-card")) {
+      const pointId = card.dataset.pointId;
+      if (pointId && !pointId.startsWith("LOCAL-")) {
+        const payload = { pointId, assignedTo: appState.currentUser, documentedBy: appState.currentUser };
+        jsonp("claimpoint", { payload: encodePayload(payload) }).then((data) => {
+          if (data && data.ok) {
+            const index = appState.points.findIndex((point) => point.pointId === pointId);
+            if (index !== -1) appState.points[index] = data.point;
+          }
+        }).catch((error) => console.warn(error));
+      }
       setCardAsActive(card);
       return;
     }
@@ -373,6 +651,17 @@ function attachPointLaunchers() {
     }
 
     if (trigger.id === "releaseButton") {
+      if (appState.currentPoint && appState.currentPoint.pointId && !appState.currentPoint.pointId.startsWith("LOCAL-")) {
+        jsonp("releasepoint", {
+          payload: encodePayload({ pointId: appState.currentPoint.pointId, documentedBy: appState.currentUser, assignedTo: appState.currentUser })
+        }).then((data) => {
+          if (data && data.ok) {
+            const index = appState.points.findIndex((point) => point.pointId === data.point.pointId);
+            if (index !== -1) appState.points[index] = data.point;
+            renderQueues();
+          }
+        }).catch((error) => console.warn(error));
+      }
       showScreen("queue");
       return;
     }
@@ -429,14 +718,23 @@ function attachPointLaunchers() {
   });
 
   document.getElementById("enterApp").addEventListener("click", () => {
-    const merhav = document.getElementById("loginMerhav").value;
-    const user = document.getElementById("loginUser").value;
+    const merhavSelect = document.getElementById("loginMerhav");
+    const merhav = merhavSelect.value;
+    const user = document.getElementById("loginUser").value.trim();
     const password = document.getElementById("loginPassword").value.trim();
-    if (!password) {
-      alert("צריך להזין סיסמה");
+    if (!user) {
+      alert("צריך להזין שם");
       return;
     }
+    if (password !== PILOT_PIN) {
+      alert("קוד כניסה שגוי לפיילוט");
+      return;
+    }
+    appState.currentUser = user;
+    appState.currentMerhavId = merhav;
+    appState.currentMerhavName = merhavSelect.options[merhavSelect.selectedIndex]?.textContent || "";
     document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
+    renderQueues();
     showScreen("queue");
   });
 
@@ -499,6 +797,7 @@ function attachPointLaunchers() {
       (position) => {
         const lat = position.coords.latitude.toFixed(6);
         const lng = position.coords.longitude.toFixed(6);
+        appState.correctedLocation = { lat, lng };
         const query = encodeURIComponent(`${lat},${lng}`);
         const navLinks = document.querySelectorAll(".nav-actions a");
         navLinks[0].href = `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`;
@@ -524,10 +823,12 @@ function attachPointLaunchers() {
   });
   document.getElementById("sendAnyway").addEventListener("click", () => {
     document.getElementById("submitDecision").hidden = true;
+    submitCurrentPoint("Waiting for review");
     showScreen("submitted");
   });
   document.getElementById("saveForLater").addEventListener("click", () => {
     document.getElementById("submitDecision").hidden = true;
+    submitCurrentPoint("In progress");
     showScreen("queue");
   });
 
@@ -583,24 +884,44 @@ function attachPointLaunchers() {
     });
   });
 
-  document.getElementById("newPointForm").addEventListener("submit", (event) => {
+  document.getElementById("newPointForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!selectedNewType) {
       alert("צריך לבחור סוג נקודה");
       return;
     }
-    const virtualCard = {
-      dataset: {
-        type: selectedNewType,
-        number: `${selectedNewType === "cluster" ? "אשכול" : selectedNewType === "signage" ? "שילוט" : "דוכן"} חדש`,
-        name: document.getElementById("newName").value || "נקודה חדשה",
-        town: document.getElementById("newTown").value,
-        location: document.getElementById("newLocation").value.trim(),
-        address: document.getElementById("newLocation").value.trim() || `${document.getElementById("newTown").value} · מיקום נוכחי`,
-        badge: selectedNewType === "cluster" ? "אשכול זהב" : selectedNewType === "signage" ? "שילוט" : "דוכן"
-      }
+    const town = document.getElementById("newTown").value.trim();
+    const payload = {
+      type: selectedNewType,
+      number: `${pointTypeLabel(selectedNewType)} חדש`,
+      name: document.getElementById("newName").value.trim() || "נקודה חדשה",
+      settlementName: town,
+      settlementId: town,
+      merhavId: appState.currentMerhavId,
+      merhavName: appState.currentMerhavName,
+      plannedAddress: document.getElementById("newLocation").value.trim() || town,
+      notes: document.getElementById("newReason").value.trim(),
+      status: "In progress",
+      assignedTo: appState.currentUser,
+      documentedBy: appState.currentUser,
+      createdBy: appState.currentUser
     };
-    setCardAsActive(virtualCard);
+    try {
+      const data = await jsonp("createpoint", { payload: encodePayload(payload) });
+      if (data && data.ok) {
+        appState.points.push(data.point);
+        renderQueues();
+        const virtualCard = { dataset: { pointId: data.point.pointId } };
+        setCardAsActive(virtualCard);
+        return;
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+    const localPoint = normalizePoint({ ...payload, pointId: `LOCAL-${Date.now()}` });
+    appState.points.push(localPoint);
+    renderQueues();
+    setCardAsActive({ dataset: { pointId: localPoint.pointId } });
   });
 }
 
@@ -639,6 +960,7 @@ function compressPhotoFile(file, maxWidth = 1600, quality = 0.78) {
 
 renderMission("cluster");
 attachPointLaunchers();
+loadBootstrap();
 
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("sw.js");

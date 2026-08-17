@@ -32,6 +32,7 @@ button{cursor:pointer}
 .ghost-btn,.back,.save-draft{border:1px solid var(--line);background:#fff;color:var(--ink)}
 .primary-btn,.submit-review,.point-open{border:0;background:var(--blue);color:#fff}
 .point-list{display:grid;gap:12px}
+.empty-state{padding:14px;border:1px dashed #b9c6d1;border-radius:8px;background:#f8fafb;color:var(--muted);text-align:center;font-weight:700}
 .my-point,.point-card{padding:15px;border:1px solid var(--line);border-radius:8px;background:#fff;display:grid;gap:8px}
 .my-point{border-right:4px solid var(--blue)}
 .point-card.correction{border-right:4px solid var(--orange)}

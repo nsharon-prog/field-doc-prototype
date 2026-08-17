@@ -1,6 +1,6 @@
 const FIELD_DOC_APP = {
   properties: PropertiesService.getScriptProperties(),
-  sheetNames: ["Settings", "Districts", "Merhavim", "Settlements", "Teams", "Users", "Points", "Photos", "StatusHistory", "InfraTests"]
+  sheetNames: ["Settings", "Districts", "Merhavim", "Settlements", "Teams", "Users", "Points", "Photos", "Answers", "StatusHistory", "InfraTests"]
 };
 
 function doGet(event) {
@@ -9,8 +9,14 @@ function doGet(event) {
   if (action === "health") return jsonResponse(getHealth_(), callback);
   if (action === "setup") return jsonResponse(setupWorkspace_(), callback);
   if (action === "hierarchy") return jsonResponse(getHierarchy_(), callback);
+  if (action === "bootstrap") return jsonResponse(getBootstrap_(event.parameter), callback);
+  if (action === "points") return jsonResponse(getPoints_(event.parameter), callback);
   if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
+  if (action === "createpoint") return jsonResponse(createPoint_(decodeGetPayload_(event.parameter.payload || "")), callback);
+  if (action === "claimpoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "claim"), callback);
+  if (action === "releasepoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "release"), callback);
   if (action === "submitfeasibility") return jsonResponse(saveFeasibilitySubmission_(decodeGetPayload_(event.parameter.payload || "")), callback);
+  if (action === "submitpoint") return jsonResponse(saveFieldPointSubmission_(decodeGetPayload_(event.parameter.payload || "")), callback);
   if (action === "testpoint") return jsonResponse(getLatestTestPoint_(), callback);
   return jsonResponse({ ok: false, error: "Unknown action" }, callback);
 }
@@ -22,7 +28,11 @@ function doPost(event) {
       : JSON.parse(event.postData.contents || "{}");
     const action = (payload.action || "").toLowerCase();
     if (action === "setup") return jsonResponse(setupWorkspace_());
+    if (action === "createpoint") return jsonResponse(createPoint_(payload));
+    if (action === "claimpoint") return jsonResponse(changePointAssignment_(payload, "claim"));
+    if (action === "releasepoint") return jsonResponse(changePointAssignment_(payload, "release"));
     if (action === "submitfeasibility") return jsonResponse(saveFeasibilitySubmission_(payload));
+    if (action === "submitpoint") return jsonResponse(saveFieldPointSubmission_(payload));
     return jsonResponse({ ok: false, error: "Unknown action" });
   } catch (error) {
     return jsonResponse({ ok: false, error: String(error), stack: error.stack || "" });
@@ -169,6 +179,137 @@ function saveFeasibilitySubmission_(payload) {
   };
 }
 
+function saveFieldPointSubmission_(payload) {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+
+  const point = createPointObject_(payload);
+  point.status = payload.status || "Waiting for review";
+  point.documentedBy = payload.documentedBy || point.documentedBy || "";
+  point.correctedLat = payload.correctedLocation && payload.correctedLocation.lat || payload.correctedLat || point.correctedLat || "";
+  point.correctedLng = payload.correctedLocation && payload.correctedLocation.lng || payload.correctedLng || point.correctedLng || "";
+  point.notes = payload.notes || point.notes || "";
+  point.updatedAt = israelTimestamp_();
+  point.assignedTo = payload.assignedTo || point.assignedTo || payload.documentedBy || "";
+
+  upsertObject_(spreadsheet.getSheetByName("Points"), "pointId", point);
+  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+    pointId: point.pointId,
+    timestamp: point.updatedAt,
+    fromStatus: payload.previousStatus || "",
+    toStatus: point.status,
+    changedBy: point.documentedBy,
+    note: "Field documentation submitted"
+  });
+
+  saveAnswers_(spreadsheet, point.pointId, payload.answers || [], point.documentedBy);
+  const savedPhotos = savePhotos_(spreadsheet, point, payload.photos || []);
+
+  return {
+    ok: true,
+    point,
+    photos: savedPhotos,
+    output: buildOutputUrls_(point)
+  };
+}
+
+function createPoint_(payload) {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+  const point = createPointObject_(payload);
+  point.status = payload.status || "Open for documentation";
+  point.createdBy = payload.createdBy || payload.documentedBy || "";
+  point.updatedAt = israelTimestamp_();
+  upsertObject_(spreadsheet.getSheetByName("Points"), "pointId", point);
+  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+    pointId: point.pointId,
+    timestamp: point.updatedAt,
+    fromStatus: "",
+    toStatus: point.status,
+    changedBy: point.createdBy,
+    note: "Point created"
+  });
+  return { ok: true, point, output: buildOutputUrls_(point) };
+}
+
+function changePointAssignment_(payload, mode) {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+  const sheet = spreadsheet.getSheetByName("Points");
+  const existing = findObjectByKey_(sheet, "pointId", payload.pointId);
+  if (!existing.object) return { ok: false, error: "Point not found", pointId: payload.pointId || "" };
+
+  const point = existing.object;
+  const fromStatus = point.status || "";
+  const now = new Date();
+  point.updatedAt = israelTimestamp_();
+  if (mode === "claim") {
+    point.status = "In progress";
+    point.assignedTo = payload.assignedTo || payload.documentedBy || "";
+    point.assignedAt = israelTimestamp_();
+    point.assignmentExpiresAt = Utilities.formatDate(new Date(now.getTime() + 10 * 60 * 60 * 1000), "Asia/Jerusalem", "yyyy-MM-dd HH:mm:ss");
+  } else {
+    point.status = "Open for documentation";
+    point.assignedTo = "";
+    point.assignedAt = "";
+    point.assignmentExpiresAt = "";
+  }
+  upsertObject_(sheet, "pointId", point);
+  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+    pointId: point.pointId,
+    timestamp: point.updatedAt,
+    fromStatus,
+    toStatus: point.status,
+    changedBy: payload.assignedTo || payload.documentedBy || "",
+    note: mode === "claim" ? "Point claimed for 10 hours" : "Point released"
+  });
+  return { ok: true, point };
+}
+
+function getBootstrap_(params) {
+  const hierarchy = getHierarchy_();
+  const points = getPoints_(params || {});
+  return {
+    ok: true,
+    hierarchy,
+    points: points.points,
+    users: points.users,
+    now: israelTimestamp_()
+  };
+}
+
+function getPoints_(params) {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+  const merhavId = String(params && params.merhavId || "");
+  const settlementId = String(params && params.settlementId || "");
+  const users = activeRows_(sheetObjects_(spreadsheet.getSheetByName("Users")));
+  const photos = sheetObjects_(spreadsheet.getSheetByName("Photos"));
+  const answers = sheetObjects_(spreadsheet.getSheetByName("Answers"));
+  const points = sheetObjects_(spreadsheet.getSheetByName("Points"))
+    .filter((point) => !merhavId || point.merhavId === merhavId || point.merhavName === merhavId)
+    .filter((point) => !settlementId || point.settlementId === settlementId || point.settlementName === settlementId)
+    .map((point) => {
+      const output = buildOutputUrls_(point);
+      return Object.assign({}, point, {
+        googleMaps: output.googleMaps,
+        waze: output.waze,
+        photoCount: photos.filter((photo) => photo.pointId === point.pointId).length,
+        answerCount: answers.filter((answer) => answer.pointId === point.pointId).length
+      });
+    });
+  return {
+    ok: true,
+    points,
+    users,
+    now: israelTimestamp_()
+  };
+}
+
 function getLatestTestPoint_() {
   const workspace = requireWorkspace_();
   const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
@@ -216,9 +357,10 @@ function ensureSheets_(spreadsheet) {
   setHeaders_(spreadsheet.getSheetByName("Merhavim"), ["merhavId", "districtId", "merhavName", "merhavLeadEmail", "active"]);
   setHeaders_(spreadsheet.getSheetByName("Settlements"), ["settlementId", "merhavId", "districtId", "settlementName", "settlementLeadEmail", "active"]);
   setHeaders_(spreadsheet.getSheetByName("Teams"), ["teamId", "districtId", "merhavId", "settlementId", "town", "teamName", "teamLeadEmail", "active"]);
-  setHeaders_(spreadsheet.getSheetByName("Users"), ["userId", "name", "email", "phone", "role", "districtId", "merhavId", "settlementId", "teamId", "active"]);
-  setHeaders_(spreadsheet.getSheetByName("Points"), ["pointId", "timestamp", "districtId", "districtName", "merhavId", "merhavName", "settlementId", "settlementName", "type", "number", "town", "teamId", "status", "plannedAddress", "correctedLat", "correctedLng", "documentedBy", "notes"]);
+  setHeaders_(spreadsheet.getSheetByName("Users"), ["userId", "name", "email", "phone", "role", "pin", "districtId", "merhavId", "settlementId", "teamId", "active"]);
+  setHeaders_(spreadsheet.getSheetByName("Points"), ["pointId", "timestamp", "createdAt", "updatedAt", "districtId", "districtName", "merhavId", "merhavName", "settlementId", "settlementName", "type", "number", "pointName", "priority", "importanceReason", "town", "teamId", "status", "plannedAddress", "plannedLat", "plannedLng", "correctedLat", "correctedLng", "assignedTo", "assignedAt", "assignmentExpiresAt", "documentedBy", "createdBy", "notes"]);
   setHeaders_(spreadsheet.getSheetByName("Photos"), ["photoId", "pointId", "timestamp", "itemKey", "caption", "fileId", "fileUrl", "mimeType", "compressedBytes", "width", "height"]);
+  setHeaders_(spreadsheet.getSheetByName("Answers"), ["answerId", "pointId", "timestamp", "sectionKey", "fieldKey", "label", "value", "documentedBy"]);
   setHeaders_(spreadsheet.getSheetByName("StatusHistory"), ["pointId", "timestamp", "fromStatus", "toStatus", "changedBy", "note"]);
   setHeaders_(spreadsheet.getSheetByName("InfraTests"), ["timestamp", "pointId", "result", "photos", "spreadsheetId", "rootFolderId"]);
 }
@@ -380,6 +522,124 @@ function appendObject_(sheet, object) {
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   const row = headers.map((key) => object[key] == null ? "" : object[key]);
   sheet.appendRow(row);
+}
+
+function upsertObject_(sheet, keyName, object) {
+  const found = findObjectByKey_(sheet, keyName, object[keyName]);
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const row = headers.map((key) => object[key] == null ? "" : object[key]);
+  if (found.rowIndex) {
+    sheet.getRange(found.rowIndex, 1, 1, headers.length).setValues([row]);
+  } else {
+    sheet.appendRow(row);
+  }
+}
+
+function findObjectByKey_(sheet, keyName, value) {
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) return { rowIndex: 0, object: null };
+  const headers = values[0];
+  const keyIndex = headers.indexOf(keyName);
+  if (keyIndex === -1) return { rowIndex: 0, object: null };
+  for (let index = 1; index < values.length; index += 1) {
+    if (String(values[index][keyIndex]) === String(value)) {
+      const object = {};
+      headers.forEach((header, column) => object[header] = values[index][column]);
+      return { rowIndex: index + 1, object };
+    }
+  }
+  return { rowIndex: 0, object: null };
+}
+
+function createPointObject_(payload) {
+  const timestamp = payload.timestamp || israelTimestamp_();
+  const pointId = payload.pointId || `POINT-${Date.now()}`;
+  const settlementName = payload.settlementName || payload.town || "";
+  return {
+    pointId,
+    timestamp,
+    createdAt: payload.createdAt || timestamp,
+    updatedAt: payload.updatedAt || timestamp,
+    districtId: payload.districtId || "north-sharon-district",
+    districtName: payload.districtName || "מחוז צפון השרון",
+    merhavId: payload.merhavId || "",
+    merhavName: payload.merhavName || "",
+    settlementId: payload.settlementId || slugify_(settlementName),
+    settlementName,
+    type: payload.type || "signage",
+    number: payload.number || nextPointNumber_(payload.type || "signage"),
+    pointName: payload.pointName || payload.name || payload.plannedAddress || "",
+    priority: payload.priority || "",
+    importanceReason: payload.importanceReason || "",
+    town: settlementName,
+    teamId: payload.teamId || "",
+    status: payload.status || "Open for documentation",
+    plannedAddress: payload.plannedAddress || payload.address || "",
+    plannedLat: payload.plannedLat || "",
+    plannedLng: payload.plannedLng || "",
+    correctedLat: payload.correctedLat || "",
+    correctedLng: payload.correctedLng || "",
+    assignedTo: payload.assignedTo || "",
+    assignedAt: payload.assignedAt || "",
+    assignmentExpiresAt: payload.assignmentExpiresAt || "",
+    documentedBy: payload.documentedBy || "",
+    createdBy: payload.createdBy || "",
+    notes: payload.notes || ""
+  };
+}
+
+function nextPointNumber_(type) {
+  const prefix = type === "cluster" ? "אשכול" : type === "booth" ? "דוכן" : "שילוט";
+  return `${prefix} חדש`;
+}
+
+function saveAnswers_(spreadsheet, pointId, answers, documentedBy) {
+  const sheet = spreadsheet.getSheetByName("Answers");
+  const timestamp = israelTimestamp_();
+  (answers || []).forEach((answer, index) => {
+    appendObject_(sheet, {
+      answerId: `${pointId}-A${Date.now()}-${index + 1}`,
+      pointId,
+      timestamp,
+      sectionKey: answer.sectionKey || "",
+      fieldKey: answer.fieldKey || "",
+      label: answer.label || "",
+      value: answer.value == null ? "" : String(answer.value),
+      documentedBy: documentedBy || ""
+    });
+  });
+}
+
+function savePhotos_(spreadsheet, point, photos) {
+  const workspace = requireWorkspace_();
+  const rootFolder = DriveApp.getFolderById(workspace.rootFolderId);
+  const pointFolder = getOrCreateChildFolder_(
+    getOrCreateChildFolder_(
+      getOrCreateChildFolder_(rootFolder, point.districtName || "מחוז צפון השרון"),
+      point.merhavName || "ללא מרחב"
+    ),
+    `${point.settlementName || point.town || "ללא יישוב"} - ${point.pointId}`
+  );
+  return (photos || []).filter((photo) => photo && photo.base64).map((photo, index) => {
+    const bytes = Utilities.base64Decode(photo.base64 || "");
+    const blob = Utilities.newBlob(bytes, photo.mimeType || "image/jpeg", photo.fileName || `${point.pointId}-${index + 1}.jpg`);
+    const file = pointFolder.createFile(blob);
+    const row = {
+      photoId: `${point.pointId}-P${Date.now()}-${index + 1}`,
+      pointId: point.pointId,
+      timestamp: point.updatedAt || israelTimestamp_(),
+      itemKey: photo.itemKey || "",
+      caption: photo.caption || "",
+      fileId: file.getId(),
+      fileUrl: file.getUrl(),
+      mimeType: photo.mimeType || "image/jpeg",
+      compressedBytes: bytes.length,
+      width: photo.width || "",
+      height: photo.height || ""
+    };
+    appendObject_(spreadsheet.getSheetByName("Photos"), row);
+    return row;
+  });
 }
 
 function clearDataRows_(sheet) {
