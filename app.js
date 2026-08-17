@@ -112,7 +112,7 @@ let editorToolMode = "arrow";
 let activePhotoSource = "";
 let cameraStream = null;
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 17:32:54";
+const buildStampValue = "2026-08-17 17:43:03";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
