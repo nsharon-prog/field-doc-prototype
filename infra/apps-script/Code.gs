@@ -14,6 +14,7 @@ function doGet(event) {
   if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
   if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_(), callback);
   if (action === "seedtestpoint") return jsonResponse(seedTestPoint_(), callback);
+  if (action === "cleartestpointdata") return jsonResponse(clearTestPointData_(), callback);
   if (action === "createpoint") return jsonResponse(createPoint_(decodeGetPayload_(event.parameter.payload || "")), callback);
   if (action === "claimpoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "claim"), callback);
   if (action === "releasepoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "release"), callback);
@@ -32,6 +33,7 @@ function doPost(event) {
     if (action === "setup") return jsonResponse(setupWorkspace_());
     if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_());
     if (action === "seedtestpoint") return jsonResponse(seedTestPoint_());
+    if (action === "cleartestpointdata") return jsonResponse(clearTestPointData_());
     if (action === "createpoint") return jsonResponse(createPoint_(payload));
     if (action === "claimpoint") return jsonResponse(changePointAssignment_(payload, "claim"));
     if (action === "releasepoint") return jsonResponse(changePointAssignment_(payload, "release"));
@@ -354,6 +356,72 @@ function seedTestPoint_() {
 
 function seedTestPoint() {
   return seedTestPoint_();
+}
+
+function clearTestPointData_() {
+  const pointId = "TEST-PLAYGROUND-001";
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+
+  const photosSheet = spreadsheet.getSheetByName("Photos");
+  const photos = sheetObjects_(photosSheet).filter((photo) => String(photo.pointId) === pointId);
+  let trashedFiles = 0;
+  photos.forEach((photo) => {
+    if (!photo.fileId) return;
+    try {
+      DriveApp.getFileById(String(photo.fileId)).setTrashed(true);
+      trashedFiles += 1;
+    } catch (error) {
+      Logger.log(`Could not trash test photo ${photo.fileId}: ${error}`);
+    }
+  });
+
+  const deletedPhotos = deleteRowsWhere_(photosSheet, (row) => String(row.pointId) === pointId);
+  const deletedAnswers = deleteRowsWhere_(spreadsheet.getSheetByName("Answers"), (row) => String(row.pointId) === pointId);
+  const deletedHistory = deleteRowsWhere_(spreadsheet.getSheetByName("StatusHistory"), (row) => String(row.pointId) === pointId);
+
+  const pointsSheet = spreadsheet.getSheetByName("Points");
+  const found = findObjectByKey_(pointsSheet, "pointId", pointId);
+  let point = null;
+  if (found.object) {
+    point = found.object;
+    point.status = "Open for documentation";
+    point.correctedLat = "";
+    point.correctedLng = "";
+    point.assignedTo = "";
+    point.assignedAt = "";
+    point.assignmentExpiresAt = "";
+    point.documentedBy = "";
+    point.updatedAt = israelTimestamp_();
+    point.notes = "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים.";
+    upsertObject_(pointsSheet, "pointId", point);
+  } else {
+    point = seedTestPoint_().point;
+  }
+
+  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+    pointId,
+    timestamp: israelTimestamp_(),
+    fromStatus: "",
+    toStatus: "Open for documentation",
+    changedBy: "clear-test-point-data",
+    note: "Test point data cleared for another test run"
+  });
+
+  return {
+    ok: true,
+    pointId,
+    deletedAnswers,
+    deletedPhotos,
+    deletedHistory,
+    trashedFiles,
+    point
+  };
+}
+
+function clearTestPointData() {
+  return clearTestPointData_();
 }
 
 function goldClusterSeedRows_() {
@@ -814,6 +882,20 @@ function clearDataRows_(sheet) {
   if (lastRow > 1) {
     sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();
   }
+}
+
+function deleteRowsWhere_(sheet, predicate) {
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) return 0;
+  const headers = values[0];
+  const rowsToDelete = [];
+  values.slice(1).forEach((row, index) => {
+    const object = {};
+    headers.forEach((header, column) => object[header] = row[column]);
+    if (predicate(object)) rowsToDelete.push(index + 2);
+  });
+  rowsToDelete.reverse().forEach((rowIndex) => sheet.deleteRow(rowIndex));
+  return rowsToDelete.length;
 }
 
 function sheetObjects_(sheet) {
