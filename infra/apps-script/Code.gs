@@ -12,6 +12,7 @@ function doGet(event) {
   if (action === "bootstrap") return jsonResponse(getBootstrap_(event.parameter), callback);
   if (action === "points") return jsonResponse(getPoints_(event.parameter), callback);
   if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
+  if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_(), callback);
   if (action === "createpoint") return jsonResponse(createPoint_(decodeGetPayload_(event.parameter.payload || "")), callback);
   if (action === "claimpoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "claim"), callback);
   if (action === "releasepoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "release"), callback);
@@ -28,6 +29,7 @@ function doPost(event) {
       : JSON.parse(event.postData.contents || "{}");
     const action = (payload.action || "").toLowerCase();
     if (action === "setup") return jsonResponse(setupWorkspace_());
+    if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_());
     if (action === "createpoint") return jsonResponse(createPoint_(payload));
     if (action === "claimpoint") return jsonResponse(changePointAssignment_(payload, "claim"));
     if (action === "releasepoint") return jsonResponse(changePointAssignment_(payload, "release"));
@@ -232,6 +234,113 @@ function createPoint_(payload) {
     note: "Point created"
   });
   return { ok: true, point, output: buildOutputUrls_(point) };
+}
+
+function seedGoldClusters_() {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+  const settlements = activeRows_(sheetObjects_(spreadsheet.getSheetByName("Settlements")));
+  const merhavim = activeRows_(sheetObjects_(spreadsheet.getSheetByName("Merhavim")));
+  const settlementByKey = {};
+  settlements.forEach((settlement) => {
+    settlementByKey[normalizeHebrewKey_(settlement.settlementName)] = settlement;
+  });
+  const merhavById = {};
+  merhavim.forEach((merhav) => merhavById[merhav.merhavId] = merhav);
+
+  const rows = goldClusterSeedRows_();
+  let created = 0;
+  let updated = 0;
+  const missingSettlements = [];
+  rows.forEach((row, index) => {
+    const sourceKey = normalizeHebrewKey_(row.settlementName);
+    const settlement = settlementByKey[sourceKey] || null;
+    if (!settlement) missingSettlements.push(row.settlementName);
+    const merhav = settlement ? merhavById[settlement.merhavId] || {} : {};
+    const existing = findObjectByKey_(spreadsheet.getSheetByName("Points"), "pointId", row.pointId);
+    const mappedSettlementName = settlement ? settlement.settlementName : row.settlementName;
+    const point = createPointObject_({
+      pointId: row.pointId,
+      districtId: "north-sharon-district",
+      districtName: "מחוז צפון השרון",
+      merhavId: settlement ? settlement.merhavId : "",
+      merhavName: merhav.merhavName || "",
+      settlementId: settlement ? settlement.settlementId : slugify_(row.settlementName),
+      settlementName: mappedSettlementName,
+      type: "cluster",
+      number: `אשכול זהב ${String(index + 1).padStart(3, "0")}`,
+      pointName: row.clusterName,
+      priority: "1",
+      importanceReason: `אשכול זהב לפי מקור. דירוג ארצי ${row.nationalRank}; ${row.level}`,
+      status: existing.object && existing.object.status ? existing.object.status : "Open for documentation",
+      plannedAddress: row.address ? `${cleanAddress_(row.address)}, ${mappedSettlementName}` : mappedSettlementName,
+      createdBy: "seed-gold-clusters",
+      notes: `אשכול מקור: ${row.sourceCluster}; כתובת מקור: ${row.address}; סוג קלפי: ${row.level}; דירוג ארצי: ${row.nationalRank}`
+    });
+    point.createdAt = existing.object && existing.object.createdAt ? existing.object.createdAt : point.createdAt;
+    point.updatedAt = israelTimestamp_();
+    upsertObject_(spreadsheet.getSheetByName("Points"), "pointId", point);
+    appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+      pointId: point.pointId,
+      timestamp: point.updatedAt,
+      fromStatus: existing.object ? existing.object.status || "" : "",
+      toStatus: point.status,
+      changedBy: "seed-gold-clusters",
+      note: existing.object ? "Gold cluster seed updated" : "Gold cluster seeded"
+    });
+    if (existing.object) updated += 1;
+    else created += 1;
+  });
+  return {
+    ok: true,
+    expected: 32,
+    processed: rows.length,
+    created,
+    updated,
+    missingSettlements: Array.from(new Set(missingSettlements))
+  };
+}
+
+function seedGoldClusters() {
+  return seedGoldClusters_();
+}
+
+function goldClusterSeedRows_() {
+  return [
+    { pointId: "GOLD-001", settlementName: "בנימינהגבעת עדה", sourceCluster: "2", clusterName: "בי\"ס אשכולות", address: "המורה", nationalRank: "12", level: "רמה 1" },
+    { pointId: "GOLD-002", settlementName: "פרדס חנהכרכור", sourceCluster: "21", clusterName: "ביה\"ס ממלכתי מעיינות", address: "צליל,7", nationalRank: "16", level: "רמה 1" },
+    { pointId: "GOLD-003", settlementName: "אבן יהודה", sourceCluster: "4", clusterName: "בית חינוך בית אב\"י", address: "העצמאות,140", nationalRank: "28", level: "רמה 1" },
+    { pointId: "GOLD-004", settlementName: "קדימהצורן", sourceCluster: "107+109", clusterName: "מתנ\"ס צורן+ביה\"ס לב-רן", address: "דרך לב השרון צורן,1 +דרך לב השרון צורן,2", nationalRank: "33", level: "רמה 1" },
+    { pointId: "GOLD-005", settlementName: "קיסריה", sourceCluster: "3+2", clusterName: "בית ספר קיסריה-מבנה דרומי+בית ספר קיסריה-מבנה צפוני", address: "שד רוטשילד,30 +שד רוטשילד,30", nationalRank: "40", level: "רמה 1" },
+    { pointId: "GOLD-006", settlementName: "זכרון יעקב", sourceCluster: "7", clusterName: "בית ספר החיטה", address: "דרך אהרן,4", nationalRank: "42", level: "רמה 1" },
+    { pointId: "GOLD-007", settlementName: "זכרון יעקב", sourceCluster: "2", clusterName: "בי\"ס ממלכתי נילי", address: "שד ניל\"י", nationalRank: "72", level: "רמה 1" },
+    { pointId: "GOLD-008", settlementName: "נתניה", sourceCluster: "51", clusterName: "בי\"ס רימלט", address: "מעפילי אגוז,5", nationalRank: "74", level: "רמה 1" },
+    { pointId: "GOLD-009", settlementName: "בת חפר", sourceCluster: "1", clusterName: "בי\"ס שדות-בת חפר", address: "חלבלוב", nationalRank: "94", level: "רמה 1" },
+    { pointId: "GOLD-010", settlementName: "נתניה", sourceCluster: "142", clusterName: "ביה\"ס חיים חפר", address: "ברמן בני,4", nationalRank: "107", level: "רמה 2" },
+    { pointId: "GOLD-011", settlementName: "תל מונד", sourceCluster: "7", clusterName: "ביה\"ס נוף ילדות", address: "החצב,1", nationalRank: "114", level: "רמה 2" },
+    { pointId: "GOLD-012", settlementName: "נתניה", sourceCluster: "149", clusterName: "בי\"ס ע\"ש אהרון דוידי", address: "שמורת נחל שניר,3", nationalRank: "131", level: "רמה 2" },
+    { pointId: "GOLD-013", settlementName: "נתניה", sourceCluster: "100", clusterName: "בי\"ס ממלכתי ע\"ש מנחם בגין", address: "גור מרדכי,4", nationalRank: "205", level: "רמה 3" },
+    { pointId: "GOLD-014", settlementName: "פרדס חנהכרכור", sourceCluster: "23", clusterName: "בי\"ס שדות", address: "נחלה,34", nationalRank: "213", level: "רמה 3" },
+    { pointId: "GOLD-015", settlementName: "תל מונד", sourceCluster: "1", clusterName: "בי\"ס שלנו", address: "הדקל,64", nationalRank: "216", level: "רמה 3" },
+    { pointId: "GOLD-016", settlementName: "פרדס חנהכרכור", sourceCluster: "8", clusterName: "בי\"ס חורב-אגודה", address: "מצדה,314", nationalRank: "220", level: "רמה 3" },
+    { pointId: "GOLD-017", settlementName: "תל מונד", sourceCluster: "6", clusterName: "מתנ\"ס תל מונד", address: "הדקל,31", nationalRank: "244", level: "רמה 3" },
+    { pointId: "GOLD-018", settlementName: "חדרה", sourceCluster: "44+66", clusterName: "ביה\"ס עש אילן רמון כניסה ראשית+ביה\"ס עש אילן רמון שער אחורי", address: "רבין יצחק,56 +רבין יצחק,56", nationalRank: "251", level: "רמה 3" },
+    { pointId: "GOLD-019", settlementName: "נתניה", sourceCluster: "125+8", clusterName: "מרכז קהילתי אופק+העמותה לחינוך הבלתי פורמלי", address: "אחימאיר,9 +אחימאיר,9", nationalRank: "290", level: "רמה 3" },
+    { pointId: "GOLD-020", settlementName: "בנימינהגבעת עדה", sourceCluster: "104", clusterName: "בית ספר גבע", address: "הניצנים,17", nationalRank: "292", level: "רמה 3" },
+    { pointId: "GOLD-021", settlementName: "זכרון יעקב", sourceCluster: "8", clusterName: "בי\"ס החורש", address: "דרך פינלס", nationalRank: "295", level: "רמה 3" },
+    { pointId: "GOLD-022", settlementName: "מעגן מיכאל", sourceCluster: "1", clusterName: "מועדון האסם", address: "מעגן מיכאל", nationalRank: "302", level: "רמה 4" },
+    { pointId: "GOLD-023", settlementName: "חדרה", sourceCluster: "1+69", clusterName: "בי\"ס אחד העם כניסה משער צפוני+בי\"ס אחד העם כניסה משער ראשי", address: "אחד העם,19 +אחד העם,19", nationalRank: "328", level: "רמה 4" },
+    { pointId: "GOLD-024", settlementName: "כפר יונה", sourceCluster: "19", clusterName: "בית הספר רימון", address: "יקינטון,4", nationalRank: "333", level: "רמה 4" },
+    { pointId: "GOLD-025", settlementName: "חדרה", sourceCluster: "4", clusterName: "בי\"ס צפרירים כ. ראשית רח' אלון", address: "האלון,30", nationalRank: "345", level: "רמה 4" },
+    { pointId: "GOLD-026", settlementName: "בית יצחקשער חפר", sourceCluster: "1", clusterName: "בית העם", address: "בית יצחק-שער חפר", nationalRank: "353", level: "רמה 4" },
+    { pointId: "GOLD-027", settlementName: "פרדס חנהכרכור", sourceCluster: "13", clusterName: "בי\"ס ממלכתי כרכור", address: "המייסדים,73", nationalRank: "354", level: "רמה 4" },
+    { pointId: "GOLD-028", settlementName: "פרדס חנהכרכור", sourceCluster: "2", clusterName: "בי\"ס ממלכתי אלונים", address: "הנדיב,1", nationalRank: "361", level: "רמה 4" },
+    { pointId: "GOLD-029", settlementName: "פרדסיה", sourceCluster: "3+5", clusterName: "בי\"ס תפוז+אולם ספורט-מול בי\"ס", address: "רמב\"ם,35 +רמב\"ם,36", nationalRank: "365", level: "רמה 4" },
+    { pointId: "GOLD-030", settlementName: "חדרה", sourceCluster: "52", clusterName: "בי\"ס מדעים ויהדות", address: "משמר הגבול,1", nationalRank: "373", level: "רמה 4" },
+    { pointId: "GOLD-031", settlementName: "חדרה", sourceCluster: "64", clusterName: "בי\"ס תחכמוני חדש", address: "שדרות כושי עפגין,7", nationalRank: "382", level: "רמה 4" },
+    { pointId: "GOLD-032", settlementName: "נתניה", sourceCluster: "101", clusterName: "בי\"ס שלהבות (הרי\"ף)", address: "החפץ חיים,801", nationalRank: "400", level: "רמה 4" }
+  ];
 }
 
 function changePointAssignment_(payload, mode) {
@@ -498,6 +607,14 @@ function splitSettlementNames_(text) {
     .filter(Boolean);
 }
 
+function cleanAddress_(text) {
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+\+/g, " +")
+    .replace(/\+\s+/g, "+ ")
+    .trim();
+}
+
 function requireWorkspace_() {
   const spreadsheetId = FIELD_DOC_APP.properties.getProperty("SPREADSHEET_ID");
   const rootFolderId = FIELD_DOC_APP.properties.getProperty("ROOT_FOLDER_ID");
@@ -687,6 +804,14 @@ function slugify_(text) {
     .replace(/[^A-Za-z0-9\u0590-\u05FF-]+/g, "")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
+    .toLowerCase();
+}
+
+function normalizeHebrewKey_(text) {
+  return String(text || "")
+    .replace(/["'`״׳]/g, "")
+    .replace(/[\u0591-\u05C7]/g, "")
+    .replace(/[^A-Za-z0-9\u0590-\u05FF]/g, "")
     .toLowerCase();
 }
 
