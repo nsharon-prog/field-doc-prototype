@@ -837,12 +837,20 @@ function saveAnswers_(spreadsheet, pointId, answers, documentedBy) {
       pointId,
       timestamp,
       sectionKey: answer.sectionKey || "",
-      fieldKey: answer.fieldKey || "",
+      fieldKey: normalizeAnswerFieldKey_(answer.fieldKey, index),
       label: answer.label || "",
       value: answer.value == null ? "" : String(answer.value),
       documentedBy: documentedBy || ""
     });
   });
+}
+
+function normalizeAnswerFieldKey_(fieldKey, index) {
+  const value = fieldKey == null ? "" : String(fieldKey).trim();
+  if (!value) return `field_${index + 1}`;
+  if (/^\d+-\d+$/.test(value)) return `field_${value.replace("-", "_")}`;
+  if (/^\d{4}-\d{2}-\d{2}/.test(value)) return `field_${index + 1}`;
+  return value;
 }
 
 function savePhotos_(spreadsheet, point, photos) {

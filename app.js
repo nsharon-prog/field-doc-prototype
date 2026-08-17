@@ -108,11 +108,40 @@ let editorToolMode = "arrow";
 let activePhotoSource = "";
 let cameraStream = null;
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 17:08:40";
+const buildStampValue = "2026-08-17 17:25:08";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
 }
+
+const answerKeyBySection = {
+  "הגעה ואימות": "arrival",
+  "דקירת מקום": "location_pin",
+  "צילום הכניסה": "entrance_photo",
+  "מיקום הדוכן": "booth_location",
+  "הערות למיקום": "location_notes",
+  "צילום מרחוק": "wide_photo",
+  "צילום תקריב": "close_photo",
+  "מדידות והערות": "measurements_notes",
+  "צילום המקום": "place_photo",
+  "שעות מומלצות": "recommended_hours",
+  "הערות למקום": "place_notes",
+  "חניה, פריקה וגישה": "parking_access",
+  "ציוד נדרש": "equipment",
+  "בדיקה לפני שליחה": "review"
+};
+
+const equipmentKeyByName = {
+  "שלט גדול": "large_sign",
+  "שלט קטן": "small_sign",
+  "שולחן": "table",
+  "דגלי המפלגה": "party_flags",
+  "אזיקונים": "zip_ties",
+  "חבל": "rope",
+  "פליירים": "flyers",
+  "כובעים": "hats",
+  "חולצות": "shirts"
+};
 
 function setLoadStatus(message, mode = "") {
   const status = document.getElementById("loadStatus");
@@ -653,14 +682,36 @@ function collectAnswers() {
   const answers = [];
   document.querySelectorAll("#documentScreen .mission-step").forEach((step, sectionIndex) => {
     const title = step.querySelector("h2")?.textContent || `שלב ${sectionIndex + 1}`;
+    const sectionKey = answerKeyBySection[title] || `step_${sectionIndex + 1}`;
     step.querySelectorAll("input, select, textarea").forEach((field, fieldIndex) => {
       if (field.type === "file" || field.id === "photoInput") return;
-      const label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || `שדה ${fieldIndex + 1}`;
+      const value = field.value || "";
+      const equipmentRow = field.closest(".equipment-row");
+      let fieldKey = field.id || field.name || `${sectionKey}_field_${fieldIndex + 1}`;
+      let label = field.closest("label")?.childNodes[0]?.textContent?.trim() || field.placeholder || `שדה ${fieldIndex + 1}`;
+      if (equipmentRow) {
+        const itemName = equipmentRow.querySelector("span")?.textContent?.trim() || "ציוד";
+        const itemIndex = [...equipmentRow.parentElement.children].indexOf(equipmentRow) + 1;
+        const itemKey = equipmentKeyByName[itemName] || `item_${itemIndex}`;
+        if (field.tagName === "SELECT") {
+          fieldKey = `equipment_${itemKey}_needed`;
+          label = `${itemName} - נדרש`;
+        } else {
+          const inputs = [...equipmentRow.querySelectorAll("input")];
+          const inputIndex = inputs.indexOf(field);
+          const quantityKey = inputIndex === 0 ? "min" : "max";
+          const quantityLabel = inputIndex === 0 ? "מינימום" : "מקסימום";
+          fieldKey = `equipment_${itemKey}_${quantityKey}`;
+          label = `${itemName} - ${quantityLabel}`;
+        }
+      } else {
+        fieldKey = `${sectionKey}_${fieldKey}`.replace(/[^a-zA-Z0-9_]+/g, "_").replace(/^_+|_+$/g, "");
+      }
       answers.push({
         sectionKey: title,
-        fieldKey: field.id || field.name || `${sectionIndex + 1}-${fieldIndex + 1}`,
+        fieldKey,
         label,
-        value: field.value || ""
+        value
       });
     });
   });
