@@ -70,7 +70,8 @@ const appState = {
   currentMerhavId: "",
   currentMerhavName: "",
   currentPoint: null,
-  correctedLocation: null
+  correctedLocation: null,
+  pointSearch: ""
 };
 
 const missionPlans = {
@@ -102,7 +103,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:26:40";
+const buildStampValue = "2026-08-17 16:28:40";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -421,6 +422,30 @@ function normalizePoint(point) {
   };
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .replace(/["'`״׳]/g, "")
+    .replace(/[\u0591-\u05C7]/g, "")
+    .replace(/[־–—]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function pointMatchesSearch(point, query) {
+  if (!query) return true;
+  const haystack = normalizeSearchText([
+    point.number,
+    point.name,
+    point.pointName,
+    point.settlementName,
+    point.merhavName,
+    point.plannedAddress,
+    point.notes
+  ].join(" "));
+  return haystack.includes(query);
+}
+
 function renderPointCard(point, mode) {
   const p = normalizePoint(point);
   const typeClass = pointTypeClass(p.type);
@@ -444,12 +469,20 @@ function renderQueues() {
   if (lists.length < 2) return;
   const user = appState.currentUser;
   const selectedMerhav = appState.currentMerhavId;
+  const searchQuery = normalizeSearchText(appState.pointSearch);
   const points = appState.points.map(normalizePoint)
-    .filter((point) => !selectedMerhav || point.merhavId === selectedMerhav || point.merhavName === appState.currentMerhavName);
+    .filter((point) => !selectedMerhav || point.merhavId === selectedMerhav || point.merhavName === appState.currentMerhavName)
+    .filter((point) => pointMatchesSearch(point, searchQuery));
   const mine = points.filter((point) => point.assignedTo === user && point.status === "In progress");
   const open = points.filter((point) => ["Open for documentation", "Needs completion"].includes(point.status) || (!point.assignedTo && point.status !== "Waiting for review"));
   lists[0].innerHTML = mine.length ? mine.map((point) => renderPointCard(point, "mine")).join("") : `<div class="empty-state">אין לך נקודות בטיפול כרגע.</div>`;
   lists[1].innerHTML = open.length ? open.map((point) => renderPointCard(point, "open")).join("") : `<div class="empty-state">אין כרגע נקודות פתוחות במרחב הזה.</div>`;
+  const count = document.getElementById("searchResultCount");
+  if (count) {
+    count.textContent = searchQuery
+      ? `נמצאו ${points.length} נקודות`
+      : "כל הנקודות מוצגות";
+  }
 }
 
 async function loadBootstrap() {
@@ -803,6 +836,11 @@ function attachPointLaunchers() {
     document.getElementById("welcomeLine").textContent = `שלום, ${user}`;
     renderQueues();
     showScreen("queue");
+  });
+
+  document.getElementById("pointSearch")?.addEventListener("input", (event) => {
+    appState.pointSearch = event.target.value || "";
+    renderQueues();
   });
 
   document.getElementById("photoInput").addEventListener("change", async (event) => {

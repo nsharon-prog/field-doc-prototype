@@ -20,6 +20,9 @@ button{cursor:pointer}
 .hero-panel p,.welcome p,.section-head p,.assignment-summary p,.step-title p{color:var(--muted);line-height:1.45}
 .hero-panel h1,.welcome h1,.assignment-summary h1,.new-point-intro h1{margin:0}
 .panel{padding:14px;margin-bottom:12px}
+.search-panel{display:grid;gap:8px}
+.search-panel label{margin-top:0}
+.search-panel small{color:var(--muted);font-weight:700}
 .build-stamp{margin-bottom:12px;padding:9px 11px;border-radius:6px;background:#f2f6fa;border:1px solid #d7e0e8;color:#4f5d68;font-size:.78rem;line-height:1.35}
 .build-stamp[data-mode="ok"]{background:#f0faf7;border-color:#b9d8ce;color:var(--teal);font-weight:700}
 .build-stamp[data-mode="fallback"]{background:#fff7ed;border-color:#f1d5b4;color:#9a520b;font-weight:700}
