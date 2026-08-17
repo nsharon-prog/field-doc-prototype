@@ -103,7 +103,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:28:40";
+const buildStampValue = "2026-08-17 16:31:29";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
@@ -362,7 +362,24 @@ function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.remove("active"));
   screens[name].classList.add("active");
   document.querySelector(".bottom-nav").hidden = name !== "queue";
+  const logout = document.getElementById("logoutButton");
+  if (logout) logout.hidden = name === "login";
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function logout() {
+  appState.currentUser = "";
+  appState.currentMerhavId = "";
+  appState.currentMerhavName = "";
+  appState.currentPoint = null;
+  appState.correctedLocation = null;
+  appState.pointSearch = "";
+  const password = document.getElementById("loginPassword");
+  const search = document.getElementById("pointSearch");
+  if (password) password.value = "";
+  if (search) search.value = "";
+  renderQueues();
+  showScreen("login");
 }
 
 function pointTypeLabel(type) {
@@ -837,6 +854,8 @@ function attachPointLaunchers() {
     renderQueues();
     showScreen("queue");
   });
+
+  document.getElementById("logoutButton")?.addEventListener("click", logout);
 
   document.getElementById("pointSearch")?.addEventListener("input", (event) => {
     appState.pointSearch = event.target.value || "";
