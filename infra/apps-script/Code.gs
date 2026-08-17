@@ -13,6 +13,7 @@ function doGet(event) {
   if (action === "points") return jsonResponse(getPoints_(event.parameter), callback);
   if (action === "synchierarchy") return jsonResponse(syncHierarchyAction_(), callback);
   if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_(), callback);
+  if (action === "seedtestpoint") return jsonResponse(seedTestPoint_(), callback);
   if (action === "createpoint") return jsonResponse(createPoint_(decodeGetPayload_(event.parameter.payload || "")), callback);
   if (action === "claimpoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "claim"), callback);
   if (action === "releasepoint") return jsonResponse(changePointAssignment_(decodeGetPayload_(event.parameter.payload || ""), "release"), callback);
@@ -30,6 +31,7 @@ function doPost(event) {
     const action = (payload.action || "").toLowerCase();
     if (action === "setup") return jsonResponse(setupWorkspace_());
     if (action === "seedgoldclusters") return jsonResponse(seedGoldClusters_());
+    if (action === "seedtestpoint") return jsonResponse(seedTestPoint_());
     if (action === "createpoint") return jsonResponse(createPoint_(payload));
     if (action === "claimpoint") return jsonResponse(changePointAssignment_(payload, "claim"));
     if (action === "releasepoint") return jsonResponse(changePointAssignment_(payload, "release"));
@@ -304,6 +306,54 @@ function seedGoldClusters_() {
 
 function seedGoldClusters() {
   return seedGoldClusters_();
+}
+
+function seedTestPoint_() {
+  const workspace = requireWorkspace_();
+  const spreadsheet = SpreadsheetApp.openById(workspace.spreadsheetId);
+  ensureSheets_(spreadsheet);
+  const pointId = "TEST-PLAYGROUND-001";
+  const existing = findObjectByKey_(spreadsheet.getSheetByName("Points"), "pointId", pointId);
+  const point = createPointObject_({
+    pointId,
+    districtId: "north-sharon-district",
+    districtName: "מחוז צפון השרון",
+    merhavId: "חדרה-מנשה",
+    merhavName: "חדרה מנשה",
+    settlementId: "חדרה",
+    settlementName: "חדרה",
+    type: "signage",
+    number: "נקודת בדיקה 001",
+    pointName: "נקודת בדיקה - לא אמיתי",
+    priority: "",
+    importanceReason: "נקודת בדיקה להפעלת זרימת נתונים",
+    status: existing.object && existing.object.status ? existing.object.status : "Open for documentation",
+    plannedAddress: "אחד העם 1, חדרה",
+    createdBy: "seed-test-point",
+    notes: "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים."
+  });
+  point.createdAt = existing.object && existing.object.createdAt ? existing.object.createdAt : point.createdAt;
+  point.updatedAt = israelTimestamp_();
+  upsertObject_(spreadsheet.getSheetByName("Points"), "pointId", point);
+  appendObject_(spreadsheet.getSheetByName("StatusHistory"), {
+    pointId,
+    timestamp: point.updatedAt,
+    fromStatus: existing.object ? existing.object.status || "" : "",
+    toStatus: point.status,
+    changedBy: "seed-test-point",
+    note: existing.object ? "Test point updated" : "Test point seeded"
+  });
+  return {
+    ok: true,
+    created: !existing.object,
+    updated: Boolean(existing.object),
+    point,
+    output: buildOutputUrls_(point)
+  };
+}
+
+function seedTestPoint() {
+  return seedTestPoint_();
 }
 
 function goldClusterSeedRows_() {

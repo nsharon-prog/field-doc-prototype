@@ -18,6 +18,7 @@ const fallbackMerhavim = [
   { merhavId: "נתניה", merhavName: "נתניה +" }
 ];
 const fallbackGoldPoints = [
+  ["TEST-PLAYGROUND-001", "חדרה-מנשה", "חדרה מנשה", "חדרה", "נקודת בדיקה - לא אמיתי", "אחד העם 1, חדרה", "נקודת בדיקה 001", "signage", "נקודת בדיקה בלבד. אפשר לצלם, לדקור GPS ולשלוח כדי לבדוק שהנתונים נשמרים."],
   ["GOLD-001", "בנימינה-גבעת-עדה-יישובי-אלונה", "בנימינה / גבעת עדה + יישובי אלונה", "בנימינה-גבעת עדה", "בי\"ס אשכולות", "המורה, בנימינה-גבעת עדה"],
   ["GOLD-002", "פרדס-חנה", "פרדס חנה", "פרדס חנה-כרכור", "ביה\"ס ממלכתי מעיינות", "צליל,7, פרדס חנה-כרכור"],
   ["GOLD-003", "נתניה", "נתניה +", "אבן יהודה", "בית חינוך בית אב\"י", "העצמאות,140, אבן יהודה"],
@@ -52,16 +53,16 @@ const fallbackGoldPoints = [
   ["GOLD-032", "נתניה", "נתניה +", "נתניה", "בי\"ס שלהבות (הרי\"ף)", "החפץ חיים,801, נתניה"]
 ].map((row, index) => ({
   pointId: row[0],
-  type: "cluster",
-  number: `אשכול זהב ${String(index + 1).padStart(3, "0")}`,
+  type: row[7] || "cluster",
+  number: row[6] || `אשכול זהב ${String(index).padStart(3, "0")}`,
   merhavId: row[1],
   merhavName: row[2],
   settlementName: row[3],
   pointName: row[4],
   plannedAddress: row[5],
   status: "Open for documentation",
-  priority: "1",
-  notes: "נטען מרשימת אשכולות זהב מקומית"
+  priority: row[7] ? "" : "1",
+  notes: row[8] || "נטען מרשימת אשכולות זהב מקומית"
 }));
 const appState = {
   hierarchy: { districts: [], merhavim: [], settlements: [] },
@@ -103,7 +104,7 @@ let editorCaption = null;
 let editorToolMode = "arrow";
 let activePhotoSource = "";
 const photoCache = new Map();
-const buildStampValue = "2026-08-17 16:31:29";
+const buildStampValue = "2026-08-17 16:34:24";
 const buildStamp = document.getElementById("buildStamp");
 if (buildStamp) {
   buildStamp.textContent = `גרסת שטח: ${buildStampValue} IL`;
